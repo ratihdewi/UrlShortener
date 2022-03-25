@@ -25,4 +25,9 @@ class VendorTenderTerbuka extends Model
 
     //nama table
     protected $table = 'vendor_tender_terbukas';
+
+    public function categories()
+    {
+        return $this->hasMany('App\Models\VendorCategory', 'vendor_id')->where('terbuka', 1);
+    }
 }

@@ -35,7 +35,8 @@ class VendorRequestTenderTerbuka extends FormRequest
             'file_penawaran' => 'nullable',
             'data_penawaran' => 'nullable',
             'no_penawaran' => 'nullable|String',
-            'pic_name' => 'required|String'
+            'pic_name' => 'required|String',
+            'captcha' => 'required|captcha'
         ];
     }
 

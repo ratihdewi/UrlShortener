@@ -1,3 +1,37 @@
+<?php 
+    
+    $segment = Request::segment(1);
+
+    if ($segment == 'tenderterbuka-bidder') {
+
+        $redirect = 'vendor.terbuka.detail';
+    }
+
+    else if ($segment == 'deleted-bidder') {
+
+        $redirect = 'vendor.deleted.detail';
+    }
+
+    else {
+
+        $redirect = 'vendor.edit';
+    }
+
+
+    function customOutput ($kalimat, $i) {
+
+        if (strlen($kalimat) <= $i) {
+            return $kalimat;
+        }
+
+        else {
+            $y = substr($kalimat,0,$i) . '...';
+            return $y;
+        }
+    }
+    
+?>
+
 @extends("master.main")
 
 @section("title","Daftar Vendor")
@@ -14,12 +48,14 @@
     <div class="card mb-4">
         <div class="card-header">
             Total Vendor: {{$vendors->count()}}
-            <a class="btn btn-sm btn-primary float-right" href="{{route('vendor.create')}}">
-                <i class="mr-1" data-feather="plus-square"></i>
-                Tambah Vendor
-            </a>
-            <a class="btn btn-sm btn-info float-right" style="margin-right:20px;" data-toggle="modal" data-target="#uploadModal" href="#">Import</a>
-            <a class="btn btn-sm btn-secondary float-right"  style="margin-right:5px;"  href="{{route('vendor.export')}}">Export</a>
+            @if ($segment == 'bidder-list')
+                <a class="btn btn-sm btn-primary float-right" href="{{route('vendor.create')}}">
+                    <i class="mr-1" data-feather="plus-square"></i>
+                    Tambah Vendor
+                </a>
+                <a class="btn btn-sm btn-info float-right" style="margin-right:20px;" data-toggle="modal" data-target="#uploadModal" href="#">Import</a>
+                <a class="btn btn-sm btn-secondary float-right"  style="margin-right:5px;"  href="{{route('vendor.export')}}">Export</a>
+            @endif
         </div>
         <div class="card-body">
             <div class="datatable">
@@ -46,26 +82,28 @@
                                 <td>{{$vendor->no}}</td>
                                 <td>{{$vendor->name}}</td>
                                 <td>
-                                    @if(isset($vendor->afiliasi))
-                                        
-                                        @foreach($vendor->categories as $row) 
-                                            @if($row->category()->exists())
-                                            {{$row->category['name']}}{{ $loop->last ? '' : ',' }} 
-                                            @endif
-                                        @endforeach
-                                        
-                                    @endif
+                                    @foreach($vendor->categories as $row) 
+                                        @if($row->category()->exists())
+                                        {{$row->category['name']}}{{ $loop->last ? '' : ',' }} 
+                                        @endif
+                                    @endforeach
                                 </td>
                                 <td>{{$vendor->no_telp}}</td>
                                 <td>{{$vendor->pic_name}}</td>
-                                <td>{{$vendor->email}}</td>
+                                <td>{{customOutput($vendor->email, 30)}}</td>
                                 <td>{{date('Y-m-d', strtotime($vendor->updated_at))}}</td>
                                 <td><div class="rateit" data-rateit-value="{{$vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>
-                                <td class="text-center"><a href="{{route('vendor.edit', [$vendor])}}" class="btn btn-light btn-sm"><small>Detail</small></a></td>
+
+                                <td class="text-center">
+                                    <div id="btnAction">
+                                        <a href="{{route($redirect, [$vendor])}}" class="btn btn-light btn-sm"><small>Detail</small></a>
+                                    </div>
+                                </td>
+
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6"><center><i>Tidak ada data.</i></center></td>
+                                <td colspan="9"><center><i>Tidak ada data.</i></center></td>
                             </tr>
                         @endforelse
                     </tbody>

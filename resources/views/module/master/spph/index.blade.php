@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="small mb-1">TTD (.jpg)&nbsp;</label>
-                                    <input name="ttd" value="{{ old('ttd') }}" class="form-control{{ $errors->has('ttd') ? ' is-invalid' : '' }}" type="file"/>
+                                    <input name="ttd" value="{{ old('ttd') }}" class="form-control{{ $errors->has('ttd') ? ' is-invalid' : '' }}" type="file" accept="image/*" />
                                     @if ($errors->has('ttd'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('ttd') }}</strong>

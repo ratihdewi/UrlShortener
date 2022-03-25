@@ -89,6 +89,7 @@
                                 </div>
                             </div>
                         </div>
+                        <input type="hidden" name="is_pengadaan" id="pdn" value="{{$user->is_pengadaan}}">
                         <button class="btn btn-primary float-right" type="submit">Simpan</button>
                         <a href="{{ url()->previous() }}" class="btn btn-light float-right" style="margin-right:10px">Kembali</a>
                     </form>
@@ -97,5 +98,22 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    
+    $('select[name=role_id]').on('change', function () {
+
+        if (this.value == 4) {
+            $('input[id=pdn]').prop('value', 0);
+        }
+
+        else {
+            $('input[id=pdn]').prop('value', 1);
+        }
+
+    });
+
+
+</script>
 
 @endsection

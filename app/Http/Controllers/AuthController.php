@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         //$login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:8888/proc/public/auth';
-        $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+        $login_url = 'ttps://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
         return \Redirect::to($login_url);
     }
 

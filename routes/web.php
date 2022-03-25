@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth'] ], function () {
         route::get('/status/{procurement}/{status}/{token}', 'App\Http\Controllers\ProcurementController@changeStatus')->name('procurement.item.change.status');
         route::get('/item-edit/{item}', 'App\Http\Controllers\ProcurementController@itemEdit')->name('procurement.item.edit');
         route::put('/item-update/{item}', 'App\Http\Controllers\ProcurementController@itemUpdate')->name('procurement.item.update');
+        route::get('/get-input-barang-pengadaan', 'App\Http\Controllers\ProcurementController@getInputBarangPengadaan')->name('procurement.get.input');
 
         route::get('/file/download/{id}/{type}', 'App\Http\Controllers\ProcurementController@fileDownload')->name('procurement.file.download');
         route::get('/file/view/{id}/{type}', 'App\Http\Controllers\ProcurementController@detailDokumen')->name('procurement.file.view');
@@ -53,6 +54,7 @@ Route::group(['middleware' => ['auth'] ], function () {
         route::get('penawaran/tenderterbuka/submit/{penawaran}', 'App\Http\Controllers\TenderTerbukaController@submitPenawaran')->name('procurement.tenderterbuka.penawaran.submit');
         route::put('tenderterbuka/batas/ubah', 'App\Http\Controllers\TenderTerbukaController@ubahBatas')->name('procurement.tenderterbuka.batas');
         route::post('logs/store/{procurement}', 'App\Http\Controllers\LogsController@store')->name('procurement.logs.store');
+
         
         Route::prefix('penawaran')->group(function () {
             route::post('/upload/{procurement}', 'App\Http\Controllers\ProcurementController@uploadPenawaran')->name('procurement.upload.penawaran');
@@ -178,10 +180,15 @@ Route::group(['middleware' => ['auth'] ], function () {
 
         Route::prefix('deleted-bidder')->group(function () {
             route::get('/', 'App\Http\Controllers\VendorController@indexDeleted')->name('vendor.deleted.index');
+            route::get('/detail/{vendor}', 'App\Http\Controllers\VendorController@deletedDetail')->name('vendor.deleted.detail');
         });
 
         Route::prefix('tenderterbuka-bidder')->group(function () {
             route::get('/', 'App\Http\Controllers\VendorController@indexTerbuka')->name('vendor.terbuka.index');
+            route::get('/detail-terbuka/{vendor}', 'App\Http\Controllers\VendorController@detailTerbuka')->name('vendor.terbuka.detail');
+            route::put('/approve-vendor/{vendor}', 'App\Http\Controllers\VendorController@approveVendor')->name('vendor.terbuka.approve');
+            route::put('/reject-vendor/{vendor}', 'App\Http\Controllers\VendorController@rejectVendor')->name('vendor.terbuka.reject');
+
         });
     });
 
@@ -197,6 +204,12 @@ Route::group(['middleware' => ['auth'] ], function () {
             Route::prefix('spph')->group(function () {
                 route::get('/', 'App\Http\Controllers\MasterSpphController@index')->name('master.spph.index');
                 route::put('/', 'App\Http\Controllers\MasterSpphController@update')->name('master.spph.update');
+            });
+
+            Route::prefix('mail')->group(function() {
+                route::get('/', 'App\Http\Controllers\MasterMailController@index')->name('master.mail.index');
+                route::put('/', 'App\Http\Controllers\MasterMailController@update')->name('master.mail.update');
+
             });
 
             Route::prefix('po')->group(function () {
@@ -241,12 +254,13 @@ route::post('penawaran-input/store', 'App\Http\Controllers\TenderTerbukaControll
 
 route::get('vendor/input', 'App\Http\Controllers\VendorController@createTenderTerbuka')->name('vendor.tenderterbuka.create');
 route::post('vendor-terbuka/store', 'App\Http\Controllers\VendorController@storeTenderTerbuka')->name('vendor.tenderterbuka.store');
+route::get('/reload-captcha', 'App\Http\Controllers\VendorController@reloadCaptcha');
 
 
-//Auth::routes();
-route::get('auth/', 'App\Http\Controllers\AuthController@auth');
+Auth::routes();
+/*route::get('auth/', 'App\Http\Controllers\AuthController@auth');
 route::get('login', 'App\Http\Controllers\AuthController@showLoginForm')->name('login');
 route::get('gettoken/', 'App\Http\Controllers\AuthController@getToken');
-route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');
+route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');*/
 
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -25,11 +25,20 @@ class VendorInsertor
             if(!isset($data['afiliasi'])){
                 $data['afiliasi'] = 0; 
             }
-            $data['delete'] = 0;
+
+            if (!isset($data['delete'])) {
+                $data['delete'] = 0;
+            }
+            
             $vendor = Vendor::create($data);
             $vendor_update = Vendor::find($vendor->id);
             $vendor_update->no = (new CreateNoVendor)->createNo($vendor->id);
             $vendor_update->save();
+
+            if ($data['category_id'] == NULL) {
+                $data['category_id'] = array(1);
+            }
+
             foreach($data['category_id'] as $row){
                 $cat = new VendorCategory();
                 $cat->vendor_id = $vendor->id;
@@ -53,6 +62,13 @@ class VendorInsertor
             return '';
         } else {
             $vendor = VendorTenderTerbuka::create($data);
+            foreach($data['category_id'] as $row){
+                $cat = new VendorCategory();
+                $cat->vendor_id = $vendor->id;
+                $cat->category_id = $row;
+                $cat->terbuka = 1;
+                $cat->save();
+            }
             return $vendor->id;
         }
     }
@@ -111,10 +127,12 @@ class VendorInsertor
 
     public function emailIsExists($email)
     {
-        if(Vendor::where('email', $email)->exists()){
+        if(Vendor::where('email', $email)->where('delete', 0)->exists()){
             return true;
-        } else {
+        }   
+        else {
             return false;
         }
+        
     }
 }

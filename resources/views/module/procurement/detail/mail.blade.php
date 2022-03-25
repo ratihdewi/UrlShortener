@@ -111,7 +111,16 @@
                     <tr>
                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Kepada {{$penerima}},</p>
-                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Anda kami undang untuk menawarkan harga pada tender yang dilakukan Universitas Pertamina. Silahkan isi file excel berikut sesuai dengan penawaran yang akan anda berikan.</p>
+                        //<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Anda kami undang untuk menawarkan harga pada tender yang dilakukan Universitas Pertamina. Silahkan isi file excel berikut sesuai dengan penawaran yang akan anda berikan.</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Anda kami undang untuk menawarkan harga pada tender yang dilakukan Universitas Pertamina. silahkan lengkapi dokumen yang dibutuhkan sesuai SPPH dan lengkapi file excel sesuai dengan penawaran yang anda berikan dengan ketentuan</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"></br>1. Isi nomor surat</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"></br>2. Harga satuan</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"></br>3. Harga total</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"></br>4. Keterangan bersifat optional</p>
+                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                        Kemudian kirimkan semua dokumen tersebut ke email yang tertera di spph
+                      </p>
+
                       </td>
                     </tr>
                   </table>

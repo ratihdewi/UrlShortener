@@ -33,6 +33,13 @@ class BappController extends Controller
                 $vendor_count++;
             }
         }
+        
+        $vendor_spph = 0;
+        foreach($procurement->spphs as $row){
+            if($row->status === 2){
+                $vendor_spph++;
+            }
+        }
 
         $min_price = $procurement->penawarans->where('can_win', 1)->groupBy('item_id')->map(function($group, $groupName) {
             return [
@@ -41,7 +48,7 @@ class BappController extends Controller
             ];
         });
 
-        return view('module.procurement.detail.bapp_show', compact('procurement', 'vendor_count', 'min_price'));
+        return view('module.procurement.detail.bapp_show', compact('procurement', 'vendor_count', 'min_price', 'vendor_spph'));
     }
 
     public function edit(Procurement $procurement)

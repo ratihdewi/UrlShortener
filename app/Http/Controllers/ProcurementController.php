@@ -100,9 +100,8 @@ class ProcurementController extends Controller
         $mechanisms = ProcurementMechanism::all();
 
         $client = new Client([
-           // 'base_uri' => 'https://36.37.91.71:21800/',
-	   'base_uri' => 'http://10.10.71.218:800',
-           'headers' => ['Content-Type' => 'application/json']
+            'base_uri' => 'http://36.37.91.71:21800/',
+            'headers' => ['Content-Type' => 'application/json']
         ]);
         $responses = $client->get('/api/Memo');
         $result = json_decode($responses->getBody()->getContents(), true);
@@ -126,6 +125,7 @@ class ProcurementController extends Controller
      */
     public function store(ProcurementRequest $request, VendorInsertor $service)
     {
+
         if($request->mechanism_id == 3 && $request->vendor_id == 0 && $request->vendor_name == '' && $request->vendor_email == '' ){
             return redirect()->route('procurement.create')->with('message', 
             new FlashMessage('Anda belum memilih vendor', 
@@ -135,7 +135,6 @@ class ProcurementController extends Controller
             new FlashMessage('Anda belum memilih vendor', 
                 FlashMessage::DANGER));
         }
-        
 
         $data = $request->except(['tor_file', 'item_file', 'vendor_id', 'vendor_id_afiliasi']);
         $data['user_id'] = Auth::user()->id;
@@ -171,11 +170,53 @@ class ProcurementController extends Controller
 
         ProcurementItem::where('user_id', Auth::user()->id)->where('temporary', 1)->update(['temporary' => 0, 'procurement_id' => $proc->id]);
 
+        //Cek Item
+        $tmp = ProcurementItem::select('*')->where('procurement_id', $proc->id)->get();
+
+        $totalPrice = 0;
+        $tempCategory = true;
+        $lenCategory = ItemCategory::all()->count();
+
+        foreach ($tmp as $xy) {
+            $totalPrice = $totalPrice + ($xy->price_est * $xy->total_unit);
+
+            if($xy->category_id == NULL) {
+                $tempCategory = false;
+                break;
+            }
+
+            else if ($xy->category_id < 1 && $category_id > $lenCategory) {
+                $tempCategory = false;
+                break;
+            }
+        }
+
+        if ($tmp == NULL) {
+            Procurement::where('id', $proc->id)->delete();
+            return redirect()->back()->withInput($request->input())->with('message', 
+            new FlashMessage('Anda belum memasukkan data barang', 
+                FlashMessage::DANGER));
+        }
+
+        else if ($totalPrice == 0) {
+            Procurement::where('id', $proc->id)->delete();
+            return redirect()->back()->withInput($request->input())->with('message', 
+            new FlashMessage('Total Harga Tidak Boleh Rp.0 ', 
+                FlashMessage::DANGER));
+        }
+
+        else if ($tempCategory == false) {
+            Procurement::where('id', $proc->id)->delete();
+            return redirect()->back()->withInput($request->input())->with('message', 
+            new FlashMessage('Category barang yang diinput tidak sesuai ', 
+                FlashMessage::DANGER));
+        }
+
         //logs
         (new LogsInsertor)->insert($proc->id, Auth::user()->id, "Membuat pengadaan baru", "", "Pengajuan");
 
         return redirect()->route('procurement.index')->with('message', 
-            new FlashMessage('Pengajuan telah berhasil ditambahkan', 
+            new FlashMessage('Pengajuan telah berhasil ditambahkan sebagai draf', 
                 FlashMessage::SUCCESS));
     }
 
@@ -200,7 +241,7 @@ class ProcurementController extends Controller
         if($procurement->status == 1 || $procurement->status == 0){
             //memo
             $client = new Client([
-                'base_uri' => 'http://10.10.71.218:800/',
+                'base_uri' => 'http://36.37.91.71:21800/',
                 'headers' => ['Content-Type' => 'application/json'],
                 'http_errors' => false
             ]);
@@ -656,7 +697,7 @@ class ProcurementController extends Controller
 
     public function ajukanSpph(Request $request, Procurement $procurement)
     {
-        if($request->checkbox!=NULL){
+        if ($request->checkbox!=NULL){
             foreach($request->checkbox as $row){
                 $spph = ProcurementSpph::find($row);
                 if(Auth::user()->role_id==3){
@@ -676,8 +717,11 @@ class ProcurementController extends Controller
                     $pdf->save('spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf');
                     Excel::store(new ProcurementItemTorExport($spph), 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.xlsx', 'real_public');
 
-                    //kirim SPPH ke email
-                    Mail::to($spph->vendor->email)->send(new SpphMail($spph->id));  
+                    // kirim SPPH ke email
+                    \Mail::to($spph->vendor->email)
+                    ->cc([$manager->email, $procurement->staff->email])
+                    ->send(new SpphMail($spph->id));   
+                    
                 }
                 
             }
@@ -694,7 +738,6 @@ class ProcurementController extends Controller
                 FlashMessage::DANGER));
         }
 
-        
     }
 
     /**
@@ -731,6 +774,7 @@ class ProcurementController extends Controller
         $procurement->save();
 
         //kirim email penawaran selesai
+
         foreach($procurement->spphs as $spph) {
             \Mail::to($spph->vendor->email)->send(new PenawaranDoneMail($spph->id));  
         }
@@ -928,4 +972,11 @@ class ProcurementController extends Controller
             new FlashMessage('Berhasil mengubah batas penawaran.', 
                 FlashMessage::SUCCESS));
     }
+
+
+    public function getInputBarangPengadaan () {
+
+        return ProcurementItem::where('procurement_id', 0)->get();
+    }
+
 }

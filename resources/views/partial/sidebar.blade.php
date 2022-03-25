@@ -53,11 +53,15 @@
                     <div class="nav-link-icon"><i data-feather="eye" @if(request()->is('master/jabatan*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Data Jabatan
                 </a>
+                <a class="nav-link collapsed" href="{{route('master.mail.index')}}" @if(request()->is('master/mail*')) style="color:#385ac2;font-weight:bold;" @endif>
+                    <div class="nav-link-icon"><i data-feather="eye" @if(request()->is('master/mail*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
+                    Data Mail
+                </a>
                 <a class="nav-link collapsed" href="{{route('master.user.index')}}" @if(request()->is('master/user*')) style="color:#385ac2;font-weight:bold;" @endif>
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('master/user*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     User
                 </a>
-                <a class="nav-link collapsed" href="{{route('vendor.deleted.index')}}" @if(request()->is('deleted-biddex*')) style="color:#385ac2;font-weight:bold;" @endif>
+                <a class="nav-link collapsed" href="{{route('vendor.deleted.index')}}" @if(request()->is('deleted-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('deleted-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Daftar Vendor (Terhapus)
                 </a>

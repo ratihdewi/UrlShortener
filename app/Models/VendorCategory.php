@@ -12,7 +12,8 @@ class VendorCategory extends Model
     //fill yang ada di table
     protected $fillable = [
         'vendor_id',
-        'category_id'
+        'category_id',
+        'terbuka'
     ];
 
     //nama table

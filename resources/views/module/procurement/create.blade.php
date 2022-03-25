@@ -26,13 +26,13 @@
             <!-- Account details card-->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form action="{{route('procurement.store')}}" method="POST" enctype="multipart/form-data">
+                    <form action="{{route('procurement.store')}}" method="POST" enctype="multipart/form-data" id="savePengadaan">
                         @csrf   
                         <div class="row">
                             <div class="col-xl-6">
                                 <div class="form-group">
                                     <label class="small mb-1">No. Memo&nbsp;</label><label class="small mb-1" style="color:red">*</label>
-                                    <select class="form-control select2" name="no_memo" id="select_memo">
+                                    <select class="form-control select2" name="no_memo" id="select_memo" required>
                                         <option value="0">Pilih Nomor Memo</option>
                                         @foreach($data_memos as $row)
                                             <option value="{{$row['nomor_surat']}}">{{$row['nomor_surat']}}</option>
@@ -61,7 +61,7 @@
                             <div class="col-xl-6">
                                 <div class="form-group">
                                     <label class="small mb-1">Kerangka Acuan Kerja (ToR)&nbsp;</label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="tor_file" required="true" value="{{ old('tor_file') }}" class="form-control{{ $errors->has('tor_file') ? ' is-invalid' : '' }}" type="file"/>
+                                    <input name="tor_file" value="{{ old('tor_file') }}" class="form-control{{ $errors->has('tor_file') ? ' is-invalid' : '' }}" type="file" required/>
                                     @if ($errors->has('tor_file'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('tor_file') }}</strong>
@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="small mb-1">Barang (import excel file)</label>
-                                    <input name="item_file" value="{{ old('items') }}" class="form-control{{ $errors->has('items') ? ' is-invalid' : '' }}" type="file"/>
+                                    <input id="importExcel" name="item_file" value="{{ old('items') }}" class="form-control{{ $errors->has('items') ? ' is-invalid' : '' }}" type="file"/>
                                     <a href="{{route('procurement.item.import.example')}}" class="btn btn-primary btn-sm"><small>Download Template Contoh</small></a>
                                     @if ($errors->has('items'))
                                         <span class="small" style="color:red" role="alert">
@@ -123,19 +123,51 @@
                                 <div class="loading"></div>
                             </div>
                         </div>  
-                        <button class="btn btn-primary float-right" type="submit">Simpan</button>
-                        <a href="{{ route('procurement.index') }}" class="btn btn-light float-right" style="margin-right:10px">Kembali</a>
                     </form>
+                    <button id="savePengadaan" class="btn btn-primary float-right" onclick="checkSubmit()">Simpan</button>
+                    <a href="{{ route('procurement.index') }}" class="btn btn-light float-right" style="margin-right:10px">Kembali</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
 @include('module.procurement.additemjs')
 
 
 <script type="text/javascript">
+
+    function checkSubmit () {
+
+        if (document.getElementById('importExcel').files.length == 0) {
+            
+            $.ajax({
+                type : "GET",
+                url : "{{route('procurement.get.input')}}",
+                success : function (data) {
+
+                    if (data.length > 0) {
+                        $('#savePengadaan').submit();
+                    }
+
+                    else {
+                        alert('Mohon Lengkapi Data Barang');
+                    }
+                },
+                error : function (data) {
+                    alert('Mohon Lengkapi Data Barang');
+                }
+
+            });
+        }
+
+        else {
+            $('#savePengadaan').submit();
+        }
+        
+    }
+
     $(document).ready(function () {
         ajaxFirstLoad('{{route('procurement.item.index')}}');
 
@@ -144,7 +176,9 @@
             nomor_surat = $(this).val()
             document.getElementById("perihal").value = passedMemos.find(x => x.nomor_surat === nomor_surat).perihal
         });
+
     });
+    
     
 
     function ajaxFirstLoad(filename, content) {

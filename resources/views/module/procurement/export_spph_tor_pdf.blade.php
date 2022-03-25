@@ -6,10 +6,13 @@
         @else  
             <title>{{$procurement->name}}</title>
         @endif
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
     </head>
     <body style="margin-left:20px;font: normal 14px, Times New Roman, Times, serif;">
         <center>
-            <img src="{{public_path('img/up.png')}}" width="100px" height="100px"><br> 
+            <img class="mt-2 mb-3" src="{{public_path('img/up.png')}}" width="20%"><br> 
         </center>
         Jakarta, {{date('d/m/Y')}}<br><br>
         <table style="margin-left:10px;">
@@ -58,6 +61,8 @@
             3) Surat pengantar penawaran harga yang ditujukan Kepada: Fungsi Pengadaan Barang dan Jasa
             Universitas Pertamina.<br>
             </div>
+
+        <div style="page-break-before:always">&nbsp;</div> 
         2. Penawaran harga harus sesuai dengan spesifikasi yang dilampirkan<br>
         @if($procurement->mechanism_id!=6) 
             3. Perusahaan yang telah menerima surat undangan resmi ini diberikan waktu untuk mengirimkan penawaran
@@ -73,7 +78,7 @@
             Demikian surat undangan ini kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terimakasih.<br><br>
         @endif
         <b>Manager Pengadaan Barang dan Jasa<br><br><br>
-        <img src="{{public_path('img/ttd.jpg')}}" width="80px">
+        <img src="{{public_path('img/ttd.jpg')}}" width="31%">
         <br>
         {{$manager->name}}</b>
 
@@ -86,12 +91,12 @@
         @endif
 
         <div class="page-break"></div>
-        Lampiran brosur:<br>
+        <!-- Lampiran brosur:<br>
         @foreach($spph->penawarans as $penawaran)
             @if($penawaran->item->brosur_file!=NULL)
                 <img src="{{public_path('brosurs/'.$penawaran->item->brosur_file)}}"><br> 
             @endif
-        @endforeach
+        @endforeach -->
         
     </body>
 

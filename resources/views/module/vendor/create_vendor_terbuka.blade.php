@@ -20,14 +20,14 @@
                         </div>
                     </div>
                 </header>
-		<!-- Main page content-->
- <h1 style="font-family:verdana; text-align: center;">Form Pendaftaran Vendor<h1>
+                <!-- Main page content-->
+                <h1 style="font-family:verdana; text-align: center;">Form Pendaftaran Vendor<h1>
                 <div class="container mt-4">
                 @include('partial.alert')
-		    <div class="row">
+                    <div class="row">
                         <div class="col-xl-12">
                             <!-- Account details card-->
-			    <div class="card mb-4">
+                            <div class="card mb-4">
                                 <div class="card-body">
                                     <form action="{{route('vendor.tenderterbuka.store')}}" method="POST">
                                         @csrf
@@ -81,7 +81,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="small mb-1">Bidang Usaha</label>
+                                                    <label class="small mb-1">Bidang Usaha</label><label class="small mb-1" >*</label>
                                                     <select class="form-control select2" name="category_id[]" multiple="" style="width:100%">
                                                         @foreach($categories as $category)
                                                             <option value="{{$category->id}}">{{$category->name}}</option>
@@ -115,6 +115,19 @@
                                                         </span>
                                                     @endif
                                                 </div>
+                                                <div class="form-group">
+                                                    <label for="captcha" class="small mb-1">Captcha</label>
+                                                    <div class="col-md-6 captcha">
+                                                        <span>{!! captcha_img() !!}</span>
+                                                        <button type="button" class="btn btn-danger" class="reload" id="reload">
+                                                        &#x21bb;
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="captcha" class="small mb-1">Enter Captcha</label>
+                                                        <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha" name="captcha">
+                                                </div>
                                             </div>
                                             <h4>*Pilih bidang usaha yang sesuai, Bisa memilih lebih dari 1 bidang usaha</h4>
                                         </div>
@@ -127,9 +140,23 @@
                     </div>
                 </div>
             </main>
-            <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
             @include('partial.jsfooter')
         </div>
+        @push('scripts')
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        @endpush
     </body>
+
+    <script type="text/javascript">
+        $('#reload').click(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/reload-captcha',
+                success: function (data) {
+                    $(".captcha span").html(data.captcha);
+                }
+            });
+        });
+    </script>
 </html>
 

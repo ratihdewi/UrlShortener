@@ -10,6 +10,7 @@ use App\Models\Vendor;
 use App\Models\VendorTenderTerbuka;
 use App\Http\Requests\VendorRequest;
 use App\Http\Requests\VendorRequestTenderTerbuka;
+use App\Http\Requests\VendorApprovalRequest;
 use App\Utilities\FlashMessage;
 use App\Services\VendorInsertor;
 use Illuminate\Http\UploadedFile;
@@ -17,6 +18,9 @@ use App\Utilities\CreateNoVendor;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VendorExport;
 use App\Imports\VendorImport;
+use App\Mail\VendorTerbukaMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 class VendorController extends Controller
 {
@@ -70,8 +74,36 @@ class VendorController extends Controller
     public function edit(Vendor $vendor)
     {
         $categories = ItemCategory::all();
-        return view('module.vendor.edit', compact('vendor', 'categories'));
+
+        if ($vendor->delete == 0) {
+            return view('module.vendor.edit', compact('vendor', 'categories'));
+        }
+
+        else {
+            return redirect()->route('vendor.index')->with('message', 
+            new FlashMessage('Akses Ditolak', 
+                FlashMessage::DANGER));
+        }
+
+        
     }
+
+    public function deletedDetail(Vendor $vendor)
+    {
+        $categories = ItemCategory::all();
+
+        if ($vendor->delete == 1) {
+            return view('module.vendor.deleted_detail', compact('vendor', 'categories'));
+        }
+
+        else {
+            return redirect()->route('vendor.deleted.index')->with('message', 
+            new FlashMessage('Akses Ditolak', 
+                FlashMessage::DANGER));
+        }
+        
+    }
+
 
     /**
      * Store a newly created data in db.
@@ -135,6 +167,92 @@ class VendorController extends Controller
     {
         $vendors = VendorTenderTerbuka::all();
         return view('module.vendor.index', compact('vendors'));
+    }
+
+    public function detailTerbuka(VendorTenderTerbuka $vendor)
+    {
+        $categories = ItemCategory::all();
+        return view('module.vendor.detail_terbuka', [
+            'vendor' => $vendor, 
+            'categories' => $categories
+        ]);
+
+    }
+
+    public function approveVendor (VendorApprovalRequest $request, VendorInsertor $service, VendorTenderTerbuka $vendor) {
+
+        $manager = User::where('role_id', 2)->first();
+        $data = [
+            'name' => $request->name,
+            'no_rek' => $request->no_rek,
+            'address' => $request->address,
+            'bank_name' => $request->bank_name,
+            'no_telp' => $request->no_telp,
+            'no_tax' => $request->no_tax,
+            'email' => $request->email,
+            'category_id' => $request->category_id,
+            'delete' => 0,
+            'pic_name' => $request->pic_name
+        ];
+
+        if ($service->insert($data)){
+
+            \Mail::to($request->email)
+            ->cc($manager->email)
+            ->send(new VendorTerbukaMail(true, $vendor));
+
+            VendorCategory::where('terbuka', 1)->where('vendor_id', $vendor->id)->delete();
+            $vendor->delete();
+
+            return redirect()->route('vendor.terbuka.index')->with('message', 
+            new FlashMessage('Vendor telah berhasil ditambahkan!', 
+                FlashMessage::SUCCESS));
+        } 
+
+        else {
+            return redirect()->route('vendor.terbuka.index')->with('message', 
+            new FlashMessage('Gagal menambahkan vendor dikarenakan email sudah didaftarkan.', 
+                FlashMessage::DANGER));
+        }
+        
+    }
+
+    public function rejectVendor (VendorApprovalRequest $request, VendorInsertor $service, VendorTenderTerbuka $vendor) {
+
+        $manager = User::where('role_id', 2)->first();
+        $data = [
+            'name' => $request->name,
+            'no_rek' => $request->no_rek,
+            'address' => $request->address,
+            'bank_name' => $request->bank_name,
+            'no_telp' => $request->no_telp,
+            'no_tax' => $request->no_tax,
+            'email' => $request->email,
+            'category_id' => $request->category_id,
+            'delete' => 1,
+            'pic_name' => $request->pic_name
+        ];
+
+        if ($service->insert($data)){
+
+            \Mail::to($request->email)
+            ->cc($manager->email)
+            ->send(new VendorTerbukaMail(false, $vendor));
+
+            VendorCategory::where('terbuka', 1)->where('vendor_id', $vendor->id)->delete();
+            $vendor->delete();
+            
+            return redirect()->route('vendor.terbuka.index')->with('message', 
+            new FlashMessage('Vendor telah berhasil direject!', 
+                FlashMessage::WARNING));
+        } 
+
+        else {
+            return redirect()->route('vendor.terbuka.index')->with('message', 
+            new FlashMessage('Gagal mereject vendor', 
+                FlashMessage::DANGER));
+        }
+
     }
 
     public function uploadFile(Request $request, Vendor $vendor)
@@ -240,6 +358,11 @@ class VendorController extends Controller
             new FlashMessage('Gagal mengajukan vendor dikarenakan email sudah didaftarkan.', 
                 FlashMessage::DANGER));
         }
+    }
+
+    public function reloadCaptcha()
+    {
+        return response()->json(['captcha'=> captcha_img()]);
     }
 
 }
