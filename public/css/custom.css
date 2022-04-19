@@ -1,0 +1,18 @@
+.color-primary {
+    background-color: #385ac2 !important;
+    border-color:  #385ac2 !important;
+  }
+
+.color-text-primary {
+  color: #385ac2 !important;
+}
+
+.dashboard-score {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 0;
+}
+
+.dashboard-score-desc {
+  color: #fff;
+}
