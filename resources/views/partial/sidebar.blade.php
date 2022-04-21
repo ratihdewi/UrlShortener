@@ -27,6 +27,14 @@
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Daftar Vendor
                 </a>
+                <a class="nav-link collapsed" href="{{route('vendor.deleted.index')}}" @if(request()->is('deleted-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
+                    <div class="nav-link-icon"><i data-feather="users" @if(request()->is('deleted-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
+                    Daftar Vendor (Terhapus)
+                </a>
+                <a class="nav-link collapsed" href="{{route('vendor.terbuka.index')}}" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
+                    <div class="nav-link-icon"><i data-feather="users" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
+                    Daftar Vendor Tender Terbuka
+                </a>
                 @endif
                 @if(Auth::user()->role_id==1)
                 <a class="nav-link collapsed" href="{{route('master.mechanism.index')}}" @if(request()->is('master/mechanism*')) style="color:#385ac2;font-weight:bold;" @endif>
@@ -61,14 +69,7 @@
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('master/user*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     User
                 </a>
-                <a class="nav-link collapsed" href="{{route('vendor.deleted.index')}}" @if(request()->is('deleted-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
-                    <div class="nav-link-icon"><i data-feather="users" @if(request()->is('deleted-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
-                    Daftar Vendor (Terhapus)
-                </a>
-                <a class="nav-link collapsed" href="{{route('vendor.terbuka.index')}}" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
-                    <div class="nav-link-icon"><i data-feather="users" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
-                    Daftar Vendor Tender Terbuka
-                </a>
+                
                 @endif
             </div>
         </div>

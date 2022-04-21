@@ -41,7 +41,7 @@
         <table style="margin-left:10px;width:100%;">
             <tr>
                 <td style="width:20px;vertical-align:top"><b>1.</b></td>
-                <td style="text-align:justify">
+                {{-- <td style="text-align:justify">
                     Memorandum no. {{$procurement->no_memo}} 
                     @php $i = 1 @endphp
                     @foreach($memos as $memo)
@@ -53,12 +53,17 @@
                         @endif
                         @php $i++ @endphp
                     @endforeach
+                </td> --}}
+                <td style="text-align:justify">
+                    Memorandum no. {{$procurement->no_memo}}
+                    pada tanggal {{date('d M Y', strtotime($memos['approved_at']))}} dari {{$memos['dari']}} tentang {{$memos['perihal']}}, 
+                    mengacu pada disposisi pada tanggal {{date('d M Y', strtotime($memos['tgl_disposisi']))}} dari {{$memos['nama_jabatan']}},
                 </td>
             </tr>
             <tr>
                 <td style="width:20px;vertical-align:top"><b>2.</b></td>
                 <td style="text-align:justify">
-                    Surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_spph}} vendor pada tanggal {{date('d M Y', strtotime($procurement->spph_sending_date))}} sebagai berikut:
+                    Surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_count}} vendor pada tanggal {{date('d M Y', strtotime($procurement->spph_sending_date))}} sebagai berikut:
                 </td>
             </tr>
         </table><br>
@@ -238,7 +243,6 @@
         border: 1px solid black;
         border-collapse: collapse;
       }
-
       .page-break {
         page-break-after: always;
     }

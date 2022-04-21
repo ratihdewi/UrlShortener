@@ -13,8 +13,8 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        //$login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:8888/proc/public/auth';
-        $login_url = 'ttps://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+        $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:8000/auth';
+        //$login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
         return \Redirect::to($login_url);
     }
 
@@ -41,18 +41,34 @@ class AuthController extends Controller
     
     public function logout(Request $request)
     {
-        $username = $_COOKIE["username"];
-        $token_login = $_COOKIE["token_login"];
-
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        setcookie('username', $username, time() - 3600, '/');
-        setcookie('token_login', $token_login, time() - 3600, '/');
-    
-        $logout_url = 'https://sso.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
+        Session::flush();
+        if (isset($_COOKIE['token_login']) || isset($_COOKIE['username'])) {
+            $token_login = $_COOKIE['token_login'];
+            $username = $_COOKIE['username'];
+            if (isset($_SERVER['HTTP_COOKIE'])){
+                $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+                foreach ($cookies as $cookie){
+                    $parts = explode('=', $cookie);
+                    $name = trim($parts[0]);
+                    setcookie($name, '', time() -1000);
+                    setcookie($name, '', time() -1000, '/');
+                }
+            }
+            $logout_url = 'https://sso-dev.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
         return \Redirect::to($logout_url);
+        }
+        // $username = $_COOKIE["username"];
+        // $token_login = $_COOKIE["token_login"];
+
+        // Auth::logout();
+        // $request->session()->invalidate();
+        // $request->session()->regenerateToken();
+
+        // setcookie('username', $username, time() - 3600, '/');
+        // setcookie('token_login', $token_login, time() - 3600, '/');
+    
+        // $logout_url = 'https://sso.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
+        // return \Redirect::to($logout_url);
     }
 
 

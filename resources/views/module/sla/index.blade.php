@@ -44,7 +44,7 @@
                                         @forelse($procs_tender as $proc)
                                             <tr @if($proc->status_caption=="Selesai") style="color:rgba(52, 152, 219);" @elseif($proc->status_caption=="Dibatalkan") style="color:rgba(192, 57, 43);" @endif>
                                                 <td>{{$proc->tanggal_caption}}</td>
-                                                <td>{{$proc->no_memo}}</td>
+                                                <td>{{$proc->no_memo}}</td> 
                                                 <td>{{$proc->name}}</td>
                                                 @foreach($master_sla_tender as $sla)
                                                     <td>{{$sla->realisasi($proc->id, 0)}}</td>
@@ -92,7 +92,7 @@
                                                 <td>{{$proc->no_memo}}</td>
                                                 <td>{{$proc->name}}</td>
                                                 @foreach($master_sla_umk as $sla)
-                                                    <td>{{$sla->realisasi($proc->id, 0)}}</td>
+                                                    <td>{{$sla->realisasi($proc->id, 1)}}</td>
                                                 @endforeach
                                             </tr>
                                         @empty

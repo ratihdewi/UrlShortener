@@ -1,29 +1,19 @@
 <?php 
     
     $segment = Request::segment(1);
-
     if ($segment == 'tenderterbuka-bidder') {
-
         $redirect = 'vendor.terbuka.detail';
     }
-
     else if ($segment == 'deleted-bidder') {
-
         $redirect = 'vendor.deleted.detail';
     }
-
     else {
-
         $redirect = 'vendor.edit';
     }
-
-
     function customOutput ($kalimat, $i) {
-
         if (strlen($kalimat) <= $i) {
             return $kalimat;
         }
-
         else {
             $y = substr($kalimat,0,$i) . '...';
             return $y;
@@ -41,7 +31,16 @@
 <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
     <div class="container"><br>
     </div>
+    <style>
+    .checked {
+        color: orange;
+    }
+    td span {
+        font-size:8px;
+    }
+        </style>
 </header>
+<?php use App\Http\Controllers\VendorController; ?>
 <!-- Main page content-->
 <div class="container mt-n10">
     @include('partial.alert')
@@ -77,7 +76,8 @@
                         
                     </tfoot>
                     <tbody>
-                        @forelse($vendors as $vendor)
+                        @forelse($vendors as $vendor) 
+                        <?php $score= VendorController::getScore($vendor->id); ?>
                             <tr>   
                                 <td>{{$vendor->no}}</td>
                                 <td>{{$vendor->name}}</td>
@@ -87,12 +87,20 @@
                                         {{$row->category['name']}}{{ $loop->last ? '' : ',' }} 
                                         @endif
                                     @endforeach
-                                </td>
+                                </td> 
                                 <td>{{$vendor->no_telp}}</td>
                                 <td>{{$vendor->pic_name}}</td>
                                 <td>{{customOutput($vendor->email, 30)}}</td>
                                 <td>{{date('Y-m-d', strtotime($vendor->updated_at))}}</td>
-                                <td><div class="rateit" data-rateit-value="{{$vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>
+                                {{--<td><div class="rateit" data-rateit-value="{{$vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>--}}
+                                <td>
+                                    @for($i=1;$i <= $score ;$i++)
+                                    <span class="fa fa-star checked"></span>
+                                    @endfor
+                                    @for($i=1;$i <= 5-$score ;$i++)
+                                    <span class="fa fa-star"></span>
+                                    @endfor
+                                </td>
 
                                 <td class="text-center">
                                     <div id="btnAction">

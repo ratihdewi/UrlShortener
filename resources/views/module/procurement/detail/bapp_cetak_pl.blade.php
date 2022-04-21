@@ -37,7 +37,7 @@
         </table>
         <br>
         <table>
-            <td style="text-align:justify">
+            {{--<td style="text-align:justify">
                 Sehubungan dengan diposisi 
                 @php $i = 1 @endphp
                 @foreach($memos as $memo)
@@ -48,6 +48,11 @@
                     @endif
                     @php $i++ @endphp
                 @endforeach 
+                tentang {{$procurement->name}}, maka dengan ini kami mengajukan permohonan penunjukan langsung kepada {{$procurement->vendor->name}}. Landasan dalam pengajuan Penunjukan Langsung ini adalah sebagai berikut:
+            </td>--}}
+            <td style="text-align:justify">
+                Sehubungan dengan diposisi 
+                tanggal {{date('d M Y', strtotime($memos['tgl_disposisi']))}} dari {{$memos['nama_jabatan']}},
                 tentang {{$procurement->name}}, maka dengan ini kami mengajukan permohonan penunjukan langsung kepada {{$procurement->vendor->name}}. Landasan dalam pengajuan Penunjukan Langsung ini adalah sebagai berikut:
             </td>
         </table>
@@ -159,7 +164,6 @@
         border: 1px solid black;
         border-collapse: collapse;
       }
-
       .page-break {
         page-break-after: always;
     }

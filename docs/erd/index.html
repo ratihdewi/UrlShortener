@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+      <meta name="description" content="Interactive entity-relationship diagram or data model diagram implemented by GoJS in JavaScript for HTML."/>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.6/tailwind.min.css"/>
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/2.1.46/go.js"></script>
+      <script src="https://unpkg.com/gojs@2.1.47/extensions/Figures.js"></script>
+      <title>ERD</title>
+   </head>
+   <body class="bg-gray-100 tracking-wide bg-gray-200">
+        <nav class="bg-white py-2 ">
+            <div class="container px-4 mx-auto md:flex md:items-center">
+
+            <div class="flex justify-between items-center">
+                <a href="erd" class="font-bold text-xl text-indigo-600">ERD</a>
+            </div>
+
+                <div class="hidden md:flex flex-col md:flex-row md:ml-auto mt-3 md:mt-0" id="navbar-collapse">
+
+                    <a href="https://github.com/kevincobain2000/laravel-erd" class="p-2 lg:px-4 md:mx-2 text-indigo-600 text-center border border-solid border-indigo-600 rounded hover:bg-indigo-600 hover:text-white transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Request Feature</a>
+                </div>
+            </div>
+        </nav>
+        <div id="app" v-cloak class="w-full flex lg:pt-10">
+            <aside class="text-xl text-grey-darkest break-all bg-gray-200 pl-2 h-screen sticky top-1 overflow-auto">
+                <b class="text-sm">Filter by Relation Type</b>
+                <div class="text-sm">
+                    <input type="checkbox" class="text-sm" id="input-relation-type-checkbox-check-all"> check all
+                </div>
+
+                <div id="filter-by-relation-type"></div>
+                <b class="text-sm">Filter by Table Name</b>
+                <div class="text-sm">
+                    <input type="checkbox" id="input-table-names-checkbox-check-all"> check all
+                </div>
+                <div id="filter-by-table-name"></div>
+            </aside>
+            <div class="ml-6 mr-6 pl-2 w-10/12 bg-gray-300 p-2">
+                <div id="myDiagramDiv" style="background-color: white; width: 100%; height: 95vh"></div>
+            </div>
+      </div>
+      <script>
+
+var nodeDataArray = [];
+var linkDataArray = [];
+var nodeDataArray = [];
+var linkDataArray = [];
+function init() {
+  var $ = go.GraphObject.make; // for conciseness in defining templates
+
+  myDiagram =
+      $(go.Diagram, "myDiagramDiv", // must name or refer to the DIV HTML element
+          {
+              allowDelete: false,
+              allowCopy: false,
+              layout: $(go.ForceDirectedLayout),
+              "undoManager.isEnabled": true
+          });
+
+  var itemTempl =
+      $(go.Panel, "Horizontal", // this Panel is a row in the containing Table
+          new go.Binding("portId", "name"), // this Panel is a "port"
+          {
+              background: "transparent", // so this port's background can be picked by the mouse
+              fromSpot: go.Spot.Right, // links only go from the right side to the left side
+              toSpot: go.Spot.Left,
+              // allow drawing links from or to this port:
+              fromLinkable: false,
+              toLinkable: false
+          },
+          $(go.Shape, {
+                  desiredSize: new go.Size(15, 15),
+                  strokeJoin: "round",
+                  strokeWidth: 3,
+                  stroke: null,
+                  margin: 2,
+                  // but disallow drawing links from or to this shape:
+                  fromLinkable: false,
+                  toLinkable: false
+              },
+              new go.Binding("figure", "figure"),
+              new go.Binding("stroke", "color"),
+              new go.Binding("fill", "color")),
+          $(go.TextBlock, {
+                  margin: new go.Margin(0, 5),
+                  column: 1,
+                  font: "13px sans-serif",
+                  alignment: go.Spot.Left,
+                  // and disallow drawing links from or to this text:
+                  fromLinkable: false,
+                  toLinkable: false
+              },
+              new go.Binding("text", "name")),
+          $(go.TextBlock, {
+                  margin: new go.Margin(0, 5),
+                  column: 2,
+                  font: "11px courier",
+                  alignment: go.Spot.Left
+              },
+              new go.Binding("text", "info"))
+      );
+
+  // define the Node template, representing an entity
+  myDiagram.nodeTemplate =
+      $(go.Node, "Auto", // the whole node panel
+          {
+              selectionAdorned: true,
+              resizable: true,
+              layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized,
+              fromSpot: go.Spot.AllSides,
+              toSpot: go.Spot.AllSides,
+              isShadowed: true,
+              shadowOffset: new go.Point(3, 3),
+              shadowColor: "#C5C1AA"
+          },
+          new go.Binding("location", "location").makeTwoWay(),
+          // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
+          // clear out any desiredSize set by the ResizingTool.
+          new go.Binding("desiredSize", "visible", function(v) {
+              return new go.Size(NaN, NaN);
+          }).ofObject("LIST"),
+          // define the node's outer shape, which will surround the Table
+          $(go.Shape, "RoundedRectangle", {
+              fill: 'white',
+              stroke: "#eeeeee",
+              strokeWidth: 6
+          }),
+          $(go.Panel, "Table", {
+                  margin: 8,
+                  stretch: go.GraphObject.Fill
+              },
+              $(go.RowColumnDefinition, {
+                  row: 0,
+                  sizing: go.RowColumnDefinition.None
+              }),
+
+              // the table header
+              $(go.TextBlock, {
+                      row: 0,
+                      alignment: go.Spot.Left,
+                      margin: new go.Margin(0, 24, 0, 2), // leave room for Button
+                      font: "bold 16px sans-serif"
+                  },
+                  new go.Binding("text", "key")),
+              // the collapse/expand button
+              $("PanelExpanderButton", "LIST", // the name of the element whose visibility this button toggles
+                  {
+                      row: 0,
+                      alignment: go.Spot.TopRight
+                  }),
+              // the list of Panels, each showing an attribute
+              $(go.Panel, "Vertical", {
+                      name: "LIST",
+                      row: 1,
+                      padding: 3,
+                      alignment: go.Spot.TopLeft,
+                      defaultAlignment: go.Spot.Left,
+                      stretch: go.GraphObject.Horizontal,
+                      itemTemplate: itemTempl,
+                  },
+                  new go.Binding("itemArray", "schema"))
+          ) // end Table Panel
+      ); // end Node
+  // define the Link template, representing a relationship
+  myDiagram.linkTemplate =
+      $(go.Link, // the whole link panel
+          {
+              selectionAdorned: true,
+              layerName: "Foreground",
+              reshapable: true,
+              routing: go.Link.AvoidsNodes,
+              corner: 5,
+              curve: go.Link.Orthogonal,
+              curviness: 0,
+          },
+          $(go.Shape, // the link shape
+              {
+                  stroke: "#303B45",
+                  strokeWidth: 1.5,
+              }),
+          $(go.Shape, // the arrowhead
+              {
+                  toArrow: "Triangle",
+                  fill: "#1967B3"
+              }),
+          $(go.TextBlock, // the "from" label
+              {
+                  textAlign: "center",
+                  font: "bold 12px sans-serif",
+                  stroke: "#1967B3",
+                  segmentIndex: 1.5,
+                  segmentOffset: new go.Point(NaN, NaN),
+                  segmentOrientation: go.Link.Horizontal,
+                  fromLinkable: true,
+                  toLinkable: true
+              },
+              new go.Binding("text", "fromText")),
+
+          $(go.TextBlock, // the "to" label
+              {
+                  textAlign: "center",
+                  font: "bold 12px sans-serif",
+                  stroke: "#1967B3",
+                  segmentIndex: -10,
+                  segmentOffset: new go.Point(NaN, NaN),
+                  segmentOrientation: go.Link.OrientUpright,
+                  fromLinkable: true,
+                  toLinkable: true
+              },
+              new go.Binding("text", "toText"))
+      );
+
+  myDiagram.model = $(go.GraphLinksModel, {
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      linkFromPortIdProperty: "fromPort",
+      linkToPortIdProperty: "toPort",
+      nodeDataArray: nodeDataArray,
+      linkDataArray: linkDataArray
+  });
+  loadFilterByTableNames()
+  loadFilterByRelationType()
+  setCheckboxesForTableNames();
+  setCheckboxesForRelationTypes();
+}
+
+
+function loadFilterByRelationType() {
+  var json = linkDataArray;
+  var appended = [];
+  $.each(json, function(i, v) {
+      // check if doesn't exist in the array
+      if ($.inArray(this.type, appended) == -1) {
+          // append
+          appended.push(this.type)
+          $("#filter-by-relation-type").append($("<div class='text-sm'>").text(this.type).prepend(
+              $("<input>").attr({
+                  'type': 'checkbox',
+                  'checked': true,
+                  'class': 'input-relation-type-checkbox',
+                  'name': 'subscribe-relation-type',
+                  "data-feed": this.type
+              }).val(this.type)
+              .prop('checked', this.checked)
+          ));
+      }
+  });
+  $(".input-relation-type-checkbox").on('change', function() {
+      setCheckboxesForTableNames()
+      setCheckboxesForRelationTypes()
+  });
+}
+
+function setCheckboxesForRelationTypes() {
+  newLinkDataArray = []
+
+  $(".input-relation-type-checkbox").each(function() {
+      if ($(this).prop('checked')) {
+          console.log($(this).val())
+          for (let i = 0; i < linkDataArray.length; i++) {
+              const element = linkDataArray[i];
+              if (element.type == $(this).val()) {
+                  newLinkDataArray.push(element)
+              }
+          }
+      }
+  });
+  myDiagram.model.linkDataArray = newLinkDataArray
+}
+
+function loadFilterByTableNames() {
+  var json = nodeDataArray;
+  var appended = [];
+  $.each(json, function(i, v) {
+      // check if doesn't exist in the array
+      if ($.inArray(this.key, appended) == -1) {
+          // append
+          appended.push(this.key)
+          $("#filter-by-table-name").append($("<div class='text-sm'>").text(this.key).prepend(
+              $("<input>").attr({
+                  'type': 'checkbox',
+                  'checked': true,
+                  'class': 'input-table-name-checkbox',
+                  'name': 'subscribe-table-name',
+                  "data-feed": this.key
+              }).val(this.key)
+              .prop('checked', this.checked)
+          ));
+      }
+  });
+
+  $(".input-table-name-checkbox").on('change', function() {
+      setCheckboxesForTableNames();
+      setCheckboxesForRelationTypes();
+  });
+}
+
+
+$("#input-relation-type-checkbox-check-all").on('change', function() {
+  $(".input-relation-type-checkbox").prop('checked', this.checked);
+  setCheckboxesForTableNames();
+  setCheckboxesForRelationTypes();
+});
+
+$("#input-table-names-checkbox-check-all").on('change', function() {
+  $(".input-table-name-checkbox").prop('checked', this.checked);
+  setCheckboxesForTableNames();
+  setCheckboxesForRelationTypes();
+});
+
+function setCheckboxesForTableNames() {
+  newNodeDataArray = []
+  newLinkDataArray = []
+
+  $(".input-table-name-checkbox").each(function() {
+      if ($(this).prop('checked')) {
+
+          for (let i = 0; i < nodeDataArray.length; i++) {
+              const element = nodeDataArray[i];
+              if (element.key == $(this).val()) {
+                  newNodeDataArray.push(element)
+              }
+          }
+          for (let i = 0; i < linkDataArray.length; i++) {
+              const element = linkDataArray[i];
+              if (element.from == $(this).val() || element.to == $(this).val()) {
+                  newLinkDataArray.push(element)
+              }
+          }
+      }
+  });
+  myDiagram.model.nodeDataArray = newNodeDataArray
+  myDiagram.model.linkDataArray = newLinkDataArray
+}
+
+var docs = "{\"link_data\":[{\"from\":\"ba_negosiasis\",\"to\":\"procurement_spphs\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"spph_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"ba_negosiasis\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"ba_negosiasis\",\"to\":\"ba_negosiasi_pesertas\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"ba_negosasi_id\",\"type\":\"HasMany\"},{\"from\":\"ba_negosiasi_pesertas\",\"to\":\"ba_negosiasis\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"ba_negosasi_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"ba_negosiasi_pesertas\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bapps\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bapps\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"kepada\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bapps\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"dari\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bast\",\"to\":\"procurement_spphs\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"spph_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bast\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bast\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"logs\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"logs\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"keterangan_user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"penawaran_tender_terbukas\",\"to\":\"penawaran_tender_terbuka_items\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"penawaran_tender_terbuka_id\",\"type\":\"HasMany\"},{\"from\":\"penawaran_tender_terbukas\",\"to\":\"vendor_tender_terbukas\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"penawaran_tender_terbukas\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"penawaran_tender_terbuka_items\",\"to\":\"procurement_items\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"item_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"penawaran_tender_terbuka_items\",\"to\":\"penawaran_tender_terbukas\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"penawaran_tender_terbuka_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"po\",\"to\":\"procurement_spphs\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"spph_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"po\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"po\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"approved_by\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurements\",\"to\":\"procurement_items\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"procurement_mechanisms\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"mechanism_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurements\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurements\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id_penunjukan_langsung\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurements\",\"to\":\"procurement_spphs\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"sp3\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"bast_umk\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"procurement_spphs\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"procurement_spphs\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"spph_penawarans\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"penawaran_tender_terbukas\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasMany\"},{\"from\":\"procurements\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"staff_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurements\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurements\",\"to\":\"bapps\",\"fromText\":\"1..1\\nHas One\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasOne\"},{\"from\":\"procurements\",\"to\":\"pj_umk\",\"fromText\":\"1..1\\nHas One\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"procurement_id\",\"type\":\"HasOne\"},{\"from\":\"procurement_items\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurement_items\",\"to\":\"item_categories\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"category_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurement_items\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurement_items\",\"to\":\"procurement_item_vendor_recomendations\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"item_id\",\"type\":\"HasMany\"},{\"from\":\"procurement_items\",\"to\":\"umk_item_vendor\",\"fromText\":\"1..1\\nHas One\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"item_id\",\"type\":\"HasOne\"},{\"from\":\"procurement_spphs\",\"to\":\"spph_penawarans\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"spph_id\",\"type\":\"HasMany\"},{\"from\":\"procurement_spphs\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurement_spphs\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"procurement_spphs\",\"to\":\"ba_negosiasis\",\"fromText\":\"1..1\\nHas One\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"spph_id\",\"type\":\"HasOne\"},{\"from\":\"procurement_spphs\",\"to\":\"po\",\"fromText\":\"1..1\\nHas One\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"spph_id\",\"type\":\"HasOne\"},{\"from\":\"procurement_spphs\",\"to\":\"bast\",\"fromText\":\"1..1\\nHas One\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"spph_id\",\"type\":\"HasOne\"},{\"from\":\"procurement_spphs\",\"to\":\"vendor_score\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"spph_id\",\"type\":\"HasMany\"},{\"from\":\"procurement_item_vendor_recomendations\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"role\",\"to\":\"role\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"parent_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"role\",\"to\":\"role\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"parent_id\",\"type\":\"HasMany\"},{\"from\":\"sp3\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"spph_penawarans\",\"to\":\"procurement_items\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"item_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"spph_penawarans\",\"to\":\"procurement_spphs\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"spph_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"bast_umk\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"umk_item_vendor\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"umk_item_vendor\",\"to\":\"procurement_items\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"item_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"pj_umk\",\"to\":\"procurements\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"procurement_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"users\",\"to\":\"master_jabatan\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"jabatan_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"users\",\"to\":\"notifications\",\"fromText\":null,\"toText\":null,\"fromPort\":\"id\",\"toPort\":\"notifiable_id\",\"type\":\"MorphMany\"},{\"from\":\"users\",\"to\":\"notifications\",\"fromText\":null,\"toText\":null,\"fromPort\":\"id\",\"toPort\":\"notifiable_id\",\"type\":\"MorphMany\"},{\"from\":\"users\",\"to\":\"notifications\",\"fromText\":null,\"toText\":null,\"fromPort\":\"id\",\"toPort\":\"notifiable_id\",\"type\":\"MorphMany\"},{\"from\":\"vendors\",\"to\":\"vendor_categories\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"vendor_id\",\"type\":\"HasMany\"},{\"from\":\"vendors\",\"to\":\"vendor_files\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"vendor_id\",\"type\":\"HasMany\"},{\"from\":\"vendors\",\"to\":\"vendor_score\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"vendor_id\",\"type\":\"HasMany\"},{\"from\":\"vendor_categories\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"vendor_categories\",\"to\":\"item_categories\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"category_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"vendor_files\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"vendor_score\",\"to\":\"vendors\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"vendor_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"vendor_score\",\"to\":\"users\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"user_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"vendor_score\",\"to\":\"procurement_spphs\",\"fromText\":\"1..1\\nBelongs To\",\"toText\":\"\",\"fromPort\":\"spph_id\",\"toPort\":\"id\",\"type\":\"BelongsTo\"},{\"from\":\"vendor_tender_terbukas\",\"to\":\"vendor_categories\",\"fromText\":\"1..*\\nHas Many\",\"toText\":\"\",\"fromPort\":\"id\",\"toPort\":\"vendor_id\",\"type\":\"HasMany\"}],\"node_data\":[{\"key\":\"ba_negosiasis\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"spph_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"date\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"time\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"location\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"meeting_result\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"photo_doc\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"negosiasi\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"peserta_eksternal\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"ba_negosiasi_pesertas\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"ba_negosasi_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"bapps\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"date\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_surat\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"memo_related\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"closing\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"location\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"reason\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"dari\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"kepada\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"bast\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"spph_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_surat\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"nama_pihak_kedua\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"jabatan_pihak_kedua\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"bast_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"item_categories\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"code\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"logs\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"logs\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan_user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"process_name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"master_jabatan\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"code\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"master_mail\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"approve_mail\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"reject_mail\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"master_po\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"ketentuan_pekerjaan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"ketentuan_pembayaran\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"master_sla\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"mechanism_type\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"process\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"time\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"master_spph\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"syarat\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"kriteria_penilaian\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"ttd\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"penawaran_tender_terbukas\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"no_penawaran\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"status\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"penawaran_tender_terbuka_items\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"penawaran_tender_terbuka_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"item_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"harga_satuan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"po\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"spph_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"date\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_spmp\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"approved_by\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"job_terms\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"ketentuan_pembayaran\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"ketentuan_pekerjaan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"ppn\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"procurements\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"status\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"tor_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_memo\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"mechanism_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"staff_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"spph_sending_date\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"evaluasi_tender_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"bapp_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"vendor_id_penunjukan_langsung\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"tanggal_batas_tender_terbuka\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"date_status\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"procurement_items\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"price_est\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"total_unit\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"specs\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"category_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"price_total\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"temporary\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"satuan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"brosur_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"procurement_mechanisms\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"procurement_spphs\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"item_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_spph\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"status\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"penawaran_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"batas_penawaran\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_surat_penawaran\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"procurement_item_vendor_recomendations\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"item_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"role\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"parent_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"sp3\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"sp3_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"spph_penawarans\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"spph_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"item_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"harga_satuan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"evaluasi\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"nilai\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"negosiasi\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"won\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"can_win\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"bast_umk\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"bast_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"umk_item_vendor\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"item_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"pj_umk\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"procurement_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_memo_umk\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_pekerja\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"jabatan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"fungsi\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"gl_account\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"cost_center\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"total\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"invoice_file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"users\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"email\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"email_verified_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"password\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"remember_token\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"role_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"jabatan_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"username\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"password_real\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"is_pengadaan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"unit_kerja\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"unit_kerja_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"vendors\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"no\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_rek\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"address\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"bank_name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_telp\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_tax\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"email\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"afiliasi\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"delete\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"pic_name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"vendor_categories\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"category_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"terbuka\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"vendor_files\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"keterangan\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"file\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"vendor_score\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"vendor_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"score\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"user_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"spph_id\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"comment\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]},{\"key\":\"vendor_tender_terbukas\",\"schema\":[{\"name\":\"id\",\"isKey\":true,\"figure\":\"Hexagon\",\"color\":\"#be4b15\",\"info\":\"\"},{\"name\":\"no\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_rek\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"address\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"bank_name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_telp\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"no_tax\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"email\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"created_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"updated_at\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"},{\"name\":\"pic_name\",\"isKey\":false,\"figure\":\"Decision\",\"color\":\"#6ea5f8\",\"info\":\"\"}]}]}"
+docs = JSON.parse(docs)
+nodeDataArray = docs.node_data
+linkDataArray = docs.link_data
+
+
+window.addEventListener('DOMContentLoaded', init);
+
+      </script>
+   </body>
+</html>

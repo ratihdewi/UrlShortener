@@ -2,15 +2,15 @@
         <table>
             <thead>
                 <tr>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:35px; text-align: center;">ID</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:35px; text-align: center;">Nama Barang</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Kategori</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:35px; text-align: center;">Spesifikasi</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Harga Satuan</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Kuantitas</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Harga Total</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Nama Vendor</th>
-                    <th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Evaluasi</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">ID</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:300px; text-align: center;">Nama Barang</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">Kategori</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:300px; text-align: center;">Spesifikasi</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">Harga Satuan</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">Kuantitas</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">Harga Total</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">Nama Vendor</th>
+                    <th style="background-color:#d9d9d9; font-weight: bold; width:200px; text-align: center;">Evaluasi</th>
                     @if($procurement->mechanism_id!=3)<th style="background-color:#d9d9d9; font-weight: bold; width:20px; text-align: center;">Nilai</th>@endif
                 </tr>
             </thead>

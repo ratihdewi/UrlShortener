@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ItemCategory;
 use App\Models\VendorCategory;
+use App\Models\VendorScore;
 use App\Models\VendorFile;
 use App\Models\Vendor;
 use App\Models\VendorTenderTerbuka;
@@ -163,10 +164,19 @@ class VendorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexTerbuka()
+    public function indexTerbuka() 
     {
         $vendors = VendorTenderTerbuka::all();
         return view('module.vendor.index', compact('vendors'));
+    }
+
+    public static function getScore($id_vendor){
+        $getScore= VendorScore::where('vendor_id',$id_vendor)->first();
+        if(empty($getScore)){
+            return 0;
+        }else{
+            return $getScore->score; 
+        }
     }
 
     public function detailTerbuka(VendorTenderTerbuka $vendor)

@@ -109,6 +109,7 @@ class BappController extends Controller
 
     public function cetak(Procurement $procurement)
     {
+        //ini_set('max_execution_time', 6000);
         $vendor_count = 0;
         foreach($procurement->spphs as $row){
             if($row->has_penawaran){
@@ -149,11 +150,14 @@ class BappController extends Controller
         //memo
         $client = new Client([
             'base_uri' => 'http://10.10.71.218:800/',
+            // 'base_uri' => 'http://36.37.91.71:21800/',
             'headers' => ['Content-Type' => 'application/json']
         ]);
-        $responses = $client->get('/api/Disposisi?nomor_surat='.$procurement->no_memo);
+        $responses = $client->get('/api/Disposisi?nomor_surat=0820/UP-SU.1/MEMO/BJ.00/II/2022');
         $result = json_decode($responses->getBody()->getContents(), true);
+        
         $memos = array_reverse($result['data']);
+        //dd($memos['user_id']);
         $total_disposisi = count($memos);
 
         $pdf_name = "BAPP-".$procurement->name.'-'.$procurement->id.".pdf";
