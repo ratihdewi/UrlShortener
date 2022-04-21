@@ -175,7 +175,7 @@ class VendorController extends Controller
         if(empty($getScore)){
             return 0;
         }else{
-            return $getScore->score;
+            return $getScore->score; 
         }
     }
 
