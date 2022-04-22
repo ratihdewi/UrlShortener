@@ -87,7 +87,8 @@
         {!! $master_spph->kriteria_penilaian !!}
         <br><br>
         @if($procurement->mechanism_id==6)
-            <b>Link Upload Penawaran: http://10.10.71.218:800/penawaran/input/{{$procurement->id}}</b>
+            <b>Link Upload Penawaran: https://apphub.universitaspertamina.ac.id/penawaran/input/{{$procurement->id}}</b>
+            <!-- <b>Link Upload Penawaran: http://10.10.71.218:800/penawaran/input/{{$procurement->id}}</b> -->
             <!-- <b>Link Upload Penawaran: http://36.37.91.71:21880/penawaran/input/{{$procurement->id}}</b> -->
         @endif
 
