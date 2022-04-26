@@ -22,7 +22,7 @@ Route::group(['middleware' => ['auth'] ], function () {
 
     route::get('change/accounttype', 'App\Http\Controllers\UserController@changeAccountType')->name('user.change.type');
 
-    Route::prefix('procurement')->group(function () {
+    Route::prefix('procurement')->group(function () { 
         route::get('/', 'App\Http\Controllers\ProcurementController@index')->name('procurement.index');
         route::get('/sortbytotal', 'App\Http\Controllers\ProcurementController@indexSort')->name('procurement.index.sort');
         route::get('show/{procurement}/{status_choosen}', 'App\Http\Controllers\ProcurementController@show')->name('procurement.show');

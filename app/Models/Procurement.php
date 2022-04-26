@@ -142,25 +142,25 @@ class Procurement extends Model
                     return "Draft";
                 } else if($this->status == 1){
                     return "Approval Pengajuan";
-                } else if($this->status == 2) {
+                } else if($this->status == 2){
                     return "SPPH";
-                } else if($this->status == 3) {
+                } else if($this->status == 3){
                     return "Tender Evaluasi";
-                } else if($this->status == 4) {
+                } else if($this->status == 4){
                     return "BA Negosiasi dan Klarifikasi";
-                } else if($this->status == 5) {
+                } else if($this->status == 5){
                     return "BAPP";
-                } else if($this->status == 6) {
+                } else if($this->status == 6){
                     return "PO";
-                } else if($this->status == 7) {
+                } else if($this->status == 7){
                     return "BAST";
-                } else if($this->status == 8) {
+                } else if($this->status == 8){
                     return "Penilaian Vendor";
-                } else if($this->status == 9) {
+                } else if($this->status == 9){
                     return "Input SP3";
-                } else if($this->status == 10) {
+                } else if($this->status == 10){
                     return "Selesai";
-                } else if($this->status == 100) {
+                } else if($this->status == 100){
                     return "Dibatalkan";
                 }
             } else {

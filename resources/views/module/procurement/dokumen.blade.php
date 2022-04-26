@@ -1,12 +1,13 @@
+<?php use App\Http\Controllers\ProcurementController; ?>
 <div class="modal fade" id="procurementDocModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog mw-100 w-75" role="document" >
         <div class="modal-content" style="min-height:700px;">
             <div class="modal-header" style="padding-right:30px;">
-                <h5 class="modal-title" id="exampleModalLabel">Import Itemm</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Import Item</h5>
                 
             </div>
             <div class="modal-body">
-                <div class="row" style="min-height:550px;" >
+                <div class="row" style="min-height:550px;">
                     <div class="col-xl-3">
                         <div class="form-group">
                             <label class="small mb-1"><a id="viewTor" data-url="{{route('procurement.file.view', [$procurement, 'tor'])}}" href="#.">ToR</a></label>
@@ -17,6 +18,7 @@
                             <div class="timeline timeline-sm">
                                 <table style="margin-left:10px;font-size:9pt">
                                 @foreach($procurement->spphs as $row)
+                                
                                     <tr>
                                         <td><a id="viewTor" data-url="{{route('procurement.file.view', [$row->id, 'spph'])}}" href="#."> {{$row->vendor->name}} </a></td>
                                     </tr>
@@ -26,6 +28,21 @@
                         </div>
                         @endif
                         @if($procurement->mechanism_id != 2)
+                        <div class="form-group">
+                            <label class="small mb-1">Penawaran</label>
+                            <div class="timeline timeline-sm">
+                                <table style="margin-left:10px;font-size:9pt">
+                                @foreach($penawaran as $row)
+                                <?php $getName = ProcurementController::getPenawaran($row->spph_id); ?>
+                                    @if(isset($getName->name))
+                                        <tr>
+                                            <td><a id="viewSpph" data-url="{{route('procurement.file.view', [$row->spph_id, 'penawaran'])}}" href="#.">{{$getName->name}}</a></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                </table>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'evaluasi'])}}" href="#."> Tender Evaluasi</a></label>
                         </div>

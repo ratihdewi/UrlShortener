@@ -4,7 +4,7 @@
 
 @section("content")
 
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
+<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10"> 
     <div class="container"><br>
     </div>
 </header>
@@ -26,6 +26,7 @@
             </select>
         </div>
         <div class="card-body">
+        <?php use App\Http\Controllers\ProcurementController; ?>
             <div class="datatable">
                 <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -49,7 +50,12 @@
                                 <td>{{$proc->no_memo}}</td>
                                 <td>{{$proc->name}}</td>
                                 <td>{{$proc->mechanism->name}}</td>
-                                <td>{{$proc->status_caption}}</td>
+                                <?php $countSpph=ProcurementController::getAproveSpph($proc->id); ?>
+                                @if(count($countSpph)>0)
+                                    <td>Approval SPPH</td>
+                                @else
+                                    <td>{{$proc->status_caption}}</td>
+                                @endif
                                 <td>Rp{{number_format($proc->items->sum('price_total'),2)}}</td>
                                 @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                     @if($proc->staff_id != NULL)

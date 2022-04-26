@@ -41,6 +41,7 @@ use App\Mail\PenawaranDoneMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use DB;
 
 class ProcurementController extends Controller
 {
@@ -228,6 +229,7 @@ class ProcurementController extends Controller
      */
     public function show(Procurement $procurement, $status_choosen)
     {
+        
         //restricted hak akses terhadap data procurement
         if(Auth::user()->role_id==4){
             $this->authorize('accessAsUser', $procurement);
@@ -256,7 +258,7 @@ class ProcurementController extends Controller
             $memos = $result_memo['data'];
 
             foreach($memos as $memo){
-                if($memo['nomor_surat']!="") { 
+                if($memo['nomor_surat']!=""){ 
                     $data_memos[] = ["nomor_surat" => $memo['nomor_surat'], "perihal" => $memo['perihal']];
                 }
             }
@@ -278,7 +280,20 @@ class ProcurementController extends Controller
         $slas = MasterSla::where('mechanism_type', $mechanism_type)->latest()->get();
        
         $mechanisms = ProcurementMechanism::all();
-        return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'));
+        $dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
+        //dd($dataPenawaran);
+        return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'))
+        ->with('penawaran',$dataPenawaran);
+    }
+
+    public static function getPenawaran($spph_id){
+        $result = DB::table("procurement_spphs as a")
+        ->join("vendors as b","a.vendor_id","=","b.id")
+        ->select("b.name")->where('a.id',$spph_id)
+        ->where(function ($query) {
+            $query->whereNotNull('a.penawaran_file');
+        })->first();
+        return $result;
     }
 
     /**
@@ -917,6 +932,10 @@ class ProcurementController extends Controller
             $spph = ProcurementSpph::find($id);
             $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
             
+        }else if($type=="penawaran"){
+            $spph = ProcurementSpph::find($id);
+            $file = 'penawarans/'.$spph->penawaran_file;
+            
         } else if($type=="banegosiasi"){
             $spph = ProcurementSpph::find($id);
             $file = 'banegosiasi/BaNegosiasi-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
@@ -938,6 +957,11 @@ class ProcurementController extends Controller
             $file = 'invoice/'.$procurement->pjumk->invoice_file; 
         } 
         return view('module.procurement.dokumen_detail', compact('id','file', 'type'));
+    }
+
+    public static function getAproveSpph($id){
+        $getApSpph = ProcurementSpph::where([['procurement_id',$id],['status',1]])->get();
+        return $getApSpph;
     }
 
     public function updateDokumen($id, Request $request)
