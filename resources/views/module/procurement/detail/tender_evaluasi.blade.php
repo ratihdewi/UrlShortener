@@ -50,6 +50,10 @@
             <div class="card-footer">
                 @if($procurement->status == 3 && Auth::user()->role_id!=4)
                     <a href="{{route('procurement.evaluasitender.done', [$procurement])}}" class="btn btn-primary float-right" style="margin-left:10px">Selesaikan Evaluasi Tender</a>
+                    <button class="btn btn-danger float-left ml-2" id="btn-batal-procurement">Batalkan Pengajuan</button>
+                    <form id="form-batal-procurement" method="POST" action="{{route('procurement.cancel', [$procurement])}}">
+                        @csrf
+                    </form>
                 @endif
                 <a href="{{route('procurement.index')}}" class="btn btn-light float-right" style="margin-left:10px">Kembali</a>
             </div>

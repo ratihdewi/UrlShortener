@@ -13,9 +13,9 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
+        $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
         // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:8000/auth';
-        $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+        // $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
         return \Redirect::to($login_url);
     }
 
@@ -34,9 +34,9 @@ class AuthController extends Controller
             Auth::attempt(['email' => $user->email, 'password' => $user->password_real]);
             return redirect()->intended('procurement');
         } else {
-            // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
+            $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
             // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:8000/auth';
-            $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+            // $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
             return \Redirect::to($login_url);
         }
     }
@@ -56,8 +56,8 @@ class AuthController extends Controller
                     setcookie($name, '', time() -1000, '/');
                 }
             }
-            // $logout_url = 'https://sso-dev.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
-            $logout_url = 'https://sso.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
+            $logout_url = 'https://sso-dev.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
+            // $logout_url = 'https://sso.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
         return \Redirect::to($logout_url);
         }
         // $username = $_COOKIE["username"];
@@ -82,8 +82,8 @@ class AuthController extends Controller
 
         //memo
         $client = new Client([
-            // 'base_uri' => 'https://sso-dev.universitaspertamina.ac.id/',
-            'base_uri' => 'https://sso.universitaspertamina.ac.id/',
+            'base_uri' => 'https://sso-dev.universitaspertamina.ac.id/',
+            // 'base_uri' => 'https://sso.universitaspertamina.ac.id/',
             'headers' => ['Content-Type' => 'application/json']
         ]);
         $responses = $client->get('sso-check?token='.$token_login.'&username='.$username);

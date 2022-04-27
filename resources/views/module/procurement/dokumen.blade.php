@@ -1,3 +1,4 @@
+<?php use App\Http\Controllers\ProcurementController; ?>
 <div class="modal fade" id="procurementDocModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog mw-100 w-75" role="document" >
         <div class="modal-content" style="min-height:700px;">
@@ -26,6 +27,21 @@
                         </div>
                         @endif
                         @if($procurement->mechanism_id != 2)
+                        <div class="form-group">
+                            <label class="small mb-1">Penawaran</label>
+                            <div class="timeline timeline-sm">
+                                <table style="margin-left:10px;font-size:9pt">
+                                @foreach($penawaran as $row)
+                                <?php $getName = ProcurementController::getPenawaran($row->spph_id); ?>
+                                    @if(isset($getName->name))
+                                        <tr>
+                                            <td><a id="viewSpph" data-url="{{route('procurement.file.view', [$row->spph_id, 'penawaran'])}}" href="#.">{{$getName->name}}</a></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                                </table>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="small mb-1">Penawaran&nbsp;</label>
                             <div class="timeline timeline-sm">

@@ -80,7 +80,7 @@
                         <?php $score= VendorController::getScore($vendor->id); ?>
                             <tr>   
                                 <td>{{$vendor->no}}</td>
-                                <td>{{$vendor->name}}</td>
+                                <td style="width:50px;">{{$vendor->name}}</td>
                                 <td>
                                     @foreach($vendor->categories as $row) 
                                         @if($row->category()->exists())
@@ -93,7 +93,7 @@
                                 <td>{{customOutput($vendor->email, 30)}}</td>
                                 <td>{{date('Y-m-d', strtotime($vendor->updated_at))}}</td>
                                 {{--<td><div class="rateit" data-rateit-value="{{$vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>--}}
-                                <td>
+                                <td style="width:100px;">
                                     @for($i=1;$i <= $score ;$i++)
                                     <span class="fa fa-star checked"></span>
                                     @endfor

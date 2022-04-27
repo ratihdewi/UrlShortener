@@ -43,6 +43,10 @@
             </div>
             <div class="card-footer">
                 @if($procurement->status == 7)
+                    <button class="btn btn-danger float-left ml-2" id="btn-batal-procurement">Batalkan Pengajuan</button>
+                    <form id="form-batal-procurement" method="POST" action="{{route('procurement.cancel', [$procurement])}}">
+                        @csrf
+                    </form>
                     <a href="{{route('procurement.bast.done', [$procurement])}}" class="btn btn-primary float-right" style="margin-left:10px">Selesaikan Proses BAST</a>
                 @endif
                 <a href="{{route('procurement.index')}}" class="btn btn-light float-right" style="margin-left:10px">Kembali</a>

@@ -41,6 +41,7 @@ use App\Mail\PenawaranDoneMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use DB;
 
 class ProcurementController extends Controller
 {
@@ -100,8 +101,8 @@ class ProcurementController extends Controller
         $mechanisms = ProcurementMechanism::all();
 
         $client = new Client([
-            'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
-            // 'base_uri' => 'http://10.10.71.218:800/',
+            // 'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
+            'base_uri' => 'http://10.10.71.218:800/',
             // 'base_uri' => 'http://36.37.91.71:21800/',
             'headers' => ['Content-Type' => 'application/json']
         ]);
@@ -243,8 +244,8 @@ class ProcurementController extends Controller
         if($procurement->status == 1 || $procurement->status == 0){
             //memo
             $client = new Client([
-                'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
-                // 'base_uri' => 'http://10.10.71.218:800/',
+                // 'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
+                'base_uri' => 'http://10.10.71.218:800/',
                 // 'base_uri' => 'http://36.37.91.71:21800/',
                 'headers' => ['Content-Type' => 'application/json'],
                 'http_errors' => false
@@ -282,7 +283,21 @@ class ProcurementController extends Controller
         $slas = MasterSla::where('mechanism_type', $mechanism_type)->latest()->get();
        
         $mechanisms = ProcurementMechanism::all();
-        return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'));
+        // return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'));
+        $dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
+        //dd($dataPenawaran);
+        return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'))
+        ->with('penawaran',$dataPenawaran);
+    }
+
+    public static function getPenawaran($spph_id){
+        $result = DB::table("procurement_spphs as a")
+        ->join("vendors as b","a.vendor_id","=","b.id")
+        ->select("b.name")->where('a.id',$spph_id)
+        ->where(function ($query) {
+            $query->whereNotNull('a.penawaran_file');
+        })->first();
+        return $result;
     }
 
     /**
@@ -920,7 +935,10 @@ class ProcurementController extends Controller
         } else if($type=="spph"){
             $spph = ProcurementSpph::find($id);
             $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-            
+        }else if($type=="penawaran"){
+            $spph = ProcurementSpph::find($id);
+            $file = 'penawarans/'.$spph->penawaran_file;
+
         } else if($type=="banegosiasi"){
             $spph = ProcurementSpph::find($id);
             $file = 'banegosiasi/BaNegosiasi-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
@@ -942,6 +960,11 @@ class ProcurementController extends Controller
             $file = 'invoice/'.$procurement->pjumk->invoice_file; 
         } 
         return view('module.procurement.dokumen_detail', compact('id','file', 'type'));
+    }
+
+    public static function getAproveSpph($id){
+        $getApSpph = ProcurementSpph::where([['procurement_id',$id],['status',1]])->get();
+        return $getApSpph;
     }
 
     public function updateDokumen($id, Request $request)

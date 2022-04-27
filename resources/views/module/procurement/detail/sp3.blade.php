@@ -33,6 +33,10 @@
             </div>
             <div class="card-footer">
                 @if($procurement->status == 9 && ($procurement->mechanism_id == 1 || $procurement->mechanism_id == 3 || $procurement->mechanism_id == 4 || $procurement->mechanism_id == 6) || $procurement->status == 2 && ($procurement->mechanism_id == 2 || $procurement->mechanism_id == 5 || $procurement->mechanism_id == 7))
+                    <button class="btn btn-danger float-left ml-2" id="btn-batal-procurement">Batalkan Pengajuan</button>
+                    <form id="form-batal-procurement" method="POST" action="{{route('procurement.cancel', [$procurement])}}">
+                        @csrf
+                    </form>
                     <button id="btn-selesai" class="btn btn-primary float-right" style="margin-left:10px">Selesaikan SP3</button>
                 @endif
                 <a href="{{route('procurement.index')}}" class="btn btn-light float-right" style="margin-left:10px">Kembali</a>
