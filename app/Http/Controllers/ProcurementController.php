@@ -280,7 +280,8 @@ class ProcurementController extends Controller
         $slas = MasterSla::where('mechanism_type', $mechanism_type)->latest()->get();
        
         $mechanisms = ProcurementMechanism::all();
-        $dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
+        //$dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
+        $dataPenawaran=DB::select('SELECT * FROM spph_penawarans group by spph_id');
         //dd($dataPenawaran);
         return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'))
         ->with('penawaran',$dataPenawaran);

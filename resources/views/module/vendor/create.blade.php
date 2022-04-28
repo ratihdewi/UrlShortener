@@ -30,7 +30,7 @@
                         <div class="row">
                             <div class="col-xl-6">
                                 <div class="form-group">
-                                  <input type="hidden" name="id" value="{{$vendor->id}}">
+                                  {{-- <input type="hidden" name="id" value="{{$vendor->id}}"> --}}
                                     <label class="small mb-1">Nama Vendor </label><label class="small mb-1" style="color:red">*</label>
                                     <input name="name" required="true" value="{{ old('name') }}" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" type="text"/>
                                     @if ($errors->has('name'))

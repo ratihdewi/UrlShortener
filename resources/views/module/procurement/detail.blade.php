@@ -159,7 +159,7 @@
     @endif
 
     @if($procurement->status == 0)
-        <button class="btn btn-danger float-left" id="btn-hapus-procurement">Hapus Pengajuan</button>
+        {{--<button class="btn btn-danger float-left" id="btn-hapus-procurement">Hapus Pengajuan</button>--}}
         <button class="btn btn-danger float-left ml-3" id="btn-batal-procurement">Batalkan Pengajuan</button>
     @endif
     @if($procurement->status == 1)
