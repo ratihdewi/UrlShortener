@@ -101,8 +101,8 @@ class ProcurementController extends Controller
         $mechanisms = ProcurementMechanism::all();
 
         $client = new Client([
-            // 'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
-            'base_uri' => 'http://10.10.71.218:800/',
+            'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
+            // 'base_uri' => 'http://10.10.71.218:800/',
             // 'base_uri' => 'http://36.37.91.71:21800/',
             'headers' => ['Content-Type' => 'application/json']
         ]);
@@ -244,8 +244,8 @@ class ProcurementController extends Controller
         if($procurement->status == 1 || $procurement->status == 0){
             //memo
             $client = new Client([
-                // 'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
-                'base_uri' => 'http://10.10.71.218:800/',
+                'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
+                // 'base_uri' => 'http://10.10.71.218:800/',
                 // 'base_uri' => 'http://36.37.91.71:21800/',
                 'headers' => ['Content-Type' => 'application/json'],
                 'http_errors' => false
