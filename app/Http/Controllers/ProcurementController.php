@@ -283,8 +283,16 @@ class ProcurementController extends Controller
         //$dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
         $dataPenawaran=DB::select('SELECT * FROM spph_penawarans group by spph_id');
         //dd($dataPenawaran);
+
+        //data spph yang sudah dikirim
+        //$dataSpphValid = ProcurementSpph::where([['procurement_id', $procurement->id],['status',2]])->get();
+        $dataSpphValid = DB::table("procurement_spphs as a")
+        ->join("vendors as b","a.vendor_id","=","b.id")
+        ->select("b.name","a.id")->where([['procurement_id', $procurement->id],['status',2]])->get();
+        //dd($dataSpphValid);
         return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'))
-        ->with('penawaran',$dataPenawaran);
+        ->with('penawaran',$dataPenawaran)
+        ->with('dataSpphValid',$dataSpphValid);
     }
 
     public static function getPenawaran($spph_id){

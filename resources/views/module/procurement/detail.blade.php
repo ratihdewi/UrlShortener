@@ -38,7 +38,6 @@
                             <a href="{{route('procurement.index')}}"> Daftar Pengadaan </a>  &nbsp;> Detail
                         @endif
                     </h1>
-                    
                 </div>
                 <div style="margin-bottom:10px;">
                 @if($procurement->status != 0)

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ItemCategory;
 use App\Models\VendorCategory;
 use App\Models\VendorScore;
+use App\Models\ProcurementSpph;
 use App\Models\VendorFile;
 use App\Models\Vendor;
 use App\Models\VendorTenderTerbuka;
@@ -22,6 +23,7 @@ use App\Imports\VendorImport;
 use App\Mail\VendorTerbukaMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use DB;
 
 class VendorController extends Controller
 {
@@ -55,7 +57,29 @@ class VendorController extends Controller
      */
     public function store(VendorRequest $request, VendorInsertor $service)
     {
+        //dd($request);
         if($service->insert($request->all())){
+
+            $data=Vendor::where([['no_rek',$request->no_rek],['email',$request->email]])->first();
+            foreach($request->category_id as $d){
+                //dd($d);
+                $datacek = DB::table("procurement_spphs as a")
+                    ->join("vendor_categories as b","a.vendor_id","=","b.vendor_id")
+                    ->select("a.*","b.vendor_id","b.category_id")->where('b.category_id',$d)->groupBy('a.vendor_id')->get();
+    
+                    if(count($datacek)>0){
+                        foreach($datacek as $row){
+                            ProcurementSpph::create([
+                                'vendor_id'=>$data->id,
+                                'item_id'=>$row->item_id,
+                                'no_spph'=>$row->no_spph,
+                                'procurement_id'=>$row->procurement_id,
+                                'status'=>0
+                            ]);
+                        }
+                    }
+            }
+
         	return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan!', 
                 FlashMessage::SUCCESS));
@@ -64,6 +88,8 @@ class VendorController extends Controller
             new FlashMessage('Gagal menambahkan vendor dikarenakan email sudah didaftarkan.', 
                 FlashMessage::DANGER));
         }
+
+       
     }
 
     /**
