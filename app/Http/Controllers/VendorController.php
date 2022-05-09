@@ -60,6 +60,7 @@ class VendorController extends Controller
         //dd($request);
         if($service->insert($request->all())){
 
+            //tambahan dari wahyu untuk penyelesaian point 5
             $data=Vendor::where([['no_rek',$request->no_rek],['email',$request->email]])->first();
             foreach($request->category_id as $d){
                 //dd($d);
@@ -78,7 +79,7 @@ class VendorController extends Controller
                             ]);
                         }
                     }
-            }
+            } //akhir tambahan dari wahyu untuk penyelesaian point 5
 
         	return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan!', 
