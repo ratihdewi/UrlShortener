@@ -257,10 +257,10 @@ route::post('vendor-terbuka/store', 'App\Http\Controllers\VendorController@store
 route::get('/reload-captcha', 'App\Http\Controllers\VendorController@reloadCaptcha');
 
 
-Auth::routes();
-// route::get('auth/', 'App\Http\Controllers\AuthController@auth');
-// route::get('login', 'App\Http\Controllers\AuthController@showLoginForm')->name('login');
-// route::get('gettoken/', 'App\Http\Controllers\AuthController@getToken');
-// route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');
+// Auth::routes();
+route::get('auth/', 'App\Http\Controllers\AuthController@auth');
+route::get('login', 'App\Http\Controllers\AuthController@showLoginForm')->name('login');
+route::get('gettoken/', 'App\Http\Controllers\AuthController@getToken');
+route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');
 
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
