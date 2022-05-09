@@ -40,7 +40,15 @@
                                 <tr>
                                     @if($procurement->mechanism_id!=6)
                                         <td class="text-center">
-                                            <input type="checkbox" name="checkbox[]" value="{{$row->id}}"/>
+                                            @if(Auth::user()->role_id <=3)
+                                                @if($row->status == 1)
+                                                    <input type="checkbox" name="checkbox[]" value="{{$row->id}}" checked />
+                                                @else
+                                                    <input type="checkbox" name="checkbox[]" value="{{$row->id}}"/>
+                                                @endif
+                                             @else
+                                                <input type="checkbox" name="checkbox[]" value="{{$row->id}}"/>
+                                            @endif
                                         </td>
                                         <td>{{$row->status_caption}}</td>
                                     @endif
@@ -68,8 +76,12 @@
             <div class="card-footer">
                 
                     <!-- @if($procurement->mechanism_id != 6)<button type="submit" class="btn btn-warning float-left" style="margin-left:10px">Kirim SPPH</button></form>@endif -->
-                    @if($procurement->mechanism_id != 6) 
-                    <button type="submit" class="btn btn-warning float-left" style="margin-left:10px">Kirim SPPH</button></form>
+                    @if($procurement->mechanism_id != 6)
+                    @if(Auth::user()->role_id==3)
+                        <button type="submit" class="btn btn-warning float-left" style="margin-left:10px">Ajukan Kirim SPPH</button></form>
+                    @else
+                        <button type="submit" class="btn btn-warning float-left" style="margin-left:10px">Kirim SPPH</button></form>
+                    @endif
                     <button class="btn btn-danger float-left ml-2" id="btn-batal-procurement">Batalkan Pengajuan</button>
                     <form id="form-batal-procurement" method="POST" action="{{route('procurement.cancel', [$procurement])}}">
                         @csrf
