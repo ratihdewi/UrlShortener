@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 
         'email',
-        'role_id', //1 = Super admin, 2 = Manager Pengadaan, 3 = Staff Pengadaan, 4 = User
+        'role_id', //1 = Super admin, 2 = Manager Pengadaan, 3 = Staff Pengadaan, 4 = User, 5 = rektor, wr2 dan direktur
         'jabatan_id',
         'password',
         'password_real',

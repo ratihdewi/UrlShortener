@@ -21,7 +21,7 @@
                     <div class="nav-link-icon"><i data-feather="columns" @if(request()->is('master/itemcategory*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Kategori Barang
                 </a>
-                @if(Auth::user()->role_id!=4)
+                @if(Auth::user()->role_id!=4 and Auth::user()->role_id!=5)
                 
                 <a class="nav-link collapsed" href="{{route('vendor.index')}}" @if(request()->is('bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
