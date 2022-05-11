@@ -281,7 +281,7 @@ class ProcurementController extends Controller
        
         $mechanisms = ProcurementMechanism::all();
         //$dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
-        $dataPenawaran=DB::select('SELECT * FROM spph_penawarans group by spph_id');
+        $dataPenawaran=DB::select("SELECT * FROM spph_penawarans where procurement_id=$procurement->id group by spph_id");
         //dd($dataPenawaran);
 
         //data spph yang sudah dikirim
@@ -296,12 +296,13 @@ class ProcurementController extends Controller
     }
 
     public static function getPenawaran($spph_id){
+        //dd($spph_id);
         $result = DB::table("procurement_spphs as a")
         ->join("vendors as b","a.vendor_id","=","b.id")
-        ->select("b.name")->where('a.id',$spph_id)
-        ->where(function ($query) {
+        ->select("b.name")
+        ->where([[function ($query) {
             $query->whereNotNull('a.penawaran_file');
-        })->first();
+        }],['a.id',$spph_id]])->first();
         return $result;
     }
 
