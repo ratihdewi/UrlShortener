@@ -37,7 +37,7 @@
                             <th>Tipe</th>
                             <th>Status</th>
                             <th>Total</th>
-                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                            @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2 || Auth::user()->role_id == 5)
                                 <th>PIC</th>
                             @endif
                             <th class="text-center">Aksi</th>
@@ -58,7 +58,7 @@
                                     <td>{{$proc->status_caption}}</td>
                                 @endif
                                 <td>Rp{{number_format($proc->items->sum('price_total'),2)}}</td>
-                                @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                                @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2 || Auth::user()->role_id == 5)
                                     @if($proc->staff_id != NULL)
                                         <td>{{$proc->staff->name}}</td>
                                     @else
