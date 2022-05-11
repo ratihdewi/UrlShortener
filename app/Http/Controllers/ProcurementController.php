@@ -231,6 +231,7 @@ class ProcurementController extends Controller
      */
     public function show(Procurement $procurement, $status_choosen)
     {
+        
         //restricted hak akses terhadap data procurement
         if(Auth::user()->role_id==4){
             $this->authorize('accessAsUser', $procurement);
@@ -244,10 +245,17 @@ class ProcurementController extends Controller
         if($procurement->status == 1 || $procurement->status == 0){
             //memo
             $client = new Client([
+<<<<<<< HEAD
                 //'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
                  'base_uri' => 'http://10.10.71.218:800/',
                 // 'base_uri' => 'http://36.37.91.71:21800/',
                 'headers' => ['Content-Type' => 'application/json'],
+=======
+                'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
+            // 'base_uri' => 'http://10.10.71.218:800/',
+            // 'base_uri' => 'http://36.37.91.71:21800/',
+            'headers' => ['Content-Type' => 'application/json'],
+>>>>>>> a2a60f4f29065035564f40c11f2cac2285fab1ef
                 'http_errors' => false
             ]);
             $responses = $client->get('/api/Disposisi?nomor_surat='.$procurement->no_memo);
@@ -261,7 +269,7 @@ class ProcurementController extends Controller
             $memos = $result_memo['data'];
 
             foreach($memos as $memo){
-                if($memo['nomor_surat']!="") { 
+                if($memo['nomor_surat']!=""){ 
                     $data_memos[] = ["nomor_surat" => $memo['nomor_surat'], "perihal" => $memo['perihal']];
                 }
             }
@@ -283,10 +291,10 @@ class ProcurementController extends Controller
         $slas = MasterSla::where('mechanism_type', $mechanism_type)->latest()->get();
        
         $mechanisms = ProcurementMechanism::all();
-        // return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'));
-        // $dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
-        $dataPenawaran=DB::select('SELECT * FROM spph_penawarans group by spph_id');
+        //$dataPenawaran=SpphPenawaran::where('procurement_id',$procurement->id)->groupBy('spph_id')->get();
+        $dataPenawaran=DB::select("SELECT * FROM spph_penawarans where procurement_id=$procurement->id group by spph_id");
         //dd($dataPenawaran);
+
         //data spph yang sudah dikirim
         //$dataSpphValid = ProcurementSpph::where([['procurement_id', $procurement->id],['status',2]])->get();
         $dataSpphValid = DB::table("procurement_spphs as a")
@@ -944,10 +952,11 @@ class ProcurementController extends Controller
         } else if($type=="spph"){
             $spph = ProcurementSpph::find($id);
             $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
+            
         }else if($type=="penawaran"){
             $spph = ProcurementSpph::find($id);
             $file = 'penawarans/'.$spph->penawaran_file;
-
+            
         } else if($type=="banegosiasi"){
             $spph = ProcurementSpph::find($id);
             $file = 'banegosiasi/BaNegosiasi-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
