@@ -302,7 +302,7 @@ class ProcurementController extends Controller
         ->select("b.name")
         ->where([[function ($query) {
             $query->whereNotNull('a.penawaran_file');
-        }],['a.id',$spph_id]])->first();
+        }],['a.id',$spph_id],['a.status',2]])->first();
         return $result;
     }
 
