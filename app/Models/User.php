@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -65,7 +63,7 @@ class User extends Authenticatable
         } else {
             if($this->role_id==2){
                 return 'Manager Pengadaan';
-            } else {
+            }else{
                 return '';
             }
         } 
@@ -79,6 +77,8 @@ class User extends Authenticatable
             return 'Manager Pengadaan';
         } else if($this->role_id==3){
             return 'Staff Pengadaan';
+        }else if($this->role_id==5){
+            return 'Pejabat';
         } else {
             return 'User';
         }

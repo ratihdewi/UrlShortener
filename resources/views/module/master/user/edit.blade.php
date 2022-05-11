@@ -76,6 +76,7 @@
                                         <option value="2" @if($user->role_id==2) selected @endif>Manager Pengadaan</option>
                                         <option value="3" @if($user->role_id==3) selected @endif>Staff Pengadaan</option>
                                         <option value="4" @if($user->role_id==4) selected @endif>User</option>
+                                        <option value="5" @if($user->role_id==5) selected @endif>Pejabat</option>
                                     </select>
                                 </div>
                                 <div class="form-group">

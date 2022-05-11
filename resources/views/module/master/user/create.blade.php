@@ -75,6 +75,7 @@
                                         <option value="2">Manager Pengadaan</option>
                                         <option value="3">Staff Pengadaan</option>
                                         <option value="4">User</option>
+                                        <option value="5">Pejabat</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
