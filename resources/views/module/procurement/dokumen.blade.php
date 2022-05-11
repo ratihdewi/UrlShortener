@@ -3,7 +3,7 @@
     <div class="modal-dialog mw-100 w-75" role="document" >
         <div class="modal-content" style="min-height:700px;">
             <div class="modal-header" style="padding-right:30px;">
-                <h5 class="modal-title" id="exampleModalLabel">Import Item</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Import Itemm</h5>
                 
             </div>
             <div class="modal-body">
@@ -17,11 +17,20 @@
                             <label class="small mb-1">Spph&nbsp;</label>
                             <div class="timeline timeline-sm">
                                 <table style="margin-left:10px;font-size:9pt">
-                                @foreach($procurement->spphs as $row)
+                                <!-- @foreach($procurement->spphs as $row)
                                     <tr>
                                         <td><a id="viewTor" data-url="{{route('procurement.file.view', [$row->id, 'spph'])}}" href="#."> {{$row->vendor->name}} </a></td>
                                     </tr>
-                                @endforeach
+                                @endforeach -->
+                                @if(count($dataSpphValid)>0)
+                                    @foreach($dataSpphValid as $row)
+                                        <tr>
+                                            <td><a id="viewTor" data-url="{{route('procurement.file.view', [$row->id, 'spph'])}}" href="#."> {{$row->name}}</a></td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <td>belum ada SPPH yang dikirim ke vendor</td>
+                                @endif
                                 </table>
                             </div>
                         </div>
