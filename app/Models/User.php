@@ -79,7 +79,9 @@ class User extends Authenticatable
             return 'Manager Pengadaan';
         } else if($this->role_id==3){
             return 'Staff Pengadaan';
-        } else {
+        } else if($this->role_id==5){
+            return 'Pejabat';
+        }else {
             return 'User';
         }
         //return $this->belongsTo('App\Models\Role', 'role_id');
