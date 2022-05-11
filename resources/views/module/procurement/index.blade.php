@@ -8,7 +8,7 @@
     <div class="container"><br>
     </div>
 </header>
-<!-- Main page content-->
+<!-- Main page contentt-->
 <div class="container mt-n10">
     @include('partial.alert')
     <div class="card mb-4">
