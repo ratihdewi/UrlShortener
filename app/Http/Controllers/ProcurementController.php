@@ -299,12 +299,13 @@ class ProcurementController extends Controller
     }
 
     public static function getPenawaran($spph_id){
+        //dd($spph_id);
         $result = DB::table("procurement_spphs as a")
         ->join("vendors as b","a.vendor_id","=","b.id")
-        ->select("b.name")->where('a.id',$spph_id)
-        ->where(function ($query) {
+        ->select("b.name")
+        ->where([[function ($query) {
             $query->whereNotNull('a.penawaran_file');
-        })->first();
+        }],['a.id',$spph_id],['a.status',2]])->first();
         return $result;
     }
 
