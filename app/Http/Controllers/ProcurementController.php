@@ -107,15 +107,42 @@ class ProcurementController extends Controller
         $responses = $client->get('/api/Memo');
         $result = json_decode($responses->getBody()->getContents(), true);
         $memos = $result['data'];
-
+        
         
         foreach($memos as $memo){
             if($memo['nomor_surat']!="") { 
                 $data_memos[] = ["nomor_surat" => $memo['nomor_surat'], "perihal" => $memo['perihal']];
             }
         }
-
+        
         return view('module.procurement.create', compact('data_memos', 'mechanisms', 'vendors', 'categories', 'vendor_afiliasis'));
+    }
+
+    public function wahyu($reg1){
+        //dd($reg1);
+        $client = new Client([
+            'base_uri' => 'http://36.37.91.71:21800/',
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
+        $responses = $client->get('/api/Memo');
+        $result = json_decode($responses->getBody()->getContents(), true);
+        $memos = $result['data'];
+
+        // foreach($memos as $memo){
+        //     if($memo['nomor_surat']!="") { 
+        //         $data_memos[] = ["nomor_surat" => $memo['nomor_surat'], "perihal" => $memo['perihal']];
+        //     }
+        // }
+        foreach($memos as $memo){
+            //echo $memo['nomor_surat'].'||||'.$memo['perihal'].'<br>';
+            if($memo['nomor_surat'] == "$reg1"){
+                $data=array(1,$memo['perihal']);
+                return $data;
+            }
+        }
+       
+        //$data=array_search("2559/UP-WRS.3/MEMO/BJ.02/IV/2022",$data_memos,true);
+        //return $data_memos;
     }
 
     /**

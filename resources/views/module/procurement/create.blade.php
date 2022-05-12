@@ -18,6 +18,14 @@
         </div>
     </div>
 </header>
+<style>
+    .valid{
+        color:green !important;
+    }
+    .invalid{
+        color:red !important;
+    }
+</style>
 <!-- Main page content-->
 <div class="container mt-4">
 @include('partial.alert')
@@ -32,12 +40,13 @@
                             <div class="col-xl-6">
                                 <div class="form-group">
                                     <label class="small mb-1">No. Memo&nbsp;</label><label class="small mb-1" style="color:red">*</label>
-                                    <select class="form-control select2" name="no_memo" id="select_memo" required>
+                                    <!-- <select class="form-control select2" name="no_memo" id="select_memo" required>
                                         <option value="0">Pilih Nomor Memo</option>
                                         @foreach($data_memos as $row)
                                             <option value="{{$row['nomor_surat']}}">{{$row['nomor_surat']}}</option>
                                         @endforeach
-                                    </select>
+                                    </select> -->
+                                    <input placeholder="No memo" class="form-control" type="text" name="no_memo" id="no_memo" /><span id="ikon"></span>
                                 </div>
                                 <div class="form-group">
                                     <input name="status" value="0" type="hidden"/>
@@ -135,6 +144,55 @@
 
 @include('module.procurement.additemjs')
 
+<script>
+    const form=document.querySelector('#savePengadaan'); 
+    let username =form.elements.namedItem('no_memo');
+    username.addEventListener('input',validate);
+    //console.log(e.target.value);
+    
+    
+    function validate(e){
+        let target1 = e.target.value;
+        let user = e.target;
+        let ikon =document.getElementById('ikon');
+        
+        
+            var request = new XMLHttpRequest();
+            request.open("GET", "/wahyu/"+target1, true);
+            request.send();
+            request.onreadystatechange = function() {
+                if (request.readyState == 4 && request.status == 200) {
+                    try {
+                        var data = JSON.parse(request.responseText);
+                        console.log(data[0]);
+                    }catch(err) {
+                        var data =0;
+                        //console.log(data);
+                    }
+                    if(data[0] == 1){
+                        // user.classList.remove('invalid');
+                        // user.classList.add('valid');
+                        ikon.innerHTML = '<i class = "fa fa-check valid"></i>';
+                        document.getElementById("perihal").value = data[1];
+                        form.elements.namedItem('tor_file').disabled = false;
+                        form.elements.namedItem('item_file').disabled = false;
+                        form.elements.namedItem('vendor_id').disabled = false;
+                        form.elements.namedItem('mechanism_id').disabled = false;
+                    }
+                    if(data ==0){
+                        // user.classList.remove('valid');
+                        // user.classList.add('invalid');
+                        ikon.innerHTML = '<i class = "fa fa-times invalid"></i>';
+                        document.getElementById("perihal").value = '';
+                        form.elements.namedItem('tor_file').disabled = true;
+                        form.elements.namedItem('item_file').disabled = true;
+                        form.elements.namedItem('vendor_id').disabled = true;
+                        form.elements.namedItem('mechanism_id').disabled = true;
+                    }
+                }
+            };
+    }
+</script>
 
 <script type="text/javascript">
 

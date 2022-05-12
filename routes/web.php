@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['middleware' => ['auth'] ], function () {
+    
     //route::get('/dashboard', 'App\Http\Controllers\DashboardController@index')->name('dashboard.index');
     Route::get('', 'App\Http\Controllers\DashboardController@index')->name('dashboard.index');
     Route::get('/year/{year}', 'App\Http\Controllers\DashboardController@indexWithYear')->name('dashboard.index.with.year');
@@ -255,6 +256,7 @@ route::post('penawaran-input/store', 'App\Http\Controllers\TenderTerbukaControll
 route::get('vendor/input', 'App\Http\Controllers\VendorController@createTenderTerbuka')->name('vendor.tenderterbuka.create');
 route::post('vendor-terbuka/store', 'App\Http\Controllers\VendorController@storeTenderTerbuka')->name('vendor.tenderterbuka.store');
 route::get('/reload-captcha', 'App\Http\Controllers\VendorController@reloadCaptcha');
+Route::get('wahyu/{reg1?}', 'App\Http\Controllers\ProcurementController@wahyu') ->where('reg1', '(.*)');;
 
 
 Auth::routes();

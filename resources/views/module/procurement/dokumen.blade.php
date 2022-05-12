@@ -3,7 +3,7 @@
     <div class="modal-dialog mw-100 w-75" role="document" >
         <div class="modal-content" style="min-height:700px;">
             <div class="modal-header" style="padding-right:30px;">
-                <h5 class="modal-title" id="exampleModalLabel">Import Itemm</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Import Item</h5>
                 
             </div>
             <div class="modal-body">
