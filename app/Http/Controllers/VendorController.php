@@ -179,8 +179,10 @@ class VendorController extends Controller
      */
     public function destroy(Vendor $vendor)
     {
+        //dd($vendor);
         $vendor->delete = 1;
         $vendor->save();
+        ProcurementSpph::where([['vendor_id',$vendor->id],['status',0]])->delete();
         return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil dihapus!', 
                 FlashMessage::WARNING));
