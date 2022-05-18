@@ -74,17 +74,20 @@ class VendorController extends Controller
 
                     if(count($datacek)>0){
                         foreach($datacek as $row){
-                            $sp0=explode("/",$getNomor->no_spph);
-                            $sp1 =$sp0[0]+1;
-                            $sp2 ="$sp1/$sp0[1]/$sp0[2]/$sp0[3]/$sp0[4]";
+                            $cekDouble = ProcurementSpph::where([['procurement_id',$row->procurement_id],['vendor_id',$data->id]])->get();
+                            if(count($cekDouble)==0){
+                                $sp0=explode("/",$getNomor->no_spph);
+                                $sp1 =$sp0[0]+1;
+                                $sp2 ="0$sp1/$sp0[1]/$sp0[2]/$sp0[3]/$sp0[4]";
 
-                            ProcurementSpph::create([
-                                'vendor_id'=>$data->id,
-                                'item_id'=>$row->item_id,
-                                'no_spph'=> $sp2,
-                                'procurement_id'=>$row->procurement_id,
-                                'status'=>0
-                            ]);
+                                ProcurementSpph::create([
+                                    'vendor_id'=>$data->id,
+                                    'item_id'=>$row->item_id,
+                                    'no_spph'=> $sp2,
+                                    'procurement_id'=>$row->procurement_id,
+                                    'status'=>0
+                                ]);
+                            }
                         }
                     }
             } //akhir wahyu untuk penyelesaian point 5
