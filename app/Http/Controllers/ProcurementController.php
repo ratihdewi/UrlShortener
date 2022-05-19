@@ -123,7 +123,7 @@ class ProcurementController extends Controller
     public function wahyu($reg1){
         //dd($reg1);
         $client = new Client([
-            'base_uri' => 'http://36.37.91.71:21800/',
+            'base_uri' => 'http://10.10.71.218:800/',
             'headers' => ['Content-Type' => 'application/json']
         ]);
         $responses = $client->get('/api/Memo');

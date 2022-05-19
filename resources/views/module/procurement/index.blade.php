@@ -4,11 +4,11 @@
 
 @section("content")
 
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
+<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10"> 
     <div class="container"><br>
     </div>
 </header>
-<!-- Main page content-->
+<!-- Main page contentt-->
 <div class="container mt-n10">
     @include('partial.alert')
     <div class="card mb-4">
@@ -50,7 +50,6 @@
                                 <td>{{$proc->no_memo}}</td>
                                 <td>{{$proc->name}}</td>
                                 <td>{{$proc->mechanism->name}}</td>
-                                <td>{{$proc->status_caption}}</td>
                                 <?php $countSpph=ProcurementController::getAproveSpph($proc->id); ?>
                                 @if(count($countSpph)>0)
                                     <td>Approval SPPH</td>

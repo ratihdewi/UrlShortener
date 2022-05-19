@@ -57,27 +57,41 @@ class VendorController extends Controller
      */
     public function store(VendorRequest $request, VendorInsertor $service)
     {
+        //dd($request);
         if($service->insert($request->all())){
+
+            //tambahan untuk penyelesaian point 5
             $data=Vendor::where([['no_rek',$request->no_rek],['email',$request->email]])->first();
             foreach($request->category_id as $d){
                 //dd($d);
                 $datacek = DB::table("procurement_spphs as a")
                     ->join("vendor_categories as b","a.vendor_id","=","b.vendor_id")
-                    ->select("a.*","b.vendor_id","b.category_id")->where('b.category_id',$d)->groupBy('a.vendor_id')->get();
+                    ->select("a.*","b.vendor_id","b.category_id")->where('b.category_id',$d)->groupBy('a.procurement_id')->get();
+    
+                $getNomor = DB::table("procurement_spphs as a")
+                    ->join("vendor_categories as b","a.vendor_id","=","b.vendor_id")
+                    ->select("a.*","b.vendor_id","b.category_id")->where('b.category_id',$d)->orderBy('a.no_spph', 'desc')->first();
 
                     if(count($datacek)>0){
                         foreach($datacek as $row){
-                            ProcurementSpph::create([
-                                'vendor_id'=>$data->id,
-                                'item_id'=>$row->item_id,
-                                'no_spph'=>$row->no_spph,
-                                'procurement_id'=>$row->procurement_id,
-                                'status'=>0
-                            ]);
+                            $cekDouble = ProcurementSpph::where([['procurement_id',$row->procurement_id],['vendor_id',$data->id]])->get();
+                            if(count($cekDouble)==0){
+                                $sp0=explode("/",$getNomor->no_spph);
+                                $sp1 =$sp0[0]+1;
+                                $sp2 ="0$sp1/$sp0[1]/$sp0[2]/$sp0[3]/$sp0[4]";
+
+                                ProcurementSpph::create([
+                                    'vendor_id'=>$data->id,
+                                    'item_id'=>$row->item_id,
+                                    'no_spph'=> $sp2,
+                                    'procurement_id'=>$row->procurement_id,
+                                    'status'=>0
+                                ]);
+                            }
                         }
                     }
-            }
-            
+            } //akhir wahyu untuk penyelesaian point 5
+
         	return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan!', 
                 FlashMessage::SUCCESS));
@@ -86,6 +100,8 @@ class VendorController extends Controller
             new FlashMessage('Gagal menambahkan vendor dikarenakan email sudah didaftarkan.', 
                 FlashMessage::DANGER));
         }
+
+       
     }
 
     /**
@@ -163,8 +179,10 @@ class VendorController extends Controller
      */
     public function destroy(Vendor $vendor)
     {
+        //dd($vendor);
         $vendor->delete = 1;
         $vendor->save();
+        ProcurementSpph::where([['vendor_id',$vendor->id],['status',0]])->delete();
         return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil dihapus!', 
                 FlashMessage::WARNING));
