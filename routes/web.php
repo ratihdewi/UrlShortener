@@ -256,11 +256,11 @@ route::get('vendor/input', 'App\Http\Controllers\VendorController@createTenderTe
 route::post('vendor-terbuka/store', 'App\Http\Controllers\VendorController@storeTenderTerbuka')->name('vendor.tenderterbuka.store');
 route::get('/reload-captcha', 'App\Http\Controllers\VendorController@reloadCaptcha');
 Route::get('wahyu/{reg1?}', 'App\Http\Controllers\ProcurementController@wahyu') ->where('reg1', '(.*)');;
+route::get('/test', 'App\Http\Controllers\VendorController@test');
+Auth::routes();
+// route::get('auth/', 'App\Http\Controllers\AuthController@auth');
+// route::get('login', 'App\Http\Controllers\AuthController@showLoginForm')->name('login');
+// route::get('gettoken/', 'App\Http\Controllers\AuthController@getToken');
+// route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');
 
-// Auth::routes();
-route::get('auth/', 'App\Http\Controllers\AuthController@auth');
-route::get('login', 'App\Http\Controllers\AuthController@showLoginForm')->name('login');
-route::get('gettoken/', 'App\Http\Controllers\AuthController@getToken');
-route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');
-
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

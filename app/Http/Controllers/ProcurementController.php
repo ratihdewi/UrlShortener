@@ -1044,4 +1044,21 @@ class ProcurementController extends Controller
         return ProcurementItem::where('procurement_id', 0)->get();
     }
 
+    public function validatePenawaranVendor ($vendor, $itemPenawaran) {
+        $isDitawarkan = false;
+        $arrItemPenawaran = array();
+
+        foreach ($itemPenawaran as $ip) {
+            array_push($arrItemPenawaran, $ip->category_id);
+        }
+        foreach ($vendor->categories as $vc) {
+           if (in_array($vc->category_id, $arrItemPenawaran)) {
+                $isDitawarkan = true;
+                break;
+           }
+        }
+
+        return $isDitawarkan;
+    }
+
 }
