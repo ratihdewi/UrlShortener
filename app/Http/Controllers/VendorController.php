@@ -42,10 +42,7 @@ class VendorController extends Controller
     }
 
     public function test() {
-        $prc = Procurement::all();
-        foreach($prc as $procurement) {
-            
-        }
+        echo "test";
     }
 
     /**

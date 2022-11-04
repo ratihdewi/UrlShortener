@@ -269,7 +269,7 @@ class ProcurementController extends Controller
         $status_dispo = true;
         $vendor_afiliasis = [];
         $data_memos = [];
-        if($procurement->status == 1 || $procurement->status == 0){
+        if($procurement->status <= 6){
             //memo
             $client = new Client([
                 'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
@@ -347,6 +347,7 @@ class ProcurementController extends Controller
     public function update(Procurement $procurement, Request $request)
     {
         //update semua nya di sini
+        $old_procurement = clone $procurement;
 
         //perihal & no memo
         $procurement->name = $request->name;
@@ -386,9 +387,42 @@ class ProcurementController extends Controller
         }
 
         //logs
-        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, "Melakukan perubahan data detail Procurement", "", "Pengajuan");
+        $arr_note = [
+            "Perihal", 
+            "Mekanisme", 
+            "Status", 
+            "Dokumen TOR", 
+            "Nomor Memo", 
+            "Pengguna", 
+            "PIC", 
+            "Tanggal pengiriman spph", 
+            "Dokumen evaluasi tender", 
+            "Dokumen BAPP", 
+            "Vendor (Penunjukkan Langsung)", "Status Date"
+        ];
 
-
+        $msg = "Melakukan perubahan data detail Procurement pada : <br> ";
+        $msg .= "<ul>";
+        foreach ($procurement->getFillable() as $key=>$keyword) {
+            if ($old_procurement->$keyword != $procurement->$keyword) {
+                if ($arr_note[$key] == "Mekanisme") {
+                    $mch = ProcurementMechanism::where('id', $procurement->$keyword)->first()->name;
+                    $msg .= "<li> {$arr_note[$key]} : {$mch} </li>";
+                } else if ($arr_note[$key] == "PIC") {
+                    $mch =User::where('id', $procurement->$keyword)->first()->name;
+                    $msg .= "<li> {$arr_note[$key]} : {$mch} </li>";
+                } else if ($arr_note[$key] == "Vendor (Penunjukkan Langsung)") {
+                    if ($procurement->$keyword != 0 || $procurement->$keyword != NULL) {
+                        $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
+                    }
+                }
+                else {
+                    $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
+                }
+            }
+        }
+        $msg .= "</ul> <br>";
+        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
         $procurement->save();
 
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 

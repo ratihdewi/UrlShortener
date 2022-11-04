@@ -37,7 +37,7 @@
                             @foreach($logs as $log)
                                 <tr>
                                     <td>{{date('d M Y H:i', strtotime($log->created_at))}}</td>
-                                    <td>{{$log->logs}} @if($log->keterangan=="") oleh @else dari @endif <font style="color:blue;">{{$log->user->name}}</font></td>
+                                    <td> <?php echo "{$log->logs}" ?> @if($log->keterangan=="") oleh @else dari @endif <font style="color:blue;">{{$log->user->name}}</font></td>
                                     <td>{{$log->keterangan}}</td>
                                 </tr>
                             @endforeach

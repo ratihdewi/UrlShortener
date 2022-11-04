@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    @if($procurement->status == 0 || $procurement->status == 1)
+                    @if(($procurement->status <= 6 && Auth::user()->role_id < 4) || ($procurement->status <= 1 && Auth::user()->role_id == 4))
                         <button type="button" class="btn btn-primary btn-md float-right" style="margin-left:10px" data-toggle="modal" data-target="#edit-detail-modal">Ubah</button>
                     @endif
                 </div>
