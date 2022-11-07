@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ItemCategory;
+use App\Models\MasterSla;
+use App\Models\Logs;
 use App\Models\VendorCategory;
 use App\Models\VendorScore;
 use App\Models\Procurement;
@@ -39,10 +41,6 @@ class VendorController extends Controller
     {
         $vendors = Vendor::where('delete', 0)->get();
         return view('module.vendor.index', compact('vendors'));
-    }
-
-    public function test() {
-        echo "test";
     }
 
     /**

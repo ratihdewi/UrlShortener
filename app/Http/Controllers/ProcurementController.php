@@ -344,49 +344,17 @@ class ProcurementController extends Controller
      * @param  \App\Procurement  $procurement
      * @return \Illuminate\Http\Response
      */
-    public function update(Procurement $procurement, Request $request)
-    {
-        //update semua nya di sini
-        $old_procurement = clone $procurement;
 
-        //perihal & no memo
-        $procurement->name = $request->name;
-        $procurement->no_memo = $request->no_memo;
+    private function customLog (Procurement $old_procurement, Procurement $procurement) {
 
-        //tor
-        $tor_file_name = '';
-        if($request->has('tor_file') && $request->tor_file!=NULL){
-            $tor_file = $request->file('tor_file');
-            $name = 'TOR-'.Auth::user()->id.'-'.$tor_file->getClientOriginalName();
-            $tor_file_name = $name;
-            $path = $this->upload($name, $tor_file, 'tors');
-            $procurement->tor_file = $tor_file_name;
-        }
-        
-        //assign staff
-        if($request->staff_id!=NULL){
-            $procurement->staff_id = $request->staff_id;
-        }
+        $mechanism_type = 0;
 
-        //assign new type
-        if($request->mechanism_id!=NULL){
-            $procurement->mechanism_id = $request->mechanism_id;
-        }
-
-        //assign new vendor
-        if($request->mechanism_id==3){
-            $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
-        } else if($request->mechanism_id==4){
-            if($request->vendor_id_afiliasi == NULL || $request->vendor_id_afiliasi == ""  || $request->vendor_id_afiliasi == 0){
-                $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
-            } else {
-                $procurement->vendor_id_penunjukan_langsung = $request->vendor_id_afiliasi;
-            }
+        if($procurement->mechanism_id==1 || $procurement->mechanism_id==3 || $procurement->mechanism_id==4 || $procurement->mechanism_id==6){
+            $mechanism_type = 0;
         } else {
-            $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
+            $mechanism_type = 1;
         }
 
-        //logs
         $arr_note = [
             "Perihal", 
             "Mekanisme", 
@@ -415,6 +383,8 @@ class ProcurementController extends Controller
                     if ($procurement->$keyword != 0 || $procurement->$keyword != NULL) {
                         $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
                     }
+                } else if ($arr_note[$key] == "Status") {
+                    $msg .= "<li> Status dikembalikan ke {$procurement->status_caption} </li>";
                 }
                 else {
                     $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
@@ -422,7 +392,68 @@ class ProcurementController extends Controller
             }
         }
         $msg .= "</ul> <br>";
-        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
+        
+        $processName = "Pengajuan";
+        if ($procurement->mechanism_id != $old_procurement-> mechanism_id) {
+            Logs::where('procurement_id', $procurement->id)->update(['process_name' => NULL]);
+            $processName = "Start SPPH";
+        }
+
+        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", $processName);
+    }
+
+    public function update(Procurement $procurement, Request $request)
+    {
+
+        //update semua nya di sini
+        $old_procurement = clone $procurement;
+
+        //Ubah status
+        if ($procurement->status > 2) {
+            $procurement->status = 2;
+        }
+
+        //perihal & no memo
+        $procurement->name = $request->name;
+        $procurement->no_memo = $request->no_memo;
+
+        //tor
+        $tor_file_name = '';
+        if($request->has('tor_file') && $request->tor_file!=NULL){
+            $tor_file = $request->file('tor_file');
+            $name = 'TOR-'.Auth::user()->id.'-'.$tor_file->getClientOriginalName();
+            $tor_file_name = $name;
+            $path = $this->upload($name, $tor_file, 'tors');
+            $procurement->tor_file = $tor_file_name;
+        }
+        
+        //assign staff
+        if($request->staff_id!=NULL){
+            $procurement->staff_id = $request->staff_id;
+        }
+
+        //assign new type
+        if($request->mechanism_id!=NULL){
+            $procurement->mechanism_id = $request->mechanism_id;
+        }
+
+        //assign new vendor
+        if($request->mechanism_id==3){
+            $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
+
+        } else if($request->mechanism_id==4){
+            if($request->vendor_id_afiliasi == NULL || $request->vendor_id_afiliasi == ""  || $request->vendor_id_afiliasi == 0){
+                $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
+            } else {
+                $procurement->vendor_id_penunjukan_langsung = $request->vendor_id_afiliasi;
+            }
+        } else {
+            $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
+        }
+
+        //logs
+        $this->customLog($old_procurement, $procurement);
+        
         $procurement->save();
 
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
@@ -713,6 +744,12 @@ class ProcurementController extends Controller
         //restricted hak akses terhadap data procurement
         if(Auth::user()->role_id==3){
             $this->authorize('accessAsStaff', $procurement);
+        }
+
+        if($procurement->staff_id == NULL) {
+            return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
+                new FlashMessage('Mohon masukkan PIC terlebih dahulu', 
+                    FlashMessage::WARNING));
         }
 
         if($procurement->status == 1){
