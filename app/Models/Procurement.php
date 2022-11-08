@@ -17,6 +17,7 @@ class Procurement extends Model
         'status', //0 draft //1 Approval Pengajuan //2 Spph //3 Tender evaluasi //4 Ba //5 BAPP //6 PO //7 BAST //8 Penilaian //9 SP3
         'tor_file',
         'no_memo',
+        'no_rka',
         'user_id',
         'staff_id',
         'spph_sending_date',

@@ -102,6 +102,10 @@
                                 <label class="small mb-1"> PIC</label>
                                 <h3 style="margin-left:10px;">@if($procurement->staff_id!=NULL) {{$procurement->staff['name']}} @else Blm di-assign @endif</h3>
                             </div>
+                            <div class="form-group">
+                                <label class="small mb-1"> No. RKA</label>
+                                <h3 style="margin-left:10px;">{{$procurement->no_rka}}</h3>
+                            </div>
                         </div>
                     </div>
                 </div>

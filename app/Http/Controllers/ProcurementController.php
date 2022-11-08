@@ -385,8 +385,9 @@ class ProcurementController extends Controller
                     }
                 } else if ($arr_note[$key] == "Status") {
                     $msg .= "<li> Status dikembalikan ke {$procurement->status_caption} </li>";
-                }
-                else {
+                } else if ($arr_note[$key] == "Tanggal pengiriman spph" || $arr_note[$key] == "Status Date") {
+                    continue;
+                } else {
                     $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
                 }
             }

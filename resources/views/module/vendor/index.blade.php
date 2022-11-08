@@ -19,6 +19,19 @@
             return $y;
         }
     }
+
+    function isComplete ($vendor) {
+        
+        $res = true;
+        foreach ($vendor->getFillable() as $keyword) {
+            if (is_null($vendor->$keyword)) {
+                $res = false;
+                break;
+            }
+        }
+
+        return $res;
+    }
     
 ?>
 
@@ -77,8 +90,9 @@
                     </tfoot>
                     <tbody>
                         @forelse($vendors as $vendor) 
+
                         <?php $score= VendorController::getScore($vendor->id); ?>
-                            <tr>   
+                            <tr style="{{ isComplete ($vendor) ? '' : 'background-color: red; opacity: 75%; color: white'}}">   
                                 <td>{{$vendor->no}}</td>
                                 <td style="width:50px;">{{$vendor->name}}</td>
                                 <td>

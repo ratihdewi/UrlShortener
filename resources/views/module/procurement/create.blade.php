@@ -69,6 +69,10 @@
                             </div>
                             <div class="col-xl-6">
                                 <div class="form-group">
+                                    <label class="small mb-1">No. RKA&nbsp;</label><label style="font-size:8pt" class="small mb-1">(optional)</label>
+                                    <input placeholder="No RKA" class="form-control" type="text" name="no_rka" id="no_rka" /><span id="ikon"></span>
+                                </div>
+                                <div class="form-group">
                                     <label class="small mb-1">Kerangka Acuan Kerja (ToR)&nbsp;</label><label class="small mb-1" style="color:red">*</label>
                                     <input name="tor_file" value="{{ old('tor_file') }}" class="form-control{{ $errors->has('tor_file') ? ' is-invalid' : '' }}" type="file" required/>
                                     @if ($errors->has('tor_file'))
@@ -80,7 +84,7 @@
                                 <div class="form-group">
                                     <label class="small mb-1">Barang (import excel file)</label>
                                     <input id="importExcel" name="item_file" value="{{ old('items') }}" class="form-control{{ $errors->has('items') ? ' is-invalid' : '' }}" type="file"/>
-                                    <a href="{{route('procurement.item.import.example')}}" class="btn btn-primary btn-sm"><small>Download Template Contoh</small></a>
+                                    <a href="{{route('procurement.item.import.example')}}" class="mt-3 btn btn-primary btn-sm"><small>Download Template Contoh</small></a>
                                     @if ($errors->has('items'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('items') }}</strong>
