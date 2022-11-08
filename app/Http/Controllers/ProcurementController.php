@@ -404,7 +404,6 @@ class ProcurementController extends Controller
 
     public function update(Procurement $procurement, Request $request)
     {
-
         //update semua nya di sini
         $old_procurement = clone $procurement;
 
@@ -439,7 +438,50 @@ class ProcurementController extends Controller
 
         //assign new vendor
         if($request->mechanism_id==3){
+
             $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
+            if (!is_null($request->vendor_name)) {
+                $newVendor = new Vendor();
+                $newVendor->name = $request->vendor_name;
+                $newVendor->email = $request->vendor_email;
+                $newVendor->save();
+                $procurement->vendor_id_penunjukan_langsung = $newVendor->id;
+                
+                foreach ($procurement->items as $item) {
+                    if (!VendorCategory::where('vendor_id', $newVendor->id)->where('category_id', $item->category_id)->exists()) {
+                        $vc = new VendorCategory();
+                        $vc->vendor_id = $newVendor->id;
+                        $vc->category_id = $item->category_id;
+                        $vc->save();
+
+                        if(Vendor::find($vc->vendor_id)){
+                            if(!ProcurementSpph::where('vendor_id', $vc->vendor_id)->where('procurement_id', $item->procurement_id)->exists()){
+                                $spph = new ProcurementSpph();
+                                $spph->procurement_id = $item->procurement_id;
+                                $spph->vendor_id = $vc->vendor_id;
+                                $spph->item_id = $item->id;
+                                $spph->status = 0;
+                                $spph->no_spph = (new CreateNoSpph)->createNo();
+                                $spph->save();
+
+                                foreach($spph->vendor->categories as $category){
+                                    //$category->id //per kategori tiap vendor
+                                    foreach($procurement->items as $item){
+                                        if($category->category_id == $item->category_id){
+                                            //masukin item->id ke array
+                                            $penawaran = new SpphPenawaran();
+                                            $penawaran->item_id = $item->id;
+                                            $penawaran->spph_id = $spph->id;
+                                            $penawaran->procurement_id = $procurement->id;
+                                            $penawaran->save();
+                                        }
+                                    }
+                                }
+                            }  
+                        }
+                    }
+                }
+            }
 
         } else if($request->mechanism_id==4){
             if($request->vendor_id_afiliasi == NULL || $request->vendor_id_afiliasi == ""  || $request->vendor_id_afiliasi == 0){
@@ -450,6 +492,9 @@ class ProcurementController extends Controller
         } else {
             $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
         }
+
+        //Vendor baru
+
 
         //logs
         $this->customLog($old_procurement, $procurement);
