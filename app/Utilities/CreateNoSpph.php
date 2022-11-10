@@ -13,7 +13,14 @@ class CreateNoSpph
 			return '0001/UP-WR2.2.2/UND/'.$this->getRomawi(date('n')).'/'.date('Y');
 		} else {
 			$no_order = sprintf('%04d', $count+1);
-            return $no_order.'/UP-WR2.2.2/UND/'.$this->getRomawi(date('n')).'/'.date('Y');
+            $nomor_surat = $no_order.'/UP-WR2.2.2/UND/'.$this->getRomawi(date('n')).'/'.date('Y');
+
+            while (ProcurementSpph::where('no_spph', $nomor_surat)->exists()) {
+                $no_order++;
+                $no_order = sprintf('%04d', $no_order);
+                $nomor_surat = $no_order.'/UP-WR2.2.2/UND/'.$this->getRomawi(date('n')).'/'.date('Y');
+            }
+            return $nomor_surat;
 		}
 	}
 

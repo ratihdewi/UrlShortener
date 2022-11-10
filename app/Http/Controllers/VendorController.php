@@ -43,6 +43,11 @@ class VendorController extends Controller
         return view('module.vendor.index', compact('vendors'));
     }
 
+    public function test() {
+        $p = (new CreateNoSpph)->createNo();
+        echo $p;
+    }
+
     /**
      * Show the form for creating a new resource.
      *

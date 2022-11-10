@@ -7,6 +7,7 @@ use App\Models\Procurement;
 use App\Models\User;
 use App\Models\MasterSpph;
 use App\Models\ProcurementItem;
+use App\Models\ProcurementMechanism;
 use App\Models\PenawaranTenderTerbuka;
 use App\Models\ProcurementSpph;
 use App\Models\ItemCategory;
@@ -19,13 +20,16 @@ use App\Services\VendorInsertor;
 use App\Utilities\CreateNoSpph;
 use App\Utilities\CreateNoVendor;
 use App\Models\Vendor;
+use App\Models\MasterSla;
 use App\Http\Requests\VendorRequestTenderTerbuka;
 use Auth;
 use PDF;
+use DB;
 use Storage;
 use ZipArchive;
 use App\Utilities\FlashMessage;
 use App\Models\Logs;
+use GuzzleHttp\Client;
 
 class TenderTerbukaController extends Controller
 {
@@ -152,10 +156,42 @@ class TenderTerbukaController extends Controller
 
         $vendors = Vendor::where('delete', 0)->get();
         $categories = ItemCategory::all();
+        $vendor_afiliasis = Vendor::where('afiliasi', 1)->get();
         $users = User::where('role_id', 3)->latest()->get();
         $tenderterbuka = 1;
+        $penawaran = DB::select("SELECT * FROM spph_penawarans where procurement_id=$procurement->id group by spph_id");
+        $mechanisms = ProcurementMechanism::all();
         $logs = Logs::where('procurement_id', $procurement->id)->latest()->get();
-        return view('module.procurement.detail', compact('logs', 'tenderterbuka', 'procurement', 'vendors', 'users', 'categories', 'status_choosen'));
+        $dataSpphValid = DB::table("procurement_spphs as a")
+        ->join("vendors as b","a.vendor_id","=","b.id")
+        ->select("b.name","a.id")->where([['procurement_id', $procurement->id],['status',2]])->get();
+
+        $client = new Client([
+            //'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
+             'base_uri' => 'http://10.10.71.218:800/',
+            // 'base_uri' => 'http://36.37.91.71:21800/',
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
+        $responses = $client->get('/api/Memo');
+        $result = json_decode($responses->getBody()->getContents(), true);
+        $memos = $result['data'];
+
+        $mechanism_type = 0;
+        if($procurement->mechanism_id==1 || $procurement->mechanism_id==3 || $procurement->mechanism_id==4 || $procurement->mechanism_id==6){
+            $mechanism_type = 0;
+        } else {
+            $mechanism_type = 1;
+        }
+        $slas = MasterSla::where('mechanism_type', $mechanism_type)->latest()->get();
+
+        
+        foreach($memos as $memo){
+            if($memo['nomor_surat']!="") { 
+                $data_memos[] = ["nomor_surat" => $memo['nomor_surat'], "perihal" => $memo['perihal']];
+            }
+        }
+
+        return view('module.procurement.detail', compact('logs', 'slas', 'mechanism_type', 'dataSpphValid', 'penawaran', 'vendor_afiliasis', 'mechanisms', 'data_memos', 'tenderterbuka', 'procurement', 'vendors', 'users', 'categories', 'status_choosen'));
     }
 
     public function detailPenawaran(PenawaranTenderTerbuka $penawaran)

@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth'] ], function () {
         Route::group(['middleware' => ['User']], function () {
             Route::prefix('spph')->group(function () {
                 route::get('/input/{procurement}', 'App\Http\Controllers\ProcurementController@inputSpph')->name('procurement.spph.input');
+                route::get('/reinput/{procurement}', 'App\Http\Controllers\ProcurementController@reInputSpph')->name('procurement.spph.reinput');
                 route::post('/ajukan/{procurement}', 'App\Http\Controllers\ProcurementController@ajukanSpph')->name('procurement.spph.ajukan');
             });
 

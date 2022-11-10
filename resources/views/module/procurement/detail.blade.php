@@ -3,7 +3,6 @@
 @section("title","Detail Pengadaan")
 
 @section("content")
-
 <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
     <div class="container-fluid">
         <div class="page-header-content">

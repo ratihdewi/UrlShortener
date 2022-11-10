@@ -17,6 +17,9 @@
         <div class="card mb-4">
             <div class="card-header">
                 @if($procurement->status == 2 && $procurement->mechanism_id!=6)
+                    @if($procurement->mechanism_id != 3)
+                        <a href="{{ route('procurement.spph.reinput', $procurement) }}" class="btn btn-sm btn-info float-right" style="margin-right:10px"> Perbaharui daftar SPPH </a>
+                    @endif
                     <a href="" class="btn btn-sm btn-success float-right" style="margin-right:10px" data-toggle="modal" data-target="#uploadPenawaranModal">Unggah File Penawaran</a>
                 @endif
             </div>
@@ -42,34 +45,36 @@
                         </thead>
                         <tbody>
                             @forelse($procurement->spphs as $row)
-                                @if($class->validatePenawaranVendor($row->vendor, $procurement->items))
-                                    <tr>
-                                        @if($procurement->mechanism_id!=6)
-                                            <td class="text-center">
-                                                @if(Auth::user()->role_id <=3)
-                                                    @if($row->status == 1)
-                                                        <input type="checkbox" name="checkbox[]" value="{{$row->id}}" checked />
+                                @if($row->vendor->delete == 0)
+                                    @if($class->validatePenawaranVendor($row->vendor, $procurement->items))
+                                        <tr>
+                                            @if($procurement->mechanism_id!=6)
+                                                <td class="text-center">
+                                                    @if(Auth::user()->role_id <=3)
+                                                        @if($row->status == 1)
+                                                            <input type="checkbox" name="checkbox[]" value="{{$row->id}}" checked />
+                                                        @else
+                                                            <input type="checkbox" name="checkbox[]" value="{{$row->id}}"/>
+                                                        @endif
                                                     @else
                                                         <input type="checkbox" name="checkbox[]" value="{{$row->id}}"/>
                                                     @endif
-                                                @else
-                                                    <input type="checkbox" name="checkbox[]" value="{{$row->id}}"/>
+                                                </td>
+                                                <td>{{$row->status_caption}}</td>
+                                            @endif
+                                            <td>{{$row->vendor->name}}</td>
+                                            <td>{{$row->no_spph}} <a href="{{route('procurement.item.export', [$row->id])}}"><i data-feather="download"></i></a></td>
+                                            <td class="text-center"><div class="rateit" data-rateit-value="{{$row->vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>
+                                            <td>{{$row->batas_penawaran_date}} @if(!$row->has_penawaran) <a href="#." id="edit-batas" data-tanggal="{{$row->batas_penawaran_date}}" data-item-id="{{$row->id}}"> <i data-feather="edit"></i></a>@endif</td>
+                                            <td>
+                                                @if($row->has_penawaran) 
+                                                <a class="btn btn-sm btn-light" data-toggle="modal" id="getDetailPenawaran" data-target="#penawaranDetailModal" data-url="{{route('procurement.penawaran.detail', [$row])}}" href="#."><small>Lihat Penawaran</small></a>
+                                                @else 
+                                                    Belum ada penawaran 
                                                 @endif
                                             </td>
-                                            <td>{{$row->status_caption}}</td>
-                                        @endif
-                                        <td>{{$row->vendor->name}}</td>
-                                        <td>{{$row->no_spph}} <a href="{{route('procurement.item.export', [$row->id])}}"><i data-feather="download"></i></a></td>
-                                        <td class="text-center"><div class="rateit" data-rateit-value="{{$row->vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>
-                                        <td>{{$row->batas_penawaran_date}} @if(!$row->has_penawaran) <a href="#." id="edit-batas" data-tanggal="{{$row->batas_penawaran_date}}" data-item-id="{{$row->id}}"> <i data-feather="edit"></i></a>@endif</td>
-                                        <td>
-                                            @if($row->has_penawaran) 
-                                            <a class="btn btn-sm btn-light" data-toggle="modal" id="getDetailPenawaran" data-target="#penawaranDetailModal" data-url="{{route('procurement.penawaran.detail', [$row])}}" href="#."><small>Lihat Penawaran</small></a>
-                                            @else 
-                                                Belum ada penawaran 
-                                            @endif
-                                        </td>
-                                    </tr>
+                                        </tr>
+                                    @endif
                                 @endif
                             @empty
                                 <tr>
