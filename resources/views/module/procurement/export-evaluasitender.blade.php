@@ -16,18 +16,20 @@
             </thead>
             <tbody>
             @foreach($procurement->penawarans as $penawaran)
-                <tr>
-                    <td style="text-align: center;">{{ $penawaran->id }}</td>
-                    <td style="text-align: center;">{{ $penawaran['item']['name'] }}</td>
-                    <td style="text-align: center;">{{ $penawaran['item']['category']['name'] }}</td>
-                    <td style="text-align: center;">{{ $penawaran['item']['specs'] }}</td>
-                    <td style="text-align: center;">{{ $penawaran['harga_satuan'] }}</td>
-                    <td style="text-align: center;">{{ $penawaran['item']['total_unit'] }}</td>
-                    <td style="text-align: center;">{{ $penawaran['harga_satuan']*$penawaran['item']['total_unit'] }}</td>
-                    <td style="text-align: center;">{{ $penawaran['spph']['vendor']['name'] }}</td>
-                    <td style="text-align: center;"></td>
-                    @if($procurement->mechanism_id!=3)<td style="text-align: center;"></td>@endif
-                </tr>
+                @if(!$penawaran->spph->hidden)
+                    <tr>
+                        <td style="text-align: center;">{{ $penawaran->id }}</td>
+                        <td style="text-align: center;">{{ $penawaran['item']['name'] }}</td>
+                        <td style="text-align: center;">{{ $penawaran['item']['category']['name'] }}</td>
+                        <td style="text-align: center;">{{ $penawaran['item']['specs'] }}</td>
+                        <td style="text-align: center;">{{ $penawaran['harga_satuan'] }}</td>
+                        <td style="text-align: center;">{{ $penawaran['item']['total_unit'] }}</td>
+                        <td style="text-align: center;">{{ $penawaran['harga_satuan']*$penawaran['item']['total_unit'] }}</td>
+                        <td style="text-align: center;">{{ $penawaran['spph']['vendor']['name'] }}</td>
+                        <td style="text-align: center;"></td>
+                        @if($procurement->mechanism_id!=3)<td style="text-align: center;"></td>@endif
+                    </tr>
+                @endif
             @endforeach
             </tbody>
         </table>

@@ -502,19 +502,13 @@ class ProcurementController extends Controller
                 }
             }
 
-            //Hapus vendor yang tidak terpilih
+            // Hide vendor yang tidak terpilih
             $spph_notSelect = ProcurementSpph::where('procurement_id', $procurement->id)
                               ->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)
                               ->get();
-            ProcurementSpph::where('procurement_id', $procurement->id)->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)->delete();
-
-            foreach ($spph_notSelect as $value) {
-                SpphPenawaran::where('procurement_id', $procurement->id)->where('spph_id', $value->id)->delete();
-            }
-
-            if (!ProcurementSpph::where('procurement_id', $procurement->id)->where('vendor_id', $procurement->vendor_id_penunjukan_langsung)->exists()) {
-                $this->reInputSpph($procurement);
-            }
+            ProcurementSpph::where('procurement_id', $procurement->id)
+            ->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)
+            ->update(['hidden' => 1]);
             
 
         } else if($request->mechanism_id==4){
@@ -527,8 +521,11 @@ class ProcurementController extends Controller
             $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
         }
 
-        //Vendor baru
-
+        //Show vendor
+        if ($procurement->mechanism_id != 3) {
+            ProcurementSpph::where('procurement_id', $procurement->id)
+            ->update(['hidden' => 0]);
+        } 
 
         //logs
         $this->customLog($old_procurement, $procurement);
@@ -1036,15 +1033,27 @@ class ProcurementController extends Controller
     {
         $isDikirim = false;
 
-        //kirim email penawaran selesai
-        foreach($procurement->spphs as $spph) {
+
+        if ($procurement->mechanism_id != 3) {
+            //kirim email penawaran selesai
+            foreach($procurement->spphs as $spph) {
+                if ($spph->status_caption == "Sudah Dikirim") {
+                    if ($spph->vendor->delete == 0){
+                            \Mail::to($spph->vendor->email)->send(new PenawaranDoneMail($spph->id));  
+                            $isDikirim = true;
+                    }
+                }
+            }
+        } else {
+            $spph = $procurement->vendor->spph[0];
             if ($spph->status_caption == "Sudah Dikirim") {
-               if ($spph->vendor->delete == 0){
-                    \Mail::to($spph->vendor->email)->send(new PenawaranDoneMail($spph->id));  
-                    $isDikirim = true;
-               }
+                if ($spph->vendor->delete == 0){
+                        \Mail::to($spph->vendor->email)->send(new PenawaranDoneMail($spph->id));  
+                        $isDikirim = true;
+                }
             }
         }
+        
 
         if ($isDikirim) {
             //ganti status procurement

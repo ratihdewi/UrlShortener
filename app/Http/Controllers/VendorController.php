@@ -44,8 +44,8 @@ class VendorController extends Controller
     }
 
     public function test() {
-        $p = (new CreateNoSpph)->createNo();
-        echo $p;
+       $procurement = Procurement::first();
+       dd($procurement->vendor->delete);
     }
 
     /**

@@ -27,17 +27,19 @@
                         </thead>
                         <tbody>
                             @forelse($procurement->penawarans as $row)
-                                <tr>
-                                    <td>{{$row->item->name}}</td>
-                                    <td>{{$row->item->category->name}}</td>
-                                    <td>{{$row->item->specs}}</td>
-                                    <td>Rp{{number_format($row->harga_satuan,2)}}</td>
-                                    <td>{{$row->item->total_unit}}</td>
-                                    <td>Rp{{number_format($row->item->total_unit*$row->harga_satuan, 2)}}</td>
-                                    <td>{{$row->spph->vendor->name}}</td>
-                                    <td>{{$row->evaluasi}}</td>
-                                    @if($procurement->mechanism_id!=3)<td>{{$row->nilai}}</td>@endif
-                                </tr>
+                                @if(!$row->spph->hidden)
+                                    <tr>
+                                        <td>{{$row->item->name}}</td>
+                                        <td>{{$row->item->category->name}}</td>
+                                        <td>{{$row->item->specs}}</td>
+                                        <td>Rp{{number_format($row->harga_satuan,2)}}</td>
+                                        <td>{{$row->item->total_unit}}</td>
+                                        <td>Rp{{number_format($row->item->total_unit*$row->harga_satuan, 2)}}</td>
+                                        <td>{{$row->spph->vendor->name}}</td>
+                                        <td>{{$row->evaluasi}}</td>
+                                        @if($procurement->mechanism_id!=3)<td>{{$row->nilai}}</td>@endif
+                                    </tr>
+                                @endif
                             @empty
                                 <tr>
                                     <td colspan="9"><center><i>Tidak ada data.</i></center></td>

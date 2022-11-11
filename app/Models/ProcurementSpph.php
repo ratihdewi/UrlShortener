@@ -20,6 +20,7 @@ class ProcurementSpph extends Model
         'batas_penawaran',
         'status', //0: belum diajukan, 1: sudah diajukan, 2: sudah dikirim
         'negosiasi',
+        'hidden',
         'no_surat_penawaran'
     ];
 

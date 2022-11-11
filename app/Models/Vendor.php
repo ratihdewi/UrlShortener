@@ -55,4 +55,9 @@ class Vendor extends Model
         return $this->hasMany('App\Models\VendorScore', 'vendor_id');
     }
 
+    public function spph()
+    {
+        return $this->hasMany('App\Models\ProcurementSpph', 'vendor_id');
+    }
+
 }

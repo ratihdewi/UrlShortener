@@ -21,32 +21,36 @@
                         <tbody>
                             @forelse($procurement->spphs as $row)
                                 @if($row->has_penawaran)
-                                    <tr>
-                                        <td>{{$row->vendor->name}}</td>
-                                        <td>{{$row->no_spph}}</td>
-                                        <td></td>
-                                        @if($procurement->mechanism_id!=3)<td>{{$row->penawaran_score}}</td>@endif
-                                        <td></td>
-                                        <td>
-                                            @if($row->has_negosiasi)
-                                                @if($procurement->status == 4)
-                                                    <a class="btn btn-sm btn-light" data-toggle="modal" id="getEditNegosiasi" data-target="#editNegosiasiModal" data-url="{{route('procurement.banegosiasi.edit', [$row])}}" href="#."><small>Ubah Negosiasi</small></a>
-                                                @endif
-                                                <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowNegosiasi" data-target="#showNegosiasiModal" data-url="{{route('procurement.banegosiasi.show', [$row])}}" href="#."><small>Lihat Negosiasi</small></a>
-                                            @else
-                                                <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputNegosiasi" data-target="#inputNegosiasiModal" data-url="{{route('procurement.banegosiasi.input', [$row])}}" href="#."><small>Buat Negosiasi</small></a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @foreach($row->penawarans as $penawaran)
-                                        <tr @if($penawaran->can_win == 0) style="color:red" @endif>
+                                    @if(!$row->hidden)
+                                        <tr>
+                                            <td>{{$row->vendor->name}}</td>
+                                            <td>{{$row->no_spph}}</td>
                                             <td></td>
-                                            <td>{{$penawaran->item->name}} x {{$penawaran->item->total_unit}}</td>
-                                            <td>Rp{{number_format($penawaran->item->price_total*$penawaran->item->total_unit,2)}}</td>
-                                            <td>{{$penawaran->nilai}}</td>
-                                            <td>Rp{{number_format($penawaran->harga_total,2)}}</td>
-                                            <td>@if($penawaran->can_win == 1 && $procurement->status == 4)<a class="btn btn-sm btn-danger" href="{{route('procurement.banegosiasi.lose', [$penawaran])}}"><small>X</small></a>@elseif($penawaran->can_win == 0 && $procurement->status == 4)<a class="btn btn-sm btn-warning" href="{{route('procurement.banegosiasi.loseundo', [$penawaran])}}"><small>Undo</small></a>@endif </td>
+                                            @if($procurement->mechanism_id!=3)<td>{{$row->penawaran_score}}</td>@endif
+                                            <td></td>
+                                            <td>
+                                                @if($row->has_negosiasi)
+                                                    @if($procurement->status == 4)
+                                                        <a class="btn btn-sm btn-light" data-toggle="modal" id="getEditNegosiasi" data-target="#editNegosiasiModal" data-url="{{route('procurement.banegosiasi.edit', [$row])}}" href="#."><small>Ubah Negosiasi</small></a>
+                                                    @endif
+                                                    <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowNegosiasi" data-target="#showNegosiasiModal" data-url="{{route('procurement.banegosiasi.show', [$row])}}" href="#."><small>Lihat Negosiasi</small></a>
+                                                @else
+                                                    <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputNegosiasi" data-target="#inputNegosiasiModal" data-url="{{route('procurement.banegosiasi.input', [$row])}}" href="#."><small>Buat Negosiasi</small></a>
+                                                @endif
+                                            </td>
                                         </tr>
+                                    @endif
+                                    @foreach($row->penawarans as $penawaran)
+                                        @if(!$penawaran->spph->hidden)
+                                            <tr @if($penawaran->can_win == 0) style="color:red" @endif>
+                                                <td></td>
+                                                <td>{{$penawaran->item->name}} x {{$penawaran->item->total_unit}}</td>
+                                                <td>Rp{{number_format($penawaran->item->price_total*$penawaran->item->total_unit,2)}}</td>
+                                                <td>{{$penawaran->nilai}}</td>
+                                                <td>Rp{{number_format($penawaran->harga_total,2)}}</td>
+                                                <td>@if($penawaran->can_win == 1 && $procurement->status == 4)<a class="btn btn-sm btn-danger" href="{{route('procurement.banegosiasi.lose', [$penawaran])}}"><small>X</small></a>@elseif($penawaran->can_win == 0 && $procurement->status == 4)<a class="btn btn-sm btn-warning" href="{{route('procurement.banegosiasi.loseundo', [$penawaran])}}"><small>Undo</small></a>@endif </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 @endif
                             @empty
