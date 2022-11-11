@@ -502,6 +502,14 @@ class ProcurementController extends Controller
                 }
             }
 
+            // Ubah status jika SPPH telah terkirim (Maju satu langkah)
+            $prcSpph = ProcurementSpph::where('procurement_id', $procurement->id)->where('vendor_id', $procurement->vendor_id_penunjukan_langsung)->first();
+
+            if ($prcSpph->status_caption == "Sudah Dikirim" && $procurement->status == 2) {
+                $procurement->status = $procurement->status + 1;
+            }
+            
+
             // Hide vendor yang tidak terpilih
             $spph_notSelect = ProcurementSpph::where('procurement_id', $procurement->id)
                               ->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)

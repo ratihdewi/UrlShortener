@@ -44,8 +44,8 @@ class VendorController extends Controller
     }
 
     public function test() {
-       $procurement = Procurement::first();
-       dd($procurement->vendor->delete);
+       $v = ProcurementSPPH::first();
+       dd($v->status_caption);
     }
 
     /**
