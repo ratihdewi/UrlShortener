@@ -510,6 +510,10 @@ class ProcurementController extends Controller
             ->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)
             ->update(['hidden' => 1]);
             
+            // Show vendor yang terpilih
+            ProcurementSpph::where('procurement_id', $procurement->id)
+            ->where('vendor_id', $procurement->vendor_id_penunjukan_langsung)
+            ->update(['hidden' => 0]);
 
         } else if($request->mechanism_id==4){
             if($request->vendor_id_afiliasi == NULL || $request->vendor_id_afiliasi == ""  || $request->vendor_id_afiliasi == 0){
@@ -924,20 +928,22 @@ class ProcurementController extends Controller
                     }
                 }
             } else if($procurement->mechanism_id==3 || $procurement->mechanism_id==4){
-                $spph = new ProcurementSpph();
-                $spph->procurement_id = $procurement->id;
-                $spph->vendor_id = $procurement->vendor_id_penunjukan_langsung;
-                $spph->item_id = 0;
-                $spph->status = 0;
-                $spph->no_spph = (new CreateNoSpph)->createNo();
-                $spph->save();
+                if (!$procurement->vendor_id_penunjukan_langsung > 0) {
+                    $spph = new ProcurementSpph();
+                    $spph->procurement_id = $procurement->id;
+                    $spph->vendor_id = $procurement->vendor_id_penunjukan_langsung;
+                    $spph->item_id = 0;
+                    $spph->status = 0;
+                    $spph->no_spph = (new CreateNoSpph)->createNo();
+                    $spph->save();
 
-                foreach($procurement->items as $item){
-                    $penawaran = new SpphPenawaran();
-                    $penawaran->item_id = $item->id;
-                    $penawaran->spph_id = $spph->id;
-                    $penawaran->procurement_id = $procurement->id;
-                    $penawaran->save();
+                    foreach($procurement->items as $item){
+                        $penawaran = new SpphPenawaran();
+                        $penawaran->item_id = $item->id;
+                        $penawaran->spph_id = $spph->id;
+                        $penawaran->procurement_id = $procurement->id;
+                        $penawaran->save();
+                    }
                 }
             } else if($procurement->mechanism_id==6){
                 $procurement->tanggal_batas_tender_terbuka = \Carbon\Carbon::now()->addDays(14)->format('Y-m-d');
