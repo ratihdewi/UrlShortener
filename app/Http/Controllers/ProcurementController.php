@@ -1046,8 +1046,6 @@ class ProcurementController extends Controller
     public function donePenawaran(Procurement $procurement)
     {
         $isDikirim = false;
-
-
         if ($procurement->mechanism_id != 3) {
             //kirim email penawaran selesai
             foreach($procurement->spphs as $spph) {
@@ -1306,5 +1304,27 @@ class ProcurementController extends Controller
 
         return $isDitawarkan;
     }
+
+    public function getYearProcurement() {
+        $proc = Procurement::all();
+ 
+        $startYear = date('Y');
+        $finishYear = date('Y');
+ 
+        foreach ($proc as $p) {
+           $year = date('Y', strtotime($p->created_at));
+ 
+           if ($year > $finishYear) {
+             $finishYear = $year;
+           };
+ 
+           if ($year < $startYear) {
+             $startYear = $year;
+           }
+ 
+        }   
+ 
+        return array($startYear, $finishYear);
+     }
 
 }

@@ -43,11 +43,6 @@ class VendorController extends Controller
         return view('module.vendor.index', compact('vendors'));
     }
 
-    public function test() {
-       $v = ProcurementSPPH::first();
-       dd($v->status_caption);
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -165,6 +160,7 @@ class VendorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function update(VendorRequest $request, Vendor $vendor)
     {
         $data = $request->all();

@@ -3,6 +3,13 @@
 @section("title","Dashboard")
 
 @section("content")
+
+<?php 
+    use App\Http\Controllers\ProcurementController;
+    $cls = new ProcurementController();
+    $tahun = $cls->getYearProcurement();
+?>
+
 <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
     <div class="container"><br>
     </div>
@@ -13,9 +20,8 @@
         <div class="col-xxl-10 col-xl-10 mb-4">
         </div>
         <div class="col-xxl-2 col-xl-2 mb-4">
-            @php $current_year = date('Y') @endphp
             <select class="form-control" name="year_select" id="year_select">
-                @for($i = 2022; $i >=2021; $i--)
+                @for($i = $tahun[1]; $i >= $tahun[0]; $i--)
                     <option value="{{route('dashboard.index.with.year', [$i])}}" @if($year == $i) selected @endif>{{$i}}</option>
                 @endfor
             </select>
