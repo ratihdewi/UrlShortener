@@ -266,6 +266,17 @@ class ProcurementController extends Controller
             $this->authorize('accessAsStaff', $procurement);
         }
 
+        $catId = array();
+        foreach ($procurement->items as $item) {
+            array_push($catId, $item->category_id);
+        }
+
+        $vendors = DB::table('vendors as v')
+                   ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                   ->where('delete', 0)
+                   ->whereIn('vc.category_id', $catId)
+                   ->get();
+
         $status_dispo = true;
         $vendor_afiliasis = [];
         $data_memos = [];
@@ -293,10 +304,14 @@ class ProcurementController extends Controller
                     $data_memos[] = ["nomor_surat" => $memo['nomor_surat'], "perihal" => $memo['perihal']];
                 }
             }
-            $vendor_afiliasis = Vendor::where('afiliasi', 1)->get();
+            $vendor_afiliasis = DB::table('vendors as v')
+                                ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                                ->where('delete', 0)
+                                ->where('afiliasi', 1)
+                                ->whereIn('vc.category_id', $catId)
+                                ->get();
         }
 
-        $vendors = Vendor::where('delete', 0)->get();
         $categories = ItemCategory::all();
         $users = User::where('role_id', 3)->latest()->get();
         $logs = Logs::where('procurement_id', $procurement->id)->latest()->get();
