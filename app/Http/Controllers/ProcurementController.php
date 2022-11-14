@@ -345,7 +345,7 @@ class ProcurementController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    private function customLog (Procurement $old_procurement, Procurement $procurement) {
+    public function customLog (Procurement $old_procurement, Procurement $procurement) {
 
         $mechanism_type = 0;
 
@@ -470,12 +470,15 @@ class ProcurementController extends Controller
                                     //$category->id //per kategori tiap vendor
                                     foreach($procurement->items as $item){
                                         if($category->category_id == $item->category_id){
-                                            //masukin item->id ke array
-                                            $penawaran = new SpphPenawaran();
-                                            $penawaran->item_id = $item->id;
-                                            $penawaran->spph_id = $spph->id;
-                                            $penawaran->procurement_id = $procurement->id;
-                                            $penawaran->save();
+                                            $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
+                                            if (!$isExists) {
+                                                //masukin item->id ke array
+                                                $penawaran = new SpphPenawaran();
+                                                $penawaran->item_id = $item->id;
+                                                $penawaran->spph_id = $spph->id;
+                                                $penawaran->procurement_id = $procurement->id;
+                                                $penawaran->save();
+                                            }
                                         }
                                     }
                                 }
@@ -862,12 +865,15 @@ class ProcurementController extends Controller
                                 //$category->id //per kategori tiap vendor
                                 foreach($procurement->items as $item){
                                     if($category->category_id == $item->category_id){
-                                        //masukin item->id ke array
-                                        $penawaran = new SpphPenawaran();
-                                        $penawaran->item_id = $item->id;
-                                        $penawaran->spph_id = $spph->id;
-                                        $penawaran->procurement_id = $procurement->id;
-                                        $penawaran->save();
+                                        $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
+                                        if (!$isExists) {
+                                            //masukin item->id ke array
+                                            $penawaran = new SpphPenawaran();
+                                            $penawaran->item_id = $item->id;
+                                            $penawaran->spph_id = $spph->id;
+                                            $penawaran->procurement_id = $procurement->id;
+                                            $penawaran->save();
+                                        }
                                     }
                                 }
                             }
@@ -885,11 +891,15 @@ class ProcurementController extends Controller
             $spph->save();
 
             foreach($procurement->items as $item){
-                $penawaran = new SpphPenawaran();
-                $penawaran->item_id = $item->id;
-                $penawaran->spph_id = $spph->id;
-                $penawaran->procurement_id = $procurement->id;
-                $penawaran->save();
+                $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
+                if (!$isExists) {
+                    //masukin item->id ke array
+                    $penawaran = new SpphPenawaran();
+                    $penawaran->item_id = $item->id;
+                    $penawaran->spph_id = $spph->id;
+                    $penawaran->procurement_id = $procurement->id;
+                    $penawaran->save();
+                }
             }
         } else if($procurement->mechanism_id==6){
             $procurement->tanggal_batas_tender_terbuka = \Carbon\Carbon::now()->addDays(14)->format('Y-m-d');
@@ -940,11 +950,15 @@ class ProcurementController extends Controller
                         foreach($procurement->items as $item){
                             if($category->category_id == $item->category_id){
                                 //masukin item->id ke array
-                                $penawaran = new SpphPenawaran();
-                                $penawaran->item_id = $item->id;
-                                $penawaran->spph_id = $spph->id;
-                                $penawaran->procurement_id = $procurement->id;
-                                $penawaran->save();
+                                $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
+                                if (!$isExists) {
+                                    //masukin item->id ke array
+                                    $penawaran = new SpphPenawaran();
+                                    $penawaran->item_id = $item->id;
+                                    $penawaran->spph_id = $spph->id;
+                                    $penawaran->procurement_id = $procurement->id;
+                                    $penawaran->save();
+                                }
                             }
                         }
                     }
@@ -960,11 +974,15 @@ class ProcurementController extends Controller
                     $spph->save();
 
                     foreach($procurement->items as $item){
-                        $penawaran = new SpphPenawaran();
-                        $penawaran->item_id = $item->id;
-                        $penawaran->spph_id = $spph->id;
-                        $penawaran->procurement_id = $procurement->id;
-                        $penawaran->save();
+                        $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
+                        if (!$isExists) {
+                            //masukin item->id ke array
+                            $penawaran = new SpphPenawaran();
+                            $penawaran->item_id = $item->id;
+                            $penawaran->spph_id = $spph->id;
+                            $penawaran->procurement_id = $procurement->id;
+                            $penawaran->save();
+                        }
                     }
                 }
             } else if($procurement->mechanism_id==6){
