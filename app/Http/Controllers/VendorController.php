@@ -172,7 +172,6 @@ class VendorController extends Controller
         $vendor->save();
 
         $vendor_category = VendorCategory::where('vendor_id', $vendor->id)->delete();
-        $proc_spph_del = DB::table('procurement_spphs')->where('vendor_id', $vendor->id)->delete();
 
         foreach($request->category_id as $row){
             $cat = new VendorCategory();
@@ -182,6 +181,7 @@ class VendorController extends Controller
         }
 
         $prc = Procurement::all();
+        ProcurementSpph::where('vendor_id', $vendor->id)->update(['hidden' => 1 ]);
 
         foreach ($prc as $procurement) {
             foreach ($procurement->items as $item) {
@@ -212,7 +212,9 @@ class VendorController extends Controller
                                     }
                                 }
                             }
-                        }  
+                        } else {
+                            ProcurementSpph::where('vendor_id', $row->vendor_id)->where('procurement_id', $item->procurement_id)->update(['hidden' => 0 ]);
+                        } 
                     }
                 }
             }

@@ -529,12 +529,26 @@ class ProcurementController extends Controller
             } else {
                 $procurement->vendor_id_penunjukan_langsung = $request->vendor_id_afiliasi;
             }
+
+            // Hide vendor yang tidak terpilih
+            $spph_notSelect = ProcurementSpph::where('procurement_id', $procurement->id)
+                              ->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)
+                              ->get();
+            ProcurementSpph::where('procurement_id', $procurement->id)
+            ->where('vendor_id', '!=', $procurement->vendor_id_penunjukan_langsung)
+            ->update(['hidden' => 1]);
+            
+            // Show vendor yang terpilih
+            ProcurementSpph::where('procurement_id', $procurement->id)
+            ->where('vendor_id', $procurement->vendor_id_penunjukan_langsung)
+            ->update(['hidden' => 0]);
+            
         } else {
             $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
         }
 
         //Show vendor
-        if ($procurement->mechanism_id != 3) {
+        if ($procurement->mechanism_id != 3 && $procurement->mechanism_id != 4) {
             ProcurementSpph::where('procurement_id', $procurement->id)
             ->update(['hidden' => 0]);
         } 
