@@ -35,6 +35,12 @@
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Daftar Vendor Tender Terbuka
                 </a>
+
+                <a class="nav-link collapsed" href="{{route('procurement.manual')}}">
+                    <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
+                    Pengadaan (Manual)
+                </a>
+
                 @endif
                 @if(Auth::user()->role_id==1)
                 <a class="nav-link collapsed" href="{{route('master.mechanism.index')}}" @if(request()->is('master/mechanism*')) style="color:#385ac2;font-weight:bold;" @endif>

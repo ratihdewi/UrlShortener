@@ -55,6 +55,12 @@ Route::group(['middleware' => ['auth'] ], function () {
         route::put('tenderterbuka/batas/ubah', 'App\Http\Controllers\TenderTerbukaController@ubahBatas')->name('procurement.tenderterbuka.batas');
         route::post('logs/store/{procurement}', 'App\Http\Controllers\LogsController@store')->name('procurement.logs.store');
 
+        Route::prefix('manual')->group(function(){
+            route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('procurement.manual');
+            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor')->name('manual.getvendor');
+            route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualController@getPenawaran')->name('manual.getpenawaran');
+            route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualController@getSpph')->name('manual.getspph');
+        });
         
         Route::prefix('penawaran')->group(function () {
             route::post('/upload/{procurement}', 'App\Http\Controllers\ProcurementController@uploadPenawaran')->name('procurement.upload.penawaran');

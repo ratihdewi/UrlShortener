@@ -273,6 +273,7 @@ class ProcurementController extends Controller
 
         $vendors = DB::table('vendors as v')
                    ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                   ->select('v.*')
                    ->where('delete', 0)
                    ->whereIn('vc.category_id', $catId)
                    ->get();
@@ -306,6 +307,7 @@ class ProcurementController extends Controller
             }
             $vendor_afiliasis = DB::table('vendors as v')
                                 ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                                ->select('v.*')
                                 ->where('delete', 0)
                                 ->where('afiliasi', 1)
                                 ->whereIn('vc.category_id', $catId)
