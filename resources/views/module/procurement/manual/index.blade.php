@@ -17,24 +17,13 @@
                 		</select>
                 	</div>
                     <fieldset class="form-group border p-3">
-                        <legend class="w-auto px-2">SPPH</legend>
+                        <legend class="w-auto px-2">Dokumen</legend>
 						<span id="fieldSpph">
 						</span>
-						<button class="btn btn-info btn-sm" style="float: right" id="tambahSpph"> Tambah SPPH </button>
+						<button class="btn btn-info btn-sm" style="float: right" id="tambahDokumen"> Tambah Dokumen </button>
                     </fieldset>
                     <fieldset class="form-group border p-3">
                     	<legend class="w-auto px-2">Penawaran dan Tender Evaluasi</legend>
-                    	<div class="form-row mb-5">
-                        	<div class="col">
-	                            <label> Unggah File Penawaran Harga (.pdf) </label>
-	                            <input type="file" class="form-control" name="penawaran_pdf">
-                        	</div>
-                        	<div class="col">
-	                            <label> Unggah File Evaluasi Tender (.pdf) </label>
-	                            <input type="file" class="form-control" name="eval_tender_pdf">
-                        	</div>
-                        </div>
-
                         <table class="table mt-5 mb-5" id="tabelItem">
 							<thead>
 								<tr>
@@ -50,11 +39,11 @@
 								</tr>
 							</thead>
                         </table>
-
                      </fieldset>
                     <button class="btn btn-primary" style="float: right;"> Submit </button>
 					<button id="addRowTable" hidden> </button>
 					<button id="initTable" hidden> </button>
+					<button id="setTotal" hidden> </button>
                 </div>
             </div>
         </div>
@@ -67,9 +56,11 @@
 	$(document).ready(function() {
         $('#opsiVendor').prop('disabled', true);
 		$('#opsiVendor').append('<option disabled selected> Pilih Vendor </option>');
+		$('#tambahDokumen').hide();
     });
 
 	var vendorSelect = [];
+	var jumlahItem = 0;
 
 	$(function(){
 		
@@ -86,12 +77,13 @@
 			vendorSelect = [];
 			myTable.clear();
 			$('#fieldSpph').html('');
-			$('#tambahSpph').click();
+			$('#tambahDokumen').show();
+			$('#tambahDokumen').click();
 		});
 
-		$('#tambahSpph').on('click', function() {
+		$('#tambahDokumen').on('click', function() {
 
-			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]"> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>';
+			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]"> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]"></div><div class="col"><label> Unggah File Evaluasi Tender (.pdf) </label><input type="file" class="form-control" name="eval_tender_pdf[]"></div></div>';
 
 			$('#fieldSpph').append(logHtml);
 			generateOption(jumlahVendor);
@@ -100,38 +92,51 @@
 		});
 
 		$('#addRowTable').on('click', function() {
+			
 			let numRow = myTable.column(0).data().length;
-			for (let i=0; i<numRow; i++) {
+			let index = vendorSelect.indexOf(this.value);
+
+			let start = index*jumlahItem;
+			let finish = start + jumlahItem;
+
+			for (let i=start; i<finish; i++) {
 				let row = myTable.row(i).data().toString();
 				let arrRow = row.split(',');
-				
-				if (arrRow[6] == '') {
-					myTable.cell(i, 6).data(this.value);
-				}
+				myTable.cell(i, 6).data(this.value);
 			}
+
 		});
 
 		$('#initTable').on('click', function() {
+			let counter = jumlahItem;
+			jumlahItem = 0;
 			$.ajax({
 				type: "GET",
 				url: currUrl + "/getPenawaran/" + this.value,
 				success: function(res) {
 					$.each(res, function(k,v){
+						let id = counter*vendorSelect.length+k;
 						myTable.row.add([
 							v.name,
 							v.category_id,
 							v.specs,
-							'',
+							`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})">`,
 							v.total_unit,
 							'',
 							v.vendor_id,
-							'',
-							''
+							`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]">`,
+							`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]">`
 						]).draw(false);
+						jumlahItem++;
 					});
 				}
 			});
 		});
+
+		$('#setTotal').on('click', function(){
+			let arr = this.value.split(',');
+			myTable.cell(arr[0],5).data(arr[1]);
+		})
 
 	});
 
@@ -151,6 +156,11 @@
 				
 				$('#addRowTable').prop('value', vendor_id);
 				$('#addRowTable').click();
+
+				for(let i=id+1; i<vendorSelect.length; i++){
+					vendorSelect[i] = '-';
+					generateOption(i);
+				}
 			}
 		});
 	}
@@ -182,6 +192,15 @@
 
 		$('#initTable').prop('value', proc_id);
 		$('#initTable').click();
+	}
+
+	function setHargaTotal(id, qty) {
+
+		var val = $('#harga_satuan_'+id).val();
+		var arr = [id, qty*val];
+
+		$('#setTotal').prop('value', arr.toString());
+		$('#setTotal').click();
 	}
 
 </script>
