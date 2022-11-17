@@ -76,6 +76,8 @@
 		$('#opsiProcurement').on('change', function() {
 			vendorSelect = [];
 			myTable.clear();
+			jumlahVendor = 0;
+			
 			$('#fieldSpph').html('');
 			$('#tambahDokumen').show();
 			$('#tambahDokumen').click();
@@ -108,29 +110,34 @@
 		});
 
 		$('#initTable').on('click', function() {
+			let numRow = myTable.column(0).data().length;
 			let counter = jumlahItem;
-			jumlahItem = 0;
-			$.ajax({
-				type: "GET",
-				url: currUrl + "/getPenawaran/" + this.value,
-				success: function(res) {
-					$.each(res, function(k,v){
-						let id = counter*vendorSelect.length+k;
-						myTable.row.add([
-							v.name,
-							v.category_id,
-							v.specs,
-							`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})">`,
-							v.total_unit,
-							'',
-							v.vendor_id,
-							`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]">`,
-							`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]">`
-						]).draw(false);
-						jumlahItem++;
-					});
-				}
-			});
+
+			if (!vendorSelect.includes('-')){
+				jumlahItem = 0;
+				$.ajax({
+					type: "GET",
+					url: currUrl + "/getPenawaran/" + this.value,
+					success: function(res) {
+						$.each(res, function(k,v){
+							let id = counter*vendorSelect.length+k;
+							myTable.row.add([
+								v.name,
+								v.category_id,
+								v.specs,
+								`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})">`,
+								v.total_unit,
+								'',
+								v.vendor_id,
+								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]">`,
+								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]">`
+							]).draw(false);
+							jumlahItem++;
+						});
+					}
+				});
+			}
+			
 		});
 
 		$('#setTotal').on('click', function(){
