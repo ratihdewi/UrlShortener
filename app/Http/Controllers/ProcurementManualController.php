@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\Vendor;
+use App\Models\ItemCategory;
 use DB;
 
 class ProcurementManualController extends Controller
@@ -23,6 +24,10 @@ class ProcurementManualController extends Controller
             'procurement_id' => $proc_id,
             'vendor_id' => $vendor_id
         ])->first();
+        
+        $vendor = Vendor::where('id', $vendor_id)->first();
+        $dataSpph['vendor_name'] = $vendor->name;
+
         return response()->json($dataSpph);
     }
 
@@ -47,6 +52,15 @@ class ProcurementManualController extends Controller
     public function getPenawaran ($proc_id) {
 
         $procurement = Procurement::where('id', $proc_id)->first();
-        return response()->json($procurement->items);
+        $data = array();
+
+        foreach($procurement->items as $item) {
+
+            $cat = ItemCategory::where('id', $item->category_id)->first();
+            $item['category_name'] = $cat->name;
+
+            array_push($data, $item);
+        }
+        return response()->json($data);
     }
 }

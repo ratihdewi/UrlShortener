@@ -61,6 +61,7 @@
 
 	var vendorSelect = [];
 	var jumlahItem = 0;
+	var currOpt = 0;
 
 	$(function(){
 		
@@ -95,16 +96,19 @@
 
 		$('#addRowTable').on('click', function() {
 			
+			let arrValue = this.value.split(',');
+
 			let numRow = myTable.column(0).data().length;
-			let index = vendorSelect.indexOf(this.value);
+			let index = vendorSelect.indexOf(arrValue[0]);
 
 			let start = index*jumlahItem;
 			let finish = start + jumlahItem;
+			let namaVendor = '';
 
 			for (let i=start; i<finish; i++) {
 				let row = myTable.row(i).data().toString();
 				let arrRow = row.split(',');
-				myTable.cell(i, 6).data(this.value);
+				myTable.cell(i, 6).data(arrValue[1]);
 			}
 
 		});
@@ -123,7 +127,7 @@
 							let id = counter*vendorSelect.length+k;
 							myTable.row.add([
 								v.name,
-								v.category_id,
+								v.category_name,
 								v.specs,
 								`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})">`,
 								v.total_unit,
@@ -161,7 +165,9 @@
 				$('#nomorSpph_'+id).prop('value', res.no_spph);
 				$('#linkSpph_'+id).prop('href', "{{ url('/spph-tor/download') }}" + "/" + res.id);
 				
-				$('#addRowTable').prop('value', vendor_id);
+				var arr = [vendor_id, res.vendor_name];
+
+				$('#addRowTable').prop('value', arr);
 				$('#addRowTable').click();
 
 				for(let i=id+1; i<vendorSelect.length; i++){
@@ -188,12 +194,17 @@
 			url: window.location.href + "/getVendor/" + proc_id,
 			success: function(res) {
 				$('#opsiVendor_'+i).prop('disabled', false);
-	
+				currOpt = 0;
 				$.each(res, function(key, value){
 					if (!vendorSelect.includes(value.id.toString())){
+						currOpt++;
 						$('#opsiVendor_'+i).append('<option value='+value.id+'>'+ value.name +'</option>');
 					}
-				})
+				});
+
+				if (currOpt < 2) {
+					$('#tambahDokumen').hide();
+				}
 			}
 		});
 
