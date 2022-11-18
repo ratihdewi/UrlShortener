@@ -1103,6 +1103,10 @@ class ProcurementController extends Controller
                             \Mail::to($spph->vendor->email)->send(new PenawaranDoneMail($spph->id));  
                             $isDikirim = true;
                     }
+                } else if ($spph->status_caption == "Ditambahkan secara manual") {
+                    if ($spph->vendor->delete == 0){
+                        $isDikirim = true;
+                    }
                 }
             }
         } else {

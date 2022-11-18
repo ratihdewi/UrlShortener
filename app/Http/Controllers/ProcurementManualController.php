@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Procurement;
 use App\Models\ProcurementSpph;
+use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\ItemCategory;
 use DB;
@@ -62,5 +63,44 @@ class ProcurementManualController extends Controller
             array_push($data, $item);
         }
         return response()->json($data);
+    }
+
+    public function store(Request $request) {
+        
+        $procurement = Procurement::where('id', $request->procurement)->first();
+        $items = $procurement->items;
+
+        foreach($request->name_vendor as $key=>$id) {
+
+            ProcurementSpph::where([
+                'procurement_id' => $procurement->id,
+                'vendor_id' => $id
+            ])->update([
+                'no_spph' => $request->no_spph[$key],
+                'status' => 3,
+            ]);
+            
+            $prcSpph = ProcurementSpph::where(['no_spph' => $request->no_spph[$key]])->first();
+            
+
+            foreach ($items as $idx=>$item) {
+
+                $dataSearch = [
+                    'procurement_id' => $procurement->id,
+                    'item_id' => $item->id,
+                    'spph_id' => $prcSpph->id
+                ];
+
+                $i = $idx + ($key*sizeof($items));
+                $dataInput = [
+                    'keterangan' => $request->keterangan[$i],
+                    'harga_satuan' => $request->harga_satuan[$i],
+                    'evaluasi' => $request->evaluasi[$i],
+                    'nilai' => $request->nilai[$i]
+                ];
+
+                SpphPenawaran::where($dataSearch)->update($dataInput);
+            }
+        }
     }
 }

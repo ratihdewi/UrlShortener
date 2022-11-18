@@ -7,40 +7,44 @@
         <div class="col-xl-12">
             <div class="card mb-4">
                 <div class="card-body text-sm">
-                	<div class="form-group mb-4">
-                		<label> Pengadaan </label>
-                		<select name="procurement" id="opsiProcurement" class="form-control select2 sm">
-							<option disabled selected> Pilih Pengadaan </option>
-							@foreach($procurements as $procurement)
-								<option value="{{ $procurement->id }}"> {{ $procurement->name }} </option>
-							@endforeach
-                		</select>
-                	</div>
-                    <fieldset class="form-group border p-3">
-                        <legend class="w-auto px-2">Dokumen</legend>
-						<span id="fieldSpph">
-						</span>
-						<button class="btn btn-info btn-sm" style="float: right" id="tambahDokumen"> Tambah Dokumen </button>
-                    </fieldset>
-                    <fieldset class="form-group border p-3">
-                    	<legend class="w-auto px-2">Penawaran dan Tender Evaluasi</legend>
-                        <table class="table mt-5 mb-5" id="tabelItem">
-							<thead>
-								<tr>
-									<th> Nama Barang </th>
-									<th> Kategori </th>
-									<th> Spesifikasi </th>
-									<th> Harga Satuan </th>
-									<th> Kuantitas </th>
-									<th> Harga Total </th>
-									<th> Nama Vendor </th>
-									<th> Evaluasi </th>
-									@if($procurement->mechanism_id!=3)<th style="text-align: center;"> Nilai </th> @endif
-								</tr>
-							</thead>
-                        </table>
-                     </fieldset>
-                    <button class="btn btn-primary" style="float: right;"> Submit </button>
+					<form method="POST" id="storeData" enctype="multipart/form-data" action="{{ route('manual.store') }}">
+						@csrf
+						<div class="form-group mb-4">
+							<label> Pengadaan </label>
+							<select name="procurement" id="opsiProcurement" class="form-control select2 sm">
+								<option disabled selected> Pilih Pengadaan </option>
+								@foreach($procurements as $procurement)
+									<option value="{{ $procurement->id }}"> {{ $procurement->name }} </option>
+								@endforeach
+							</select>
+						</div>
+						<fieldset class="form-group border p-3">
+							<legend class="w-auto px-2">Dokumen</legend>
+							<span id="fieldSpph">
+							</span>
+						</fieldset>
+						<fieldset class="form-group border p-3">
+							<legend class="w-auto px-2">Penawaran dan Tender Evaluasi</legend>
+							<table class="table mt-5 mb-5" id="tabelItem">
+								<thead>
+									<tr>
+										<th> Nama Barang </th>
+										<th> Kategori </th>
+										<th> Spesifikasi </th>
+										<th> Harga Satuan </th>
+										<th> Kuantitas </th>
+										<th width="10%"> Harga Total </th>
+										<th> Nama Vendor </th>
+										<th width="10%"> Keterangan </th>
+										<th width="10%"> Evaluasi </th>
+										@if($procurement->mechanism_id!=3)<th width="10%"> Nilai </th> @endif
+									</tr>
+								</thead>
+							</table>
+						</fieldset>
+					</form>
+					<button class="btn btn-info" style="float: left" id="tambahDokumen"> Tambah Dokumen </button>
+					<button id="save" class="btn btn-primary" style="float: right;"> Submit </button>
 					<button id="addRowTable" hidden> </button>
 					<button id="initTable" hidden> </button>
 					<button id="setTotal" hidden> </button>
@@ -86,7 +90,7 @@
 
 		$('#tambahDokumen').on('click', function() {
 
-			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]"> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]"></div><div class="col"><label> Unggah File Evaluasi Tender (.pdf) </label><input type="file" class="form-control" name="eval_tender_pdf[]"></div></div>';
+			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]"> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]"></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]"></div><div class="col"><label> Unggah File Evaluasi Tender (.pdf) </label><input type="file" class="form-control" name="eval_tender_pdf[]"></div></div>';
 
 			$('#fieldSpph').append(logHtml);
 			generateOption(jumlahVendor);
@@ -133,6 +137,7 @@
 								v.total_unit,
 								'',
 								v.vendor_id,
+								`<input type="text" class="form-control" id="keterangan_${id}" name="keterangan[]">`,
 								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]">`,
 								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]">`
 							]).draw(false);
@@ -147,7 +152,11 @@
 		$('#setTotal').on('click', function(){
 			let arr = this.value.split(',');
 			myTable.cell(arr[0],5).data(arr[1]);
-		})
+		});
+
+		$('#save').on('click', function(){
+			$('#storeData').submit();
+		});
 
 	});
 

@@ -75,6 +75,8 @@ class ProcurementSpph extends Model
             return "Belum diajukan";
         } else if($this->status==1){
             return "Sudah diajukan";
+        } else if($this->status==3){
+            return "Ditambahkan secara manual";
         } else {
             return "Sudah Dikirim";
         }
