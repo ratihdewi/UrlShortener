@@ -336,8 +336,12 @@ class ProcurementController extends Controller
         //$dataSpphValid = ProcurementSpph::where([['procurement_id', $procurement->id],['status',2]])->get();
         $dataSpphValid = DB::table("procurement_spphs as a")
         ->join("vendors as b","a.vendor_id","=","b.id")
-        ->select("b.name","a.id")->where([['procurement_id', $procurement->id],['status',2]])->get();
-        //dd($dataSpphValid);
+        ->select("b.name","a.id")
+        ->where('procurement_id', $procurement->id)
+        ->whereIn('status',[2,3])
+        ->get();
+        
+        
         return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'))
         ->with('penawaran',$dataPenawaran)
         ->with('dataSpphValid',$dataSpphValid);
@@ -345,12 +349,15 @@ class ProcurementController extends Controller
 
     public static function getPenawaran($spph_id){
         //dd($spph_id);
+        
         $result = DB::table("procurement_spphs as a")
         ->join("vendors as b","a.vendor_id","=","b.id")
         ->select("b.name")
         ->where([[function ($query) {
-            $query->whereNotNull('a.penawaran_file');
-        }],['a.id',$spph_id],['a.status',2]])->first();
+            $query->whereNotNull('a.penawaran_file')->whereIn('a.status', [2,3]);
+        }],['a.id',$spph_id]])->first();
+
+
         return $result;
     }
 
@@ -394,7 +401,7 @@ class ProcurementController extends Controller
                     $mch = ProcurementMechanism::where('id', $procurement->$keyword)->first()->name;
                     $msg .= "<li> {$arr_note[$key]} : {$mch} </li>";
                 } else if ($arr_note[$key] == "PIC") {
-                    $mch =User::where('id', $procurement->$keyword)->first()->name;
+                    $mch = User::where('id', $procurement->$keyword)->first()->name;
                     $msg .= "<li> {$arr_note[$key]} : {$mch} </li>";
                 } else if ($arr_note[$key] == "Vendor (Penunjukkan Langsung)") {
                     if ($procurement->$keyword != 0 || $procurement->$keyword != NULL) {

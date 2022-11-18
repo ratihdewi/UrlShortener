@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\ItemCategory;
 use DB;
+use Auth;
 
 class ProcurementManualController extends Controller
 {
@@ -17,6 +19,12 @@ class ProcurementManualController extends Controller
         return view('module.procurement.manual.index', compact(
             'procurements'
         ));
+    }
+
+    public function upload($name, UploadedFile $photo, $folder)
+    {
+        $destination_path = $folder;
+		$photo->move($destination_path, $name);
     }
 
     public function getSpph($proc_id, $vendor_id) {
@@ -71,17 +79,25 @@ class ProcurementManualController extends Controller
         $items = $procurement->items;
 
         foreach($request->name_vendor as $key=>$id) {
+            
+            $dataUpdateSpph = [
+                'no_spph' => $request->no_spph[$key],
+                'status' => 3,
+            ];
+
+            if (isset($request->penawaran_pdf[$key])){
+                $file_penawaran = $request->file('penawaran_pdf')[$key];
+                $name = 'Penawaran-'.Auth::user()->id.'-'.$file_penawaran->getClientOriginalName();
+                $path = $this->upload($name, $file_penawaran, 'penawarans');
+                $dataUpdateSpph = array_merge($dataUpdateSpph, ['penawaran_file' => $name]);
+            }
 
             ProcurementSpph::where([
                 'procurement_id' => $procurement->id,
                 'vendor_id' => $id
-            ])->update([
-                'no_spph' => $request->no_spph[$key],
-                'status' => 3,
-            ]);
+            ])->update($dataUpdateSpph);
             
             $prcSpph = ProcurementSpph::where(['no_spph' => $request->no_spph[$key]])->first();
-            
 
             foreach ($items as $idx=>$item) {
 
