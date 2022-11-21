@@ -33,6 +33,12 @@
                                 <input name="tor_file" class="form-control" style="width:300px" type="file"/>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="small mb-1">Nomor RKA</label>
+                            <div class="row" style="margin-left:1px;">
+                                <input name="no_rka" class="form-control" value="{{ $procurement->no_rka }}" style="width:350px" type="text"/>
+                            </div>
+                        </div>
 
                         @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                             <div class="form-group">

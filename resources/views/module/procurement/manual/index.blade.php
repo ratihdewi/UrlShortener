@@ -103,7 +103,7 @@
 
 		$('#tambahDokumen').on('click', function() {
 
-			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]"> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]"></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]"></div></div>';
+			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]" required></div></div>';
 
 			$('#fieldSpph').append(logHtml);
 			generateOption(jumlahVendor);
@@ -146,13 +146,13 @@
 								v.name,
 								v.category_name,
 								v.specs,
-								`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})">`,
+								`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})" required>`,
 								v.total_unit,
 								'',
 								v.vendor_id,
-								`<input type="text" class="form-control" id="keterangan_${id}" name="keterangan[]">`,
-								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]">`,
-								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]">`
+								`<input type="text" class="form-control" id="keterangan_${id}" name="keterangan[]" required>`,
+								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]" required>`,
+								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]" required>`
 							]).draw(false);
 							jumlahItem++;
 						});

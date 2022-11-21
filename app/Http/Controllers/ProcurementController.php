@@ -258,7 +258,6 @@ class ProcurementController extends Controller
      */
     public function show(Procurement $procurement, $status_choosen)
     {
-        
         //restricted hak akses terhadap data procurement
         if(Auth::user()->role_id==4){
             $this->authorize('accessAsUser', $procurement);
@@ -385,6 +384,7 @@ class ProcurementController extends Controller
             "Status", 
             "Dokumen TOR", 
             "Nomor Memo", 
+            "Nomor RKA",
             "Pengguna", 
             "PIC", 
             "Tanggal pengiriman spph", 
@@ -440,6 +440,7 @@ class ProcurementController extends Controller
         //perihal & no memo
         $procurement->name = $request->name;
         $procurement->no_memo = $request->no_memo;
+        $procurement->no_rka = $request->no_rka;
 
         //tor
         $tor_file_name = '';
