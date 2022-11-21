@@ -7,6 +7,15 @@
         <div class="col-xl-12">
             <div class="card mb-4">
                 <div class="card-body text-sm">
+					@if ($errors->any())
+						<div class="alert alert-danger">
+							<ul>
+								@foreach($errors->all() as $error)
+								<li> {{ $error }} </li>
+								@endforeach
+							</ul>
+						</div>
+					@endif
 					<form method="POST" id="storeData" enctype="multipart/form-data" action="{{ route('manual.store') }}">
 						@csrf
 						<div class="form-group mb-4">

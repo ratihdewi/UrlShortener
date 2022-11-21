@@ -9,13 +9,14 @@ use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\ItemCategory;
+use App\Utilities\FlashMessage;
 use DB;
 use Auth;
 
 class ProcurementManualController extends Controller
 {
     public function index() {
-        $procurements = Procurement::all();
+        $procurements = Procurement::where('status', '>', 1)->get();
         return view('module.procurement.manual.index', compact(
             'procurements'
         ));
@@ -74,23 +75,39 @@ class ProcurementManualController extends Controller
     }
 
     public function store(Request $request) {
+
+        $this->validate($request, [
+            'no_spph' => 'required',
+            'name_vendor' => 'required',
+            'spph_pdf' => 'required',
+            'penawaran_pdf' => 'required',
+            'eval_tender_pdf' => 'required',
+        ]);
         
         $procurement = Procurement::where('id', $request->procurement)->first();
         $items = $procurement->items;
 
         foreach($request->name_vendor as $key=>$id) {
-            
+
+            $vendor = Vendor::where('id', $id)->first();
+            $spph = ProcurementSpph::where([
+                'procurement_id' => $procurement->id,
+                'vendor_id' => $vendor->id
+            ])->first();
+
+            $file_penawaran = $request->file('penawaran_pdf')[$key];
+            $name_penawaran = 'Penawaran-'.Auth::user()->id.'-'.$file_penawaran->getClientOriginalName();
+            $path_penawaran = $this->upload($name_penawaran, $file_penawaran, 'penawarans');
+
+            $file_spph = $request->file('spph_pdf')[$key];
+            $name_spph = 'SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
+            $path_spph = $this->upload($name_spph, $file_spph, 'spph');
+
             $dataUpdateSpph = [
                 'no_spph' => $request->no_spph[$key],
                 'status' => 3,
+                'penawaran_file' => $name_penawaran,
             ];
-
-            if (isset($request->penawaran_pdf[$key])){
-                $file_penawaran = $request->file('penawaran_pdf')[$key];
-                $name = 'Penawaran-'.Auth::user()->id.'-'.$file_penawaran->getClientOriginalName();
-                $path = $this->upload($name, $file_penawaran, 'penawarans');
-                $dataUpdateSpph = array_merge($dataUpdateSpph, ['penawaran_file' => $name]);
-            }
 
             ProcurementSpph::where([
                 'procurement_id' => $procurement->id,
@@ -118,5 +135,15 @@ class ProcurementManualController extends Controller
                 SpphPenawaran::where($dataSearch)->update($dataInput);
             }
         }
+
+        $file_et = $request->file('eval_tender_pdf');
+        $name_et = 'Evaluasi-'.Auth::user()->id.'-'.$file_et->getClientOriginalName();
+        $path_et = $this->upload($name_et, $file_et, 'evaluasi');
+
+        Procurement::where('id', $request->procurement)->update(['evaluasi_tender_file' => $name_et]);
+
+        return redirect()->route('procurement.manual')->with('message', 
+        new FlashMessage('Berhasil menambah pengadaan secara manual', 
+            FlashMessage::SUCCESS));
     }
 }
