@@ -10,6 +10,7 @@ use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\ItemCategory;
 use App\Utilities\FlashMessage;
+use App\Services\LogsInsertor;
 use DB;
 use Auth;
 
@@ -141,6 +142,9 @@ class ProcurementManualController extends Controller
         $path_et = $this->upload($name_et, $file_et, 'evaluasi');
 
         Procurement::where('id', $request->procurement)->update(['evaluasi_tender_file' => $name_et]);
+        $msg = "Pengadaan ditambahkan secara manual";
+
+        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
 
         return redirect()->route('procurement.manual')->with('message', 
         new FlashMessage('Berhasil menambah pengadaan secara manual', 
