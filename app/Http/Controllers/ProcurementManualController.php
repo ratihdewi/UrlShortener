@@ -8,6 +8,7 @@ use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
+use App\Models\User;
 use App\Models\ItemCategory;
 use App\Utilities\FlashMessage;
 use App\Services\LogsInsertor;
@@ -18,8 +19,10 @@ class ProcurementManualController extends Controller
 {
     public function index() {
         $procurements = Procurement::where('status', '>', 1)->get();
+        $pesertas = User::where('role_id', '<>', '1')->get();
         return view('module.procurement.manual.index', compact(
-            'procurements'
+            'procurements',
+            'pesertas'
         ));
     }
 
@@ -130,7 +133,8 @@ class ProcurementManualController extends Controller
                     'keterangan' => $request->keterangan[$i],
                     'harga_satuan' => $request->harga_satuan[$i],
                     'evaluasi' => $request->evaluasi[$i],
-                    'nilai' => $request->nilai[$i]
+                    'nilai' => $request->nilai[$i],
+                    'can_win' => 1
                 ];
 
                 SpphPenawaran::where($dataSearch)->update($dataInput);
