@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\ItemCategory;
 use App\Utilities\FlashMessage;
 use App\Services\LogsInsertor;
+use App\Models\BaNegosiasi;
+use App\Models\BaNegosiasiPeserta;
 use DB;
 use Auth;
 
@@ -134,10 +136,32 @@ class ProcurementManualController extends Controller
                     'harga_satuan' => $request->harga_satuan[$i],
                     'evaluasi' => $request->evaluasi[$i],
                     'nilai' => $request->nilai[$i],
-                    'can_win' => 1
+                    'can_win' => 1,
+                    'negosiasi' => 1
                 ];
 
                 SpphPenawaran::where($dataSearch)->update($dataInput);
+
+                /*BA-Negosiasi */
+                $request_nego = $request->except(['photo_doc', 'penawaran_id']);
+                $request_nego['spph_id'] = $prcSpph->id;
+                $request_nego['procurement_id'] = $procurement->id;
+
+                if($request_nego->has('photo_doc')){
+                    $photo_doc_nego = $request_nego->file('photo_doc');
+                    $name_nego = 'documentaion-'.rand(10000, 100000) . '.' . $photo_doc_nego->getClientOriginalExtension();
+                    $request_nego['photo_doc'] = $name_nego;
+                    $path_nego = $this->upload($name_nego, $photo_doc_nego, 'negosiasidoc');
+                }
+
+                $ba = BaNegosiasi::create($data);
+                foreach($request_nego->peserta_id[$i] as $row){
+                    $peserta = new BaNegosiasiPeserta();
+                    $peserta->ba_negosasi_id = $ba->id;
+                    $peserta->user_id = $row;
+                    $peserta->save();
+                }
+                /*End BA-Negosiasi */
             }
         }
 
@@ -145,7 +169,10 @@ class ProcurementManualController extends Controller
         $name_et = 'Evaluasi-'.Auth::user()->id.'-'.$file_et->getClientOriginalName();
         $path_et = $this->upload($name_et, $file_et, 'evaluasi');
 
-        Procurement::where('id', $request->procurement)->update(['evaluasi_tender_file' => $name_et]);
+        Procurement::where('id', $request->procurement)->update([
+            'evaluasi_tender_file' => $name_et,
+            'status' => 4,
+        ]);
         $msg = "Pengadaan ditambahkan secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
@@ -154,4 +181,5 @@ class ProcurementManualController extends Controller
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
             FlashMessage::SUCCESS));
     }
+
 }

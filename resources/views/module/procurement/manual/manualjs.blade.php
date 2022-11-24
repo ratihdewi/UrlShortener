@@ -7,6 +7,7 @@
     });
 
 	var vendorSelect = [];
+	var arrNego = [];
 	var jumlahItem = 0;
 	var currOpt = 0;
 
@@ -71,26 +72,21 @@
 							<div class="form-row mb-2 mt-3">
 								<div class="col-xl-12">
 									<div class="form-group">
-										<label class="small mb-1">Hasil Rapat </label>
-										<textarea name="meeting_result" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
+										<label class="small">Peserta Rapat Internal</label>
+										<select size="10" class="form-control select2" multiple="multiple" name="peserta_id[${jumlahVendor}][]" style="width:100%">
+											@foreach($pesertas as $peserta)
+											<option class="mt-1 mb-1" value="{{$peserta->id}}">{{$peserta->name}}</option>
+											@endforeach
+										</select>
 									</div>
 								</div>
 							</div>
 
 							<div class="form-row mb-2 mt-3">
-								<div class="col-xl-8">
-									<label class="small">Peserta Rapat Internal</label>
-									<input type="hidden" class="form-control" id="listPeserta${jumlahVendor}">
-									<ul id="listNumPeserta${jumlahVendor}"> </ul>
-								</div>
-								<div class="col-xl-4">
+								<div class="col-xl-12">
 									<div class="form-group">
-										<label class="small">Tambah nama</label>
-										<select class="form-control select2" onchange="addNamaPeserta(${jumlahVendor})" name="peserta${jumlahVendor}" id="peserta${jumlahVendor}" style="width:100%">
-											@foreach($pesertas as $peserta)
-												<option value="{{$peserta->id}};{{$peserta->name}}">{{$peserta->name}}</option>
-											@endforeach
-										</select>
+										<label class="small mb-1">Hasil Rapat </label>
+										<textarea name="meeting_result[]" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
 									</div>
 								</div>
 							</div>
@@ -99,13 +95,13 @@
 								<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label>
-										<input name="photo_doc" required="true" class="form-control" type="file"/>
+										<input name="photo_doc[]" required="true" class="form-control" type="file"/>
 									</div>
 								</div>
 								<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Negosiasi </label>(Rp)
-										<input name="negosiasi" required="true" class="form-control" type="text"/>
+										<input name="negosiasi[]" required="true" class="form-control" type="text"/>
 									</div>
 								</div>
 							</div>
@@ -153,7 +149,9 @@
 					success: function(res) {
 						$.each(res, function(k,v){
 							let id = counter*vendorSelect.length+k;
+							arrNego[id] = -1;
 							myTable.row.add([
+								`<input type="checkbox" onchange="ubahArrNego(${id})" />`,
 								v.name,
 								v.category_name,
 								v.specs,
@@ -179,6 +177,7 @@
 		});
 
 		$('#save').on('click', function(){
+			$('#otherField').append(`<input type="hidden" name="arrNego" value="${arrNego}" />`);
 			$('#storeData').submit();
 		});
 
@@ -256,20 +255,14 @@
 		$('#setTotal').click();
 	}
 
-	function addNamaPeserta(id) {
-		var value = $('#listPeserta'+id).val();
-		var input = $(`#peserta${id}`).val();
+	function ubahArrNego(id) {
 
-		var arr = input.split(';');
-
-		if (value == '') {
-			value = arr[0];
+		if (arrNego[id] < 0) {
+			arrNego[id] = id;
 		} else {
-			value = value + "," + arr[0];
+			arrNego[id] = -1;
 		}
 
-		$('#listNumPeserta'+id).append(`<li>${arr[1]}</li>`);
-		$('#listPeserta'+id).prop('value', value);
 	}
 	
 

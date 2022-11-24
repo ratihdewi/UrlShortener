@@ -1,7 +1,6 @@
 @extends("master.main")
 
 @section("content")
-
 <div class="container mt-4">
     <div class="row">
         <div class="col-xl-12">
@@ -41,6 +40,7 @@
 							<table class="table mt-5 mb-5" id="tabelItem">
 								<thead>
 									<tr>
+										<th> Negosiasi </th>
 										<th> Nama Barang </th>
 										<th> Kategori </th>
 										<th> Spesifikasi </th>
@@ -60,6 +60,7 @@
 							<div id="fieldBA-Negosiasi">
 							</div>
 						</fieldset>
+						<div id="otherField"></div>
 					</form>
 					<button class="btn btn-info" style="float: left" id="tambahDokumen"> Tambah Dokumen </button>
 					<button id="save" class="btn btn-primary" style="float: right;"> Submit </button>
