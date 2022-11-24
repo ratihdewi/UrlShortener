@@ -58,7 +58,6 @@
 						<fieldset class="form-group border p-3">
 							<legend class="w-auto px-2"> BA Negosiasi </legend>
 							<div id="fieldBA-Negosiasi">
-								@include('module.procurement.manual.ba-negosiasi')
 							</div>
 						</fieldset>
 					</form>

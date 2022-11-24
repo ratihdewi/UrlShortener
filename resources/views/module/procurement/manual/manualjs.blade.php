@@ -27,6 +27,7 @@
 			jumlahVendor = 0;
 			
 			$('#fieldSpph').html('');
+			$('#fieldBA-Negosiasi').html('');
 			$('#tambahDokumen').show();
 			$('#tambahDokumen').click();
 		});
@@ -34,8 +35,88 @@
 		$('#tambahDokumen').on('click', function() {
 
 			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]" required></div></div>';
+			var collapse = `<div class="accordion" id="accordion${jumlahVendor}">
+				<div class="card" style="margin: 1.5%">
+					<div class="card-header" id="heading${jumlahVendor}">
+						<h2 class="mb-0">
+							<button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapse${jumlahVendor}" aria-expanded="true" aria-controls="collapse${jumlahVendor}">
+								<div id="headerBA${jumlahVendor}"> -- </div>
+							</button>
+						</h2>
+					</div>
+					<div id="collapse${jumlahVendor}" class="collapse" aria-labelledby="heading${jumlahVendor}" data-parent="#accordion${jumlahVendor}">
+						<div class="card-body" style="border: none !important">
+							<span class="form-row mb-2">
+								<div class="col">
+									<label class="small">Hari/Tanggal </label>
+									<input name="date[]" class="form-control" required="true" type="date"/>
+								</div>
+								<div class="col">
+									<label class="small">Waktu </label>
+									<input name="time[]" class="form-control" required="true" type="time"/>
+								</div>
+							</span>
+
+							<span class="form-row mb-2 mt-3">
+								<div class="col">
+									<label class="small"> Tempat </label>
+									<input name="location[]" class="form-control" required="true" type="ztext"/>
+								</div>
+								<div class="col">
+									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label>
+									<input name="peserta_eksternal[]" class="form-control" required="true" type="text"/>
+								</div>
+							</span>
+
+							<div class="form-row mb-2 mt-3">
+								<div class="col-xl-12">
+									<div class="form-group">
+										<label class="small mb-1">Hasil Rapat </label>
+										<textarea name="meeting_result" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-row mb-2 mt-3">
+								<div class="col-xl-8">
+									<label class="small">Peserta Rapat Internal</label>
+									<input type="hidden" class="form-control" id="listPeserta${jumlahVendor}">
+									<ul id="listNumPeserta${jumlahVendor}"> </ul>
+								</div>
+								<div class="col-xl-4">
+									<div class="form-group">
+										<label class="small">Tambah nama</label>
+										<select class="form-control select2" onchange="addNamaPeserta(${jumlahVendor})" name="peserta${jumlahVendor}" id="peserta${jumlahVendor}" style="width:100%">
+											@foreach($pesertas as $peserta)
+												<option value="{{$peserta->id}};{{$peserta->name}}">{{$peserta->name}}</option>
+											@endforeach
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-row mb-2 mt-3">
+								<div class="col">
+									<div class="form-group">
+										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label>
+										<input name="photo_doc" required="true" class="form-control" type="file"/>
+									</div>
+								</div>
+								<div class="col">
+									<div class="form-group">
+										<label class="small mb-1">Negosiasi </label>(Rp)
+										<input name="negosiasi" required="true" class="form-control" type="text"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			`;
 
 			$('#fieldSpph').append(logHtml);
+			$('#fieldBA-Negosiasi').append(collapse);
 			generateOption(jumlahVendor);
 
 			jumlahVendor++;
@@ -119,6 +200,7 @@
 				
 				var arr = [vendor_id, res.vendor_name];
 
+				$(`#headerBA${id}`).html(res.vendor_name);
 				$('#addRowTable').prop('value', arr);
 				$('#addRowTable').click();
 
@@ -173,5 +255,22 @@
 		$('#setTotal').prop('value', arr.toString());
 		$('#setTotal').click();
 	}
+
+	function addNamaPeserta(id) {
+		var value = $('#listPeserta'+id).val();
+		var input = $(`#peserta${id}`).val();
+
+		var arr = input.split(';');
+
+		if (value == '') {
+			value = arr[0];
+		} else {
+			value = value + "," + arr[0];
+		}
+
+		$('#listNumPeserta'+id).append(`<li>${arr[1]}</li>`);
+		$('#listPeserta'+id).prop('value', value);
+	}
+	
 
 </script>

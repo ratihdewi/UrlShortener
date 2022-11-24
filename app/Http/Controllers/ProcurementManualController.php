@@ -149,9 +149,9 @@ class ProcurementManualController extends Controller
         $msg = "Pengadaan ditambahkan secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
-
-        return redirect()->route('procurement.manual')->with('message', 
-        new FlashMessage('Berhasil menambah pengadaan secara manual', 
+        
+        return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
+        new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
             FlashMessage::SUCCESS));
     }
 }
