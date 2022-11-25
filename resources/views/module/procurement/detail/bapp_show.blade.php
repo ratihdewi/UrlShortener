@@ -44,7 +44,7 @@
                     <div class="row">
                         <div class="col-xl-12">
                         Memo terkait<br>
-                        urat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_spph}} vendor pada tanggal {{date('d M Y', strtotime($procurement->spph_sending_date))}} sebagai berikut:
+                        surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_spph}} vendor pada tanggal {{date('d M Y', strtotime($procurement->spph_sending_date))}} sebagai berikut:
                         </div>
                     </div>
                     <div class="row">
@@ -60,7 +60,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($procurement->spphs as $row)
-                                     @if($row->status === 2)
+                                     @if($row->status === 2 || $row->status === 3)
                                         <tr>
                                             <td>{{$row->vendor->name}}</td>
                                             <td>{{$row->no_spph}}</td>

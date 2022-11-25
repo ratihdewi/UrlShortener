@@ -80,6 +80,7 @@ class ProcurementManualController extends Controller
         return response()->json($data);
     }
 
+
     public function store(Request $request) {
 
         $this->validate($request, [
@@ -136,33 +137,20 @@ class ProcurementManualController extends Controller
                     'harga_satuan' => $request->harga_satuan[$i],
                     'evaluasi' => $request->evaluasi[$i],
                     'nilai' => $request->nilai[$i],
-                    'can_win' => 1,
-                    'negosiasi' => 1
+                    'can_win' => 1
                 ];
 
+                if($request->arrNego[$i] > 0) {
+                    $dataInput['negosiasi'] = 1;
+                } else {
+                    $dataInput['negosiasi'] = NULL;
+                    $dataInput['can_win'] = 0;
+                }
+
                 SpphPenawaran::where($dataSearch)->update($dataInput);
-
-                /*BA-Negosiasi */
-                $request_nego = $request->except(['photo_doc', 'penawaran_id']);
-                $request_nego['spph_id'] = $prcSpph->id;
-                $request_nego['procurement_id'] = $procurement->id;
-
-                if($request_nego->has('photo_doc')){
-                    $photo_doc_nego = $request_nego->file('photo_doc');
-                    $name_nego = 'documentaion-'.rand(10000, 100000) . '.' . $photo_doc_nego->getClientOriginalExtension();
-                    $request_nego['photo_doc'] = $name_nego;
-                    $path_nego = $this->upload($name_nego, $photo_doc_nego, 'negosiasidoc');
-                }
-
-                $ba = BaNegosiasi::create($data);
-                foreach($request_nego->peserta_id[$i] as $row){
-                    $peserta = new BaNegosiasiPeserta();
-                    $peserta->ba_negosasi_id = $ba->id;
-                    $peserta->user_id = $row;
-                    $peserta->save();
-                }
-                /*End BA-Negosiasi */
             }
+
+            $this->storeBaNegosiasi($request, $key, $prcSpph, $procurement);
         }
 
         $file_et = $request->file('eval_tender_pdf');
@@ -180,6 +168,34 @@ class ProcurementManualController extends Controller
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
             FlashMessage::SUCCESS));
+    }
+
+    public function storeBaNegosiasi($req, $i, $spph, $procurement) {
+
+        $photo = $req->file('photo_doc')[$i];
+        $name  = 'documentaion-'.rand(10000, 100000) . '.' . $photo->getClientOriginalExtension();
+        $path  = $this->upload($name, $photo, 'negosiasidoc');
+        
+        $data = [
+            'spph_id' => $spph->id,
+            'procurement_id' => $procurement->id,
+            'date' => $req->date[$i],
+            'time' => $req->time[$i],
+            'location' => $req->location[$i],
+            'meeting_result' => $req->meeting_result[$i],
+            'photo_doc' => $name,
+            'negosiasi' => $req->negosiasi[$i],
+            'peserta_eksternal' => $req->peserta_eksternal[$i]
+        ];
+        
+        $ba = BaNegosiasi::create($data);
+        foreach($req->peserta_id[$i] as $row){
+            $peserta = new BaNegosiasiPeserta();
+            $peserta->ba_negosasi_id = $ba->id;
+            $peserta->user_id = $row;
+            $peserta->save();
+        }        
+        
     }
 
 }

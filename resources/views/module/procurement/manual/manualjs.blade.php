@@ -95,7 +95,7 @@
 								<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label>
-										<input name="photo_doc[]" required="true" class="form-control" type="file"/>
+										<input name="photo_doc[]" required class="form-control" type="file"/>
 									</div>
 								</div>
 								<div class="col">
@@ -132,7 +132,7 @@
 			for (let i=start; i<finish; i++) {
 				let row = myTable.row(i).data().toString();
 				let arrRow = row.split(',');
-				myTable.cell(i, 6).data(arrValue[1]);
+				myTable.cell(i, 7).data(arrValue[1]);
 			}
 
 		});
@@ -173,7 +173,7 @@
 
 		$('#setTotal').on('click', function(){
 			let arr = this.value.split(',');
-			myTable.cell(arr[0],5).data(arr[1]);
+			myTable.cell(arr[0],6).data(arr[1]);
 		});
 
 		$('#save').on('click', function(){

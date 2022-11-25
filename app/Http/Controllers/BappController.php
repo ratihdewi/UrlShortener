@@ -36,7 +36,7 @@ class BappController extends Controller
         
         $vendor_spph = 0;
         foreach($procurement->spphs as $row){
-            if($row->status === 2){
+            if($row->status === 2 || $row->status === 3){
                 $vendor_spph++;
             }
         }
