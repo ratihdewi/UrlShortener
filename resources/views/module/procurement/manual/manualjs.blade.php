@@ -18,6 +18,7 @@
 		
 		var myTable = $('#tabelItem').DataTable({
 			"searching" : false,
+			"paging": false,
 			"lengthChange": false,
 			"ordering": false,
 		});
@@ -121,6 +122,7 @@
 		$('#addRowTable').on('click', function() {
 			
 			let arrValue = this.value.split(',');
+			let arrCat = [];
 
 			let numRow = myTable.column(0).data().length;
 			let index = vendorSelect.indexOf(arrValue[0]);
@@ -129,11 +131,28 @@
 			let finish = start + jumlahItem;
 			let namaVendor = '';
 
-			for (let i=start; i<finish; i++) {
-				let row = myTable.row(i).data().toString();
-				let arrRow = row.split(',');
-				myTable.cell(i, 7).data(arrValue[1]);
-			}
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/getVendorCategory/" + arrValue[0],
+				success: function(res) {
+					$.each(res, function(k,v){
+						arrCat.push(v.category_name);
+					});
+
+					for (let i=start; i<finish; i++) {
+						showHideRow(i, true);
+						let row = myTable.row(i).data().toString();
+						let arrRow = row.split(',');
+
+						if(arrCat.includes(arrRow[2])){
+							myTable.cell(i, 7).data(arrValue[1]);
+						} else {
+							myTable.cell(i, 7).data('');
+							showHideRow(i, false);
+						}		
+					}
+				}
+			});
 
 		});
 
@@ -151,7 +170,7 @@
 							let id = counter*vendorSelect.length+k;
 							arrNego[id] = -1;
 							myTable.row.add([
-								`<input type="checkbox" onchange="ubahArrNego(${id})" />`,
+								`<input type="checkbox" id="checkbox_${id}" onchange="ubahArrNego(${id})" />`,
 								v.name,
 								v.category_name,
 								v.specs,
@@ -159,10 +178,11 @@
 								v.total_unit,
 								'',
 								v.vendor_id,
-								`<input type="text" class="form-control" id="keterangan_${id}" name="keterangan[]" required>`,
-								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]" required>`,
-								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]" required>`
-							]).draw(false);
+								`<input type="text" class="form-control" id="keterangan_${id}" name="keterangan[]"  value="" required>`,
+								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]" value="" required>`,
+								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]" value="" required>`
+							]).node().id = `baris${id}`;
+							myTable.draw(false);
 							jumlahItem++;
 						});
 					}
@@ -263,6 +283,14 @@
 			arrNego[id] = -1;
 		}
 
+	}
+
+	function showHideRow (id, status) {
+		if (status) {
+			$(`#baris${id}`).show();
+		} else {
+			$(`#baris${id}`).hide();
+		}
 	}
 	
 

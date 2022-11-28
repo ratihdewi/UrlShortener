@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth'] ], function () {
         Route::prefix('manual')->group(function(){
             route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('procurement.manual');
             route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor')->name('manual.getvendor');
+            route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorCategory')->name('manual.getvendorcategory');
             route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualController@getPenawaran')->name('manual.getpenawaran');
             route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualController@getSpph')->name('manual.getspph');
             route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('manual.store');

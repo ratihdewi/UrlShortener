@@ -8,6 +8,7 @@ use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
+use App\Models\VendorCategory;
 use App\Models\User;
 use App\Models\ItemCategory;
 use App\Utilities\FlashMessage;
@@ -60,9 +61,21 @@ class ProcurementManualController extends Controller
                    ->select('v.*')
                    ->where('delete', 0)
                    ->whereIn('vc.category_id', $catId)
+                   ->groupBy('v.id')
                    ->get();
         
         return response()->json($vendors);
+    }
+
+    public function getVendorCategory ($id) {
+        
+        $vendorCategory = DB::table('vendor_categories as vc')
+                          ->join('item_categories as ic', 'ic.id', '=', 'vc.category_id')
+                          ->select('vc.*', 'ic.name as category_name')
+                          ->where('vendor_id', $id)
+                          ->get();
+
+        return response()->json($vendorCategory);
     }
 
     public function getPenawaran ($proc_id) {
@@ -122,32 +135,34 @@ class ProcurementManualController extends Controller
             ])->update($dataUpdateSpph);
             
             $prcSpph = ProcurementSpph::where(['no_spph' => $request->no_spph[$key]])->first();
+            $listNego = explode(",", $request->arrNego);
 
             foreach ($items as $idx=>$item) {
 
-                $dataSearch = [
-                    'procurement_id' => $procurement->id,
-                    'item_id' => $item->id,
-                    'spph_id' => $prcSpph->id
-                ];
-
                 $i = $idx + ($key*sizeof($items));
-                $dataInput = [
-                    'keterangan' => $request->keterangan[$i],
-                    'harga_satuan' => $request->harga_satuan[$i],
-                    'evaluasi' => $request->evaluasi[$i],
-                    'nilai' => $request->nilai[$i],
-                    'can_win' => 1
-                ];
+                if (!is_null($request->harga_satuan[$i]) && $request->harga_satuan[$i] >= 0) {
+                    $dataSearch = [
+                        'procurement_id' => $procurement->id,
+                        'item_id' => $item->id,
+                        'spph_id' => $prcSpph->id
+                    ];
 
-                if($request->arrNego[$i] > 0) {
-                    $dataInput['negosiasi'] = 1;
-                } else {
-                    $dataInput['negosiasi'] = NULL;
-                    $dataInput['can_win'] = 0;
+                    $dataInput = [
+                        'keterangan' => $request->keterangan[$i],
+                        'harga_satuan' => $request->harga_satuan[$i],
+                        'evaluasi' => $request->evaluasi[$i],
+                        'nilai' => $request->nilai[$i],
+                    ];
+    
+                    if($listNego[$i] >= 0) {
+                        $dataInput['negosiasi'] = 1;
+                        $dataInput['can_win'] = 1;
+                    } else {
+                        $dataInput['can_win'] = 0;
+                    }
+    
+                    SpphPenawaran::where($dataSearch)->update($dataInput);
                 }
-
-                SpphPenawaran::where($dataSearch)->update($dataInput);
             }
 
             $this->storeBaNegosiasi($request, $key, $prcSpph, $procurement);
