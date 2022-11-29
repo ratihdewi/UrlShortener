@@ -21,11 +21,14 @@ use Auth;
 class ProcurementManualController extends Controller
 {
     public function index() {
+
         $procurements = Procurement::where('status', '>', 1)->get();
         $pesertas = User::where('role_id', '<>', '1')->get();
+        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
         return view('module.procurement.manual.index', compact(
             'procurements',
-            'pesertas'
+            'pesertas',
+            'users'
         ));
     }
 
@@ -46,6 +49,12 @@ class ProcurementManualController extends Controller
         $dataSpph['vendor_name'] = $vendor->name;
 
         return response()->json($dataSpph);
+    }
+
+    public function getProcurement($id) {
+        $procurement = Procurement::where('id', $id)->first();
+
+        return response()->json($procurement);
     }
 
     public function getVendor ($proc_id) {
@@ -159,6 +168,7 @@ class ProcurementManualController extends Controller
                         $dataInput['can_win'] = 1;
                     } else {
                         $dataInput['can_win'] = 0;
+                        $dataInput['negosiasi'] = NULL;
                     }
     
                     SpphPenawaran::where($dataSearch)->update($dataInput);
@@ -174,7 +184,7 @@ class ProcurementManualController extends Controller
 
         Procurement::where('id', $request->procurement)->update([
             'evaluasi_tender_file' => $name_et,
-            'status' => 4,
+            'status' => 5,
         ]);
         $msg = "Pengadaan ditambahkan secara manual";
 
@@ -203,14 +213,74 @@ class ProcurementManualController extends Controller
             'peserta_eksternal' => $req->peserta_eksternal[$i]
         ];
         
-        $ba = BaNegosiasi::create($data);
+        $ba = '';
+        $exists = BaNegosiasi::where([
+            'spph_id' => $spph->id,
+            'procurement_id' => $procurement->id,
+        ])->exists();
+
+        if(!$exists) {
+            $ba = BaNegosiasi::create($data);
+        } else {
+            BaNegosiasi::where([
+                'spph_id' => $spph->id,
+                'procurement_id' => $procurement->id,
+            ])->update($data);
+            $ba = BaNegosiasi::where([
+                'spph_id' => $spph->id,
+                'procurement_id' => $procurement->id,
+            ])->first();
+            BaNegosiasiPeserta::where('ba_negosasi_id', $ba->id)->delete();
+        }
+
         foreach($req->peserta_id[$i] as $row){
             $peserta = new BaNegosiasiPeserta();
             $peserta->ba_negosasi_id = $ba->id;
             $peserta->user_id = $row;
             $peserta->save();
-        }        
+        }
         
+    }
+
+    public function getProcurementComponent ($id) {
+
+        $procurement = Procurement::where('id', $id)->first();
+        $penawaran = array();
+        $min_price = $procurement->penawarans->where('can_win', 1)->groupBy('item_id')->map(function($group, $groupName) {
+            return [
+                'item_id' => $groupName,
+                'penawaran_id' => $group->firstWhere('harga_total', $group->min('harga_total'))->id
+            ];
+        });
+        foreach ($procurement->penawarans as $row) {
+            $row['item'] = $row->item;
+            $row['category'] = $row->item->category;
+            $row['spph'] = $row->spph;
+            $row['vendor'] = $row->spph->vendor;
+
+            if (in_array($row->id, $min_price->pluck('penawaran_id')->toArray())) {
+                $row['minimum'] = true;
+            } else {
+                $row['minimum'] = false;
+            }
+            
+            array_push($penawaran, $row);
+        }
+
+        $data = [
+            'procurement' => $procurement,
+            'penawaran' => $penawaran,
+            'spph' => $procurement->spphs,
+            'bapp' => $procurement->bapp,
+        ];
+
+        return response()->json($data);
+    }
+
+
+    public function storeBapp(Request $request) {
+
+        dd($request->all());
     }
 
 }

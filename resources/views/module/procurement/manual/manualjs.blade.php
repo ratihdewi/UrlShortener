@@ -4,6 +4,8 @@
         $('#opsiVendor').prop('disabled', true);
 		$('#opsiVendor').append('<option disabled selected> Pilih Vendor </option>');
 		$('#tambahDokumen').hide();
+		$('#spph-negosiasi').hide();
+		$('#bapp').hide();
     });
 
 	var vendorSelect = [];
@@ -27,11 +29,30 @@
 			vendorSelect = [];
 			myTable.clear();
 			jumlahVendor = 0;
-			
-			$('#fieldSpph').html('');
-			$('#fieldBA-Negosiasi').html('');
-			$('#tambahDokumen').show();
-			$('#tambahDokumen').click();
+
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/getProcurement/" + this.value,
+				success: function(res) {
+
+					if(parseInt(res.status) >= 5) {
+						$('#spph-negosiasi').hide();
+						$('#bapp').show();
+						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
+
+						loadBapp(res.id);
+					} else {
+						$('#spph-negosiasi').show();
+						$('#bapp').hide();
+						$('#storeData').prop('action', "{{ route('manual.store') }}");
+
+						$('#fieldSpph').html('');
+						$('#fieldBA-Negosiasi').html('');
+						$('#tambahDokumen').show();
+						$('#tambahDokumen').click();
+					}
+				}
+			});
 		});
 
 		$('#tambahDokumen').on('click', function() {
@@ -291,6 +312,56 @@
 		} else {
 			$(`#baris${id}`).hide();
 		}
+	}
+
+	function loadBapp (id) {
+
+		var table = $('#tableBappVendor').DataTable({
+			"searching" : false,
+			"paging": false,
+			"lengthChange": false,
+			"ordering": false,
+		});
+
+		$.ajax({
+			type: "GET",
+			url: window.location.href + "/getProcurementComponent/" + id,
+			success: function(res) {
+				$('input[name=nomor_memo_bapp]').prop('value', res.procurement.no_memo);
+				$('input[name=perihal]').prop('value', res.procurement.name);
+				$('input[name=location]').prop('value', res.bapp.location);
+				$('input[name=no_surat_bapp]').prop('value', res.bapp.no_surat);
+				$('input[name=tanggal_bapp]').prop('value', res.bapp.date.slice(0,10));
+				$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
+
+				$.each(res.penawaran, function(k,v){
+
+					if (v.minimum){
+						table.row.add([
+							`<div style="font-weight: bold"> ${v.item.name} </div>`,
+							`<div style="font-weight: bold"> ${v.item.category.name} </div>`,
+							`<div style="font-weight: bold"> ${v.item.specs} </div>`,
+							`<div style="font-weight: bold"> ${v.item.price_est} </div>`,
+							`<div style="font-weight: bold"> ${v.item.total_unit} </div>`,
+							`<div style="font-weight: bold"> ${v.item.price_total} </div>`,
+							`<div style="font-weight: bold"> ${v.spph.vendor.name} </div>`,
+						]).draw(false);
+					}
+					
+					else {
+						table.row.add([
+							v.item.name,
+							v.item.category.name,
+							v.item.specs,
+							v.item.price_est,
+							v.item.total_unit,
+							v.item.price_total,
+							v.spph.vendor.name,
+						]).draw(false);
+					}
+				});
+			}
+		});
 	}
 	
 

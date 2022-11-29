@@ -62,6 +62,9 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualController@getPenawaran')->name('manual.getpenawaran');
             route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualController@getSpph')->name('manual.getspph');
             route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('manual.store');
+            route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualController@storeBapp')->name('manual.storebapp');
+            route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurement')->name('manual.getprocurement');
+            route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementComponent')->name('manual.getprocurementcomponent');
         });
         
         Route::prefix('penawaran')->group(function () {
