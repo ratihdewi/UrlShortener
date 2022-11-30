@@ -111,7 +111,7 @@
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Tempat </label>
-											<input name="location" class="form-control" type="text"/>
+											<input name="lokasi" class="form-control" type="text"/>
 										</div>
 									</div>
 								</div>

@@ -83,7 +83,7 @@
 							<span class="form-row mb-2 mt-3">
 								<div class="col">
 									<label class="small"> Tempat </label>
-									<input name="location[]" class="form-control" required="true" type="ztext"/>
+									<input name="location[]" class="form-control" required="true" type="text"/>
 								</div>
 								<div class="col">
 									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label>
@@ -332,8 +332,11 @@
 				$('input[name=location]').prop('value', res.bapp.location);
 				$('input[name=no_surat_bapp]').prop('value', res.bapp.no_surat);
 				$('input[name=tanggal_bapp]').prop('value', res.bapp.date.slice(0,10));
-				$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
 
+				if (res.procurement.spph_sending_date != null) {
+					$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
+				}
+				
 				$.each(res.penawaran, function(k,v){
 
 					if (v.minimum){

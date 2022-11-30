@@ -186,6 +186,8 @@ class ProcurementManualController extends Controller
             'evaluasi_tender_file' => $name_et,
             'status' => 5,
         ]);
+
+        $this->setWinner($procurement);
         $msg = "Pengadaan ditambahkan secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
@@ -193,6 +195,24 @@ class ProcurementManualController extends Controller
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
             FlashMessage::SUCCESS));
+    }
+
+    public function setWinner ($procurement) {
+
+        $min_price = $procurement->penawarans->where('can_win', 1)->groupBy('item_id')->map(function($group, $groupName) {
+            return [
+                'item_id' => $groupName,
+                'penawaran_id' => $group->firstWhere('harga_total', $group->min('harga_total'))->id
+            ];
+        });
+
+        //set winner
+        foreach($min_price->pluck('penawaran_id')->toArray() as $row)
+        {
+            $penawaran = SpphPenawaran::find($row);
+            $penawaran->won = 1;
+            $penawaran->save();
+        }
     }
 
     public function storeBaNegosiasi($req, $i, $spph, $procurement) {
@@ -273,7 +293,7 @@ class ProcurementManualController extends Controller
             'spph' => $procurement->spphs,
             'bapp' => $procurement->bapp,
         ];
-
+        
         return response()->json($data);
     }
 
