@@ -25,9 +25,17 @@
 			"ordering": false,
 		});
 
+		var tableBapp = $('#tableBappVendor').DataTable({
+			"searching" : false,
+			"paging": false,
+			"lengthChange": false,
+			"ordering": false,
+		});
+
 		$('#opsiProcurement').on('change', function() {
 			vendorSelect = [];
 			myTable.clear();
+			tableBapp.clear();
 			jumlahVendor = 0;
 
 			$.ajax({
@@ -38,9 +46,12 @@
 					if(parseInt(res.status) >= 5) {
 						$('#spph-negosiasi').hide();
 						$('#bapp').show();
+						$('#fieldPO').html('');
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
 
-						loadBapp(res.id);
+						$('#loadBapp').click();
+						$('#tambahDokumen').hide();
+
 					} else {
 						$('#spph-negosiasi').show();
 						$('#bapp').hide();
@@ -114,7 +125,7 @@
 							</div>
 
 							<div class="form-row mb-2 mt-3">
-								<div class="col">
+							<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label>
 										<input name="photo_doc[]" required class="form-control" type="file"/>
@@ -222,6 +233,129 @@
 			$('#storeData').submit();
 		});
 
+		$('#loadBapp').on('click', function(){
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/getProcurementComponent/" + $('#opsiProcurement').val(),
+				success: function(res) {
+					$('input[name=nomor_memo_bapp]').prop('value', res.procurement.no_memo);
+					$('input[name=perihal]').prop('value', res.procurement.name);
+					$('input[name=location]').prop('value', res.bapp.location);
+					$('input[name=no_surat_bapp]').prop('value', res.bapp.no_surat);
+					$('input[name=tanggal_bapp]').prop('value', res.bapp.date.slice(0,10));
+
+					if (res.procurement.spph_sending_date != null) {
+						$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
+					}
+					
+					$.each(res.penawaran, function(k,v){
+
+						if (v.minimum){
+							tableBapp.row.add([
+								`<div style="font-weight: bold"> ${v.item.name} </div>`,
+								`<div style="font-weight: bold"> ${v.item.category.name} </div>`,
+								`<div style="font-weight: bold"> ${v.item.specs} </div>`,
+								`<div style="font-weight: bold"> ${v.item.price_est} </div>`,
+								`<div style="font-weight: bold"> ${v.item.total_unit} </div>`,
+								`<div style="font-weight: bold"> ${v.item.price_total} </div>`,
+								`<div style="font-weight: bold"> ${v.spph.vendor.name} </div>`,
+							]).draw(false);
+						}
+						
+						else {
+							tableBapp.row.add([
+								v.item.name,
+								v.item.category.name,
+								v.item.specs,
+								v.item.price_est,
+								v.item.total_unit,
+								v.item.price_total,
+								v.spph.vendor.name,
+							]).draw(false);
+						}
+					});
+
+					$.each(res.spphs_won, function(index, val){
+						let isiField = `
+						<div class="accordion" id="accordionPO${index}">
+						  <div class="card" style="margin: 1.5%">
+						    <div class="card-header" id="headingPO${index}">
+						      <h2 class="mb-0">
+						        <button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapsePO${index}" aria-expanded="true" aria-controls="collapsePO${index}">
+						          ${val.vendor.name}
+						        </button>
+						      </h2>
+						    </div>
+
+						    <div id="collapsePO${index}" class="collapse" aria-labelledby="headingPO${index}" data-parent="#accordionPO${index}">
+						      <div class="card-body">
+						        
+						        <div class="row">
+								    <div class="col-xl-6">
+								        <div class="form-group">
+								            <label class="small mb-1">Nomor Memo </label>
+								            <input name="po_no_memo[]" value="${res.procurement.no_memo}" disabled class="form-control" type="text"/>
+								        </div>
+
+								        <input name="po_job_terms[]" value="Sesuai dengan hasil rapat Negosiasi dan klarifikasi harga" type="hidden"/>
+										<input name="po_spph_id[]" value="${val.id}" hidden type="text" />
+
+								        <div class="form-group">
+								            <label class="small mb-1">Perihal </label>
+								            <input name="po_perihal[]" value="${res.procurement.name}" disabled class="form-control" type="text"/>
+								        </div>
+								        <div class="form-group">
+								            <label class="small mb-1">No SPMP </label>
+								            <input name="po_no_spmp[]" id="po_no_spmp${index}" value="${val.po.no_spmp}" class="form-control" type="text"/>
+								        </div>
+								    </div>
+								    <div class="col-xl-6">
+								        <div class="form-group">
+								            <label class="small mb-1">Tanggal </label>
+								            <input name="po_date[]" id="po_date${index}" class="form-control" value="${val.po.date.slice(0,10)}" type="date"/>
+								        </div>
+								        <div class="form-group">
+								            <label class="small mb-1">Disetujui Oleh </label>
+								            <select class="form-control select2" name="po_approved_by[]" id="po_approved_by${index}" style="width:100%">
+								                @foreach($users as $user)
+								                <option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
+								                @endforeach
+								            </select>
+								        </div>
+								        <div class="form-group">
+								            <label class="small mb-1">PPN </label>
+								            <input name="po_ppn[]" id="po_ppn${index}" style="width:20px" checked value="1" class="form-control" type="checkbox"/>
+								        </div>
+								    </div>
+								</div>
+								<div class="row">
+								    <div class="col-xl-12">
+								        <div class="form-group">
+								            <label class="small mb-1">Ketentuan Pekerjaan </label><label class="small mb-1" style="color:red">*</label>
+								            <textarea id="ket_kerja${index}" name="po_ketentuan_pekerjaan[]" id="po_ketentuan_pekerjaan${index}" rows="4" class="form-control"> ${val.po.ketentuan_pekerjaan} </textarea>
+								        </div>
+								        <div class="form-group">
+								            <label class="small mb-1">Ketentuan Pembayaran </label><label class="small mb-1" style="color:red">*</label>
+								            <textarea id="ket_bayar${index}" name="po_ketentuan_pembayaran[]" id="po_ketentuan_pembayaran${index}" rows="4" class="form-control"> ${val.po.ketentuan_pembayaran} </textarea>
+								        </div>
+								    </div>
+								</div>
+
+						      </div>
+						    </div>
+						  </div>
+						</div>
+						`;
+
+						$('#fieldPO').append(isiField);
+						ClassicEditor.create(document.querySelector(`#ket_kerja${index}`));
+						ClassicEditor.create(document.querySelector(`#ket_bayar${index}`));
+
+					});
+				}
+			});
+		});
+
 	});
 
 	function ubahVendor(id) {
@@ -312,59 +446,6 @@
 		} else {
 			$(`#baris${id}`).hide();
 		}
-	}
-
-	function loadBapp (id) {
-
-		var table = $('#tableBappVendor').DataTable({
-			"searching" : false,
-			"paging": false,
-			"lengthChange": false,
-			"ordering": false,
-		});
-
-		$.ajax({
-			type: "GET",
-			url: window.location.href + "/getProcurementComponent/" + id,
-			success: function(res) {
-				$('input[name=nomor_memo_bapp]').prop('value', res.procurement.no_memo);
-				$('input[name=perihal]').prop('value', res.procurement.name);
-				$('input[name=location]').prop('value', res.bapp.location);
-				$('input[name=no_surat_bapp]').prop('value', res.bapp.no_surat);
-				$('input[name=tanggal_bapp]').prop('value', res.bapp.date.slice(0,10));
-
-				if (res.procurement.spph_sending_date != null) {
-					$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
-				}
-				
-				$.each(res.penawaran, function(k,v){
-
-					if (v.minimum){
-						table.row.add([
-							`<div style="font-weight: bold"> ${v.item.name} </div>`,
-							`<div style="font-weight: bold"> ${v.item.category.name} </div>`,
-							`<div style="font-weight: bold"> ${v.item.specs} </div>`,
-							`<div style="font-weight: bold"> ${v.item.price_est} </div>`,
-							`<div style="font-weight: bold"> ${v.item.total_unit} </div>`,
-							`<div style="font-weight: bold"> ${v.item.price_total} </div>`,
-							`<div style="font-weight: bold"> ${v.spph.vendor.name} </div>`,
-						]).draw(false);
-					}
-					
-					else {
-						table.row.add([
-							v.item.name,
-							v.item.category.name,
-							v.item.specs,
-							v.item.price_est,
-							v.item.total_unit,
-							v.item.price_total,
-							v.spph.vendor.name,
-						]).draw(false);
-					}
-				});
-			}
-		});
 	}
 	
 

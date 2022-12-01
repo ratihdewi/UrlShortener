@@ -8,8 +8,10 @@ use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
+use App\Models\Po;
 use App\Models\VendorCategory;
 use App\Models\User;
+use App\Models\Bapp;
 use App\Models\ItemCategory;
 use App\Utilities\FlashMessage;
 use App\Services\LogsInsertor;
@@ -188,6 +190,11 @@ class ProcurementManualController extends Controller
         ]);
 
         $this->setWinner($procurement);
+        if (!Bapp::where('procurement_id', $procurement->id)->exists()){
+            Bapp::create([
+                'procurement_id' => $procurement->id
+            ]);
+        }
         $msg = "Pengadaan ditambahkan secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
@@ -212,6 +219,18 @@ class ProcurementManualController extends Controller
             $penawaran = SpphPenawaran::find($row);
             $penawaran->won = 1;
             $penawaran->save();
+
+            $poExists = Po::where([
+                'procurement_id' => $procurement->id,
+                'spph_id' => $penawaran->spph_id
+            ])->exists();
+
+            if (!$poExists) {
+                Po::create([
+                    'procurement_id' => $procurement->id,
+                    'spph_id' => $penawaran->spph_id
+                ]);
+            }
         }
     }
 
@@ -265,6 +284,7 @@ class ProcurementManualController extends Controller
     public function getProcurementComponent ($id) {
 
         $procurement = Procurement::where('id', $id)->first();
+
         $penawaran = array();
         $min_price = $procurement->penawarans->where('can_win', 1)->groupBy('item_id')->map(function($group, $groupName) {
             return [
@@ -272,6 +292,7 @@ class ProcurementManualController extends Controller
                 'penawaran_id' => $group->firstWhere('harga_total', $group->min('harga_total'))->id
             ];
         });
+
         foreach ($procurement->penawarans as $row) {
             $row['item'] = $row->item;
             $row['category'] = $row->item->category;
@@ -287,20 +308,72 @@ class ProcurementManualController extends Controller
             array_push($penawaran, $row);
         }
 
+        $spphs_won = array();
+        foreach($procurement->spphsWon as $row) {
+            $row['vendor'] = $row->vendor;
+            $row['po'] = $row->po;
+            array_push($spphs_won, $row);
+        }
+
         $data = [
             'procurement' => $procurement,
             'penawaran' => $penawaran,
             'spph' => $procurement->spphs,
             'bapp' => $procurement->bapp,
+            'spphs_won' => $spphs_won
         ];
-        
+
         return response()->json($data);
     }
 
 
     public function storeBapp(Request $request) {
+        
+        $dataBapp = [
+            'procurement_id' => $request->procurement,
+            'date' => $request->tanggal_bapp,
+            'no_surat' => $request->no_surat_bapp,
+            'location' => $request->lokasi,
+            'dari' => $request->dari,
+            'kepada' => $request->kepada,
+        ];
 
-        dd($request->all());
+        if(Bapp::where('procurement_id', $request->procurement)->exists()) {
+            Bapp::where('procurement_id', $request->procurement)->update($dataBapp);
+        } else {
+            Bapp::create($dataBapp);
+        }
+
+        foreach ($request->po_spph_id as $i=>$v) {
+            $dataPo = [
+                'spph_id' => $v,
+                'procurement_id' => $request->procurement,
+                'date' => $request->po_date[$i],
+                'no_spmp' => $request->po_no_spmp[$i],
+                'approved_by' => $request->po_approved_by[$i],
+                'job_terms' => $request->po_job_terms[$i],
+                'ketentuan_pembayaran' => $request->po_ketentuan_pembayaran[$i],
+                'ketentuan_pekerjaan' => $request->po_ketentuan_pekerjaan[$i]
+            ];
+
+            if (isset($request->po_ppn[$i])){
+                $dataPo['ppn'] = $request->po_ppn[$i];
+            }
+
+            Po::where([
+                'spph_id' => $v,
+                'procurement_id' => $request->procurement,
+            ])->update($dataPo);
+        }
+
+        $procurement = Procurement::where('id', $request->procurement)->first();
+        $msg = "Melakukan perubahan data BAPP dan/atau PO secara manual";
+
+        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
+        
+        return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
+        new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
+            FlashMessage::SUCCESS));
     }
 
 }

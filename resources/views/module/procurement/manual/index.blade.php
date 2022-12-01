@@ -97,7 +97,7 @@
 											<label class="small mb-1">Dari</label>
 											<select class="form-control" name="dari" style="width:100%">
 												@foreach($users as $user)
-													<option @if($procurement->bapp->dari == $user->id) selected @endif value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
+													<option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
 												@endforeach
 											</select>
 										</div>
@@ -105,7 +105,7 @@
 											<label class="small mb-1">Kepada</label>
 											<select class="form-control" name="kepada" style="width:100%">
 												@foreach($users as $user)
-													<option @if($procurement->bapp->kepada == $user->id) selected @endif value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
+													<option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
 												@endforeach
 											</select>
 										</div>
@@ -115,19 +115,25 @@
 										</div>
 									</div>
 								</div>
-								<table class="table mt-5 mb-4" id="tableBappVendor" width="100%" cellspacing="0">
-									<thead>
-										<tr>
-											<th>Nama Barang</th>
-											<th>Kategori</th>
-											<th>Spesifikasi</th>
-											<th>Harga Satuan</th>
-											<th>Kuantitas</th>
-											<th>Total Harga</th>
-											<th>Nama Vendor</th>
-										</tr>
-									</thead>
-								</table>
+								<div style="margin-top: 3.5% !important; margin-bottom: 3.5% !important;">
+									<table class="table" id="tableBappVendor" width="100%" cellspacing="0">
+										<thead>
+											<tr>
+												<th>Nama Barang</th>
+												<th>Kategori</th>
+												<th>Spesifikasi</th>
+												<th>Harga Satuan</th>
+												<th>Kuantitas</th>
+												<th>Total Harga</th>
+												<th>Nama Vendor</th>
+											</tr>
+										</thead>
+									</table>
+								</div>
+							</fieldset>
+							<fieldset class="form-group border p-3">
+								<legend class="w-auto px-2"> PO </legend>
+								<div id="fieldPO"></div>
 							</fieldset>
 						</nav>
 					</form>
@@ -136,6 +142,7 @@
 					<button id="addRowTable" hidden> </button>
 					<button id="initTable" hidden> </button>
 					<button id="setTotal" hidden> </button>
+					<button id="loadBapp" hidden></button>
                 </div>
             </div>
         </div>
