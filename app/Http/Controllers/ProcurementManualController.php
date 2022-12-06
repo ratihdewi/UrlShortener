@@ -11,7 +11,9 @@ use App\Models\Vendor;
 use App\Models\Po;
 use App\Models\VendorCategory;
 use App\Models\User;
+use App\Http\Requests\BappMultipleRequest;
 use App\Models\Bapp;
+use App\Models\Bast;
 use App\Models\ItemCategory;
 use App\Utilities\FlashMessage;
 use App\Services\LogsInsertor;
@@ -27,10 +29,12 @@ class ProcurementManualController extends Controller
         $procurements = Procurement::where('status', '>', 1)->get();
         $pesertas = User::where('role_id', '<>', '1')->get();
         $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+        $generalUsers = User::all();
         return view('module.procurement.manual.index', compact(
             'procurements',
             'pesertas',
-            'users'
+            'users',
+            'generalUsers'
         ));
     }
 
@@ -195,6 +199,7 @@ class ProcurementManualController extends Controller
                 'procurement_id' => $procurement->id
             ]);
         }
+
         $msg = "Pengadaan ditambahkan secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
@@ -220,16 +225,20 @@ class ProcurementManualController extends Controller
             $penawaran->won = 1;
             $penawaran->save();
 
-            $poExists = Po::where([
+            $arrData = [
                 'procurement_id' => $procurement->id,
                 'spph_id' => $penawaran->spph_id
-            ])->exists();
+            ];
+
+            $poExists = Po::where($arrData)->exists();
+            $bastExists = Bast::where($arrData)->exists();
 
             if (!$poExists) {
-                Po::create([
-                    'procurement_id' => $procurement->id,
-                    'spph_id' => $penawaran->spph_id
-                ]);
+                Po::create($arrData);
+            }
+
+            if (!$bastExists) {
+                Bast::create($arrData);
             }
         }
     }
@@ -293,6 +302,8 @@ class ProcurementManualController extends Controller
             ];
         });
 
+        $bast = Bast::where('procurement_id', $procurement->id)->get();
+
         foreach ($procurement->penawarans as $row) {
             $row['item'] = $row->item;
             $row['category'] = $row->item->category;
@@ -312,6 +323,7 @@ class ProcurementManualController extends Controller
         foreach($procurement->spphsWon as $row) {
             $row['vendor'] = $row->vendor;
             $row['po'] = $row->po;
+            $row['bast'] = $row->bast;
             array_push($spphs_won, $row);
         }
 
@@ -320,15 +332,15 @@ class ProcurementManualController extends Controller
             'penawaran' => $penawaran,
             'spph' => $procurement->spphs,
             'bapp' => $procurement->bapp,
-            'spphs_won' => $spphs_won
+            'spphs_won' => $spphs_won,
         ];
 
         return response()->json($data);
     }
 
 
-    public function storeBapp(Request $request) {
-        
+    public function storeFromBapp(BappMultipleRequest $request) {
+
         $dataBapp = [
             'procurement_id' => $request->procurement,
             'date' => $request->tanggal_bapp,
@@ -344,7 +356,14 @@ class ProcurementManualController extends Controller
             Bapp::create($dataBapp);
         }
 
+        Procurement::where('id', $request->procurement)->update([
+            'spph_sending_date' => $request->tanggal_kirim_spph
+        ]);
+
         foreach ($request->po_spph_id as $i=>$v) {
+
+            $spph = ProcurementSpph::where('id', $v)->first();
+
             $dataPo = [
                 'spph_id' => $v,
                 'procurement_id' => $request->procurement,
@@ -364,10 +383,32 @@ class ProcurementManualController extends Controller
                 'spph_id' => $v,
                 'procurement_id' => $request->procurement,
             ])->update($dataPo);
+            
+            $dataBast = [
+                'spph_id' => $v,
+                'procurement_id' => $request->procurement,
+                'no_surat' => $request->bast_no_surat[$i],
+                'user_id' => $request->bast_user_id[$i],
+                'nama_pihak_kedua' => $request->bast_nama_pihak_kedua[$i],
+                'jabatan_pihak_kedua' => $request->bast_jabatan_pihak_kedua[$i],
+            ];
+
+            if (isset($request->bast_file[$i])) {
+                $file_bast = $request->file('bast_file')[$i];
+                $name_bast = 'BAST-'.$spph->vendor->name.'-'.$spph->id.'.'.$file_bast->getClientOriginalExtension();
+                $path = $this->upload($name_bast, $file_bast, 'bast');
+                $dataBast['bast_file'] = $name_bast;
+            }
+            
+            Bast::where([
+                'spph_id' => $v,
+                'procurement_id' => $request->procurement,
+            ])->update($dataBast);
+            
         }
 
         $procurement = Procurement::where('id', $request->procurement)->first();
-        $msg = "Melakukan perubahan data BAPP dan/atau PO secara manual";
+        $msg = "Melakukan perubahan data BAPP, PO, dan/atau BAST secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
         

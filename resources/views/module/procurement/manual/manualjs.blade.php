@@ -47,6 +47,7 @@
 						$('#spph-negosiasi').hide();
 						$('#bapp').show();
 						$('#fieldPO').html('');
+						$('#fieldBAST').html('');
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
 
 						$('#loadBapp').click();
@@ -243,6 +244,7 @@
 					$('input[name=location]').prop('value', res.bapp.location);
 					$('input[name=no_surat_bapp]').prop('value', res.bapp.no_surat);
 					$('input[name=tanggal_bapp]').prop('value', res.bapp.date.slice(0,10));
+					$('input[name=lokasi]').prop('value', res.bapp.location);
 
 					if (res.procurement.spph_sending_date != null) {
 						$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
@@ -351,6 +353,70 @@
 						ClassicEditor.create(document.querySelector(`#ket_kerja${index}`));
 						ClassicEditor.create(document.querySelector(`#ket_bayar${index}`));
 
+						let bastTag = `
+						<div class="accordion" id="accordionBAST${index}">
+						    <div class="card" style="margin: 1.5%">
+						        <div class="card-header" id="headingBAST${index}">
+						            <h2 class="mb-0">
+						                <button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapseBAST${index}" aria-expanded="true" aria-controls="collapseBAST${index}">
+						                    ${val.vendor.name}
+						                </button>
+						            </h2>
+						        </div>
+
+						        <div id="collapseBAST${index}" class="collapse" aria-labelledby="headingBAST${index}" data-parent="#accordionBAST${index}">
+						            <div class="card-body">
+						                <div class="row">
+						                    <div class="col-xl-6">
+						                        <div class="form-group">
+						                            <label class="small mb-1">Nama Vendor </label>
+						                            <input disabled value="${val.vendor.name}" required class="form-control" type="text"/>
+						                        </div>
+						                        <div class="form-group">
+						                            <label class="small mb-1">Perihal </label>
+						                            <input disabled value="${res.procurement.name}" required class="form-control" type="text"/>
+						                        </div>
+						                        <div class="form-group">
+						                            <label class="small mb-1">No Surat </label>
+						                            <input name="bast_no_surat[]" value="${val.bast.no_surat}" required class="form-control" type="text"/>
+						                        </div>
+						                        <div class="form-group">
+						                            <label class="small mb-1">Pihak Pertama </label>
+													<button id="setSelectName${index}" onClick="setSelectName(${index}, ${val.bast.user_id})" hidden></button>
+						                            <select class="form-control select2" id="pihakPertama${index}" name="bast_user_id[]" style="width:100%">
+						                                @foreach($generalUsers as $user)
+						                                <option value="{{$user->id}}">
+						                                	{{$user->name}} - {{$user->role_caption}}
+						                                </option>
+						                                @endforeach
+						                            </select>
+						                        </div>
+						                    </div>
+						                    <div class="col-xl-6">
+						                        <div class="form-group">
+						                            <label class="small mb-1">Nomor SPMP </label>
+						                            <input disabled value="${val.po.no_spmp}" required class="form-control" type="text"/>
+						                        </div>
+						                        <div class="form-group">
+						                            <label class="small mb-1">Nama Pihak Kedua </label>
+						                            <input name="bast_nama_pihak_kedua[]" value="${val.bast.nama_pihak_kedua}" required class="form-control" type="text"/>
+						                        </div>
+						                        <div class="form-group">
+						                            <label class="small mb-1">Jabatan Pihak Kedua</label>
+						                            <input name="bast_jabatan_pihak_kedua[]" value="${val.bast.jabatan_pihak_kedua}" required class="form-control" type="text"/>
+						                        </div>
+						                        <div class="form-group">
+						                            <label class="small mb-1">Upload Dokumen&nbsp;</label>
+						                            <input name="bast_file[]" required class="form-control" type="file"/>
+						                        </div>
+						                    </div>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>`;
+						$('#fieldBAST').append(bastTag);
+						$(`#setSelectName${index}`).click();
 					});
 				}
 			});
@@ -446,6 +512,10 @@
 		} else {
 			$(`#baris${id}`).hide();
 		}
+	}
+
+	function setSelectName(id, userId) {
+		$(`#pihakPertama${id}`).val(userId);
 	}
 	
 
