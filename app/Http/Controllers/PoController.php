@@ -8,6 +8,7 @@ use App\Models\Procurement;
 use App\Models\ProcurementItem;
 use App\Models\User;
 use App\Models\Po;
+use App\Models\PoDetail;
 use App\Models\MasterPo;
 use App\Utilities\FlashMessage;
 use App\Http\Requests\PoRequest;
@@ -57,6 +58,16 @@ class PoController extends Controller
 
         $po = Po::create($data); 
 
+        $masterPo = MasterPo::first();
+        $detailPo = [
+            'po_id' => $po->id,
+            'harga_total' => $spph->penawarans->where('won', 1)->sum('harga_total'),
+            'negosiasi' => $spph->negosiasi->negosiasi,
+            'nilai_ppn' => $masterPo->nilai_ppn
+        ];
+
+        $PoDetail = PoDetail::create($detailPo);
+
         return redirect()->route('procurement.show', [$spph->procurement_id, $procurement->status])->with('message', 
             new FlashMessage('Berhasil melakukan input PO.', 
                 FlashMessage::SUCCESS));
@@ -82,12 +93,18 @@ class PoController extends Controller
     public function cetak(ProcurementSpph $spph)
     {
         $procurement = Procurement::find($spph->procurement_id);
+        $masterPo = MasterPo::first();
+        $spph->po['detail'] = PoDetail::where('po_id', $spph->po->id)->first();
 
         //return view('module.procurement.detail.po_cetak', compact('spph', 'procurement'));
 
         $pdf_name = "PO-".$spph->vendor->name.'-'.$spph->id.".pdf";
         $location = "po"."/";
-        $pdf_save = PDF::loadview('module.procurement.detail.po_cetak',['procurement' => $procurement, 'spph' => $spph]);
+        $pdf_save = PDF::loadview('module.procurement.detail.po_cetak',[
+            'procurement' => $procurement, 
+            'spph' => $spph,
+            'masterPo' => $masterPo
+        ]);
         $pdf_save->save($location.$pdf_name);
 
         $file = public_path()."/".$location.$pdf_name;

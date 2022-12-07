@@ -1,3 +1,9 @@
+<?php 
+    
+    $hargaTotal = $spph->po->detail->harga_total;
+    $hargaNego = $spph->po->detail->negosiasi;
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -40,7 +46,7 @@
                 <td style="vertical-align:top;" colspan="3">
                     <b>Vendor:</b><br>
                     <b>{{$spph->vendor->name}}</b><br>
-                    <b>{{$spph->vendor->address}}</b<<br>
+                    <b>{{$spph->vendor->address}}</b><br>
                 </td>
                 <td class="garis" colspan="2" >
                     <b>Nomor Vendor</b><br>
@@ -105,44 +111,44 @@
             @endforeach
             <tr>
                 <td class="garis" colspan="6" style="text-align: right;">Harga Total</td>
-                <td class="garis" style="text-align: right;">Rp{{number_format($spph->penawarans->where('won', 1)->sum('harga_total'), 2)}}
+                <td class="garis" style="text-align: right;">Rp{{number_format($hargaTotal, 2)}}
             </tr>
             @if($spph->has_negosiasi)
             <tr>
                 <td class="garis" colspan="6" style="text-align: right;">Negosiasi</td>
-                <td class="garis" style="text-align: right;">Rp{{number_format($spph->negosiasi->negosiasi,2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format($hargaNego,2)}}</td>
             </tr>
             @endif
             @if($spph->has_negosiasi)
             <tr>
                 <td class="garis" colspan="6" style="text-align: right;">Harga Perolehan Setelah Negosiasi</td>
-                <td class="garis" style="text-align: right;">Rp{{number_format($spph->penawarans->where('won', 1)->sum('harga_total')-$spph->negosiasi->negosiasi,2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format($hargaTotal-$hargaNego,2)}}</td>
             </tr>
             @endif
             @if($spph->po->ppn==1)
             <tr>
-                <td class="garis" colspan="6" style="text-align: right;">PPN</td>
+                <td class="garis" colspan="6" style="text-align: right;">PPN ({{ $masterPo->nilai_ppn }}%) </td>
                 @if($spph->has_negosiasi)
-                <td class="garis" style="text-align: right;">Rp{{number_format(0.1*($spph->penawarans->where('won', 1)->sum('harga_total')-$spph->negosiasi->negosiasi), 2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format($masterPo->nilai_ppn/100*($hargaTotal-$hargaNego), 2)}}</td>
                 @else
-                <td class="garis" style="text-align: right;">Rp{{number_format(0.1*($spph->penawarans->where('won', 1)->sum('harga_total')), 2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format($masterPo->nilai_ppn/100*($hargaTotal), 2)}}</td>
                 @endif
             </tr>
             <tr>
                 <td class="garis" colspan="6" style="text-align: right;">Total Harga + PPN</td>
                 @if($spph->has_negosiasi)
-                <td class="garis" style="text-align: right;">Rp{{number_format(($spph->penawarans->where('won', 1)->sum('harga_total')-$spph->negosiasi->negosiasi)+0.1*($spph->penawarans->where('won', 1)->sum('harga_total')-$spph->negosiasi->negosiasi),2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format(($hargaTotal-$hargaNego)+$masterPo->nilai_ppn/100*($hargaTotal-$hargaNego),2)}}</td>
                 @else
-                <td class="garis" style="text-align: right;">Rp{{number_format($spph->penawarans->where('won', 1)->sum('harga_total')+0.1*$spph->penawarans->where('won', 1)->sum('harga_total'),2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format($hargaTotal+$masterPo->nilai_ppn/100*$hargaTotal,2)}}</td>
                 @endif
             </tr>
             @else
             <tr>
                 <td class="garis" colspan="6" style="text-align: right;">Total Harga</td>
                 @if($spph->has_negosiasi)
-                <td class="garis" style="text-align: right;">Rp{{number_format(($spph->penawarans->where('won', 1)->sum('harga_total')-$spph->negosiasi->negosiasi),2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format(($hargaTotal-$hargaNego),2)}}</td>
                 @else
-                <td class="garis" style="text-align: right;">Rp{{number_format($spph->penawarans->where('won', 1)->sum('harga_total'),2)}}</td>
+                <td class="garis" style="text-align: right;">Rp{{number_format($hargaTotal,2)}}</td>
                 @endif
             </tr>
             @endif

@@ -49,6 +49,15 @@
                                         </span>
                                     @endif
                                 </div>
+                                <div class="form-group">
+                                    <label class="small mb-1"> Nilai PPN (%) </label><label class="small mb-1" style="color:red">*</label>
+                                    <input type="text" name="nilai_ppn" class="form-control{{ $errors->has('nilai_ppn') ? ' is-invalid' : '' }}" value="{{ $po->nilai_ppn }}" />
+                                    @if ($errors->has('nilai_ppn'))
+                                        <span class="small" style="color:red" role="alert">
+                                            <strong>{{ $errors->first('nilai_ppn') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <button class="btn btn-primary float-right" type="submit">Simpan</button>

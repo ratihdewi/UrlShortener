@@ -12,7 +12,8 @@ class MasterPo extends Model
     //fill yang ada di table
     protected $fillable = [
         'ketentuan_pekerjaan',
-        'ketentuan_pembayaran'
+        'ketentuan_pembayaran',
+        'nilai_ppn'
     ];
 
     //nama table
