@@ -9,9 +9,11 @@ use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\Po;
+use App\Models\MasterPo;
 use App\Models\VendorCategory;
 use App\Models\User;
 use App\Http\Requests\BappMultipleRequest;
+use App\Http\Requests\SpphMultipleRequest;
 use App\Models\Bapp;
 use App\Models\Bast;
 use App\Models\ItemCategory;
@@ -27,15 +29,20 @@ class ProcurementManualController extends Controller
     public function index() {
 
         $procurements = Procurement::where('status', '>', 1)->get();
-        $pesertas = User::where('role_id', '<>', '1')->get();
-        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
-        $generalUsers = User::all();
-        return view('module.procurement.manual.index', compact(
-            'procurements',
-            'pesertas',
-            'users',
-            'generalUsers'
-        ));
+        if (sizeof($procurements) > 0) {
+            $pesertas = User::where('role_id', '<>', '1')->get();
+            $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+            $generalUsers = User::all();
+            return view('module.procurement.manual.index', compact(
+                'procurements',
+                'pesertas',
+                'users',
+                'generalUsers'
+            ));
+        } else {
+            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan tidak ada atau masih berstatus approval']);
+        }
+        
     }
 
     public function upload($name, UploadedFile $photo, $folder)
@@ -109,15 +116,7 @@ class ProcurementManualController extends Controller
     }
 
 
-    public function store(Request $request) {
-
-        $this->validate($request, [
-            'no_spph' => 'required',
-            'name_vendor' => 'required',
-            'spph_pdf' => 'required',
-            'penawaran_pdf' => 'required',
-            'eval_tender_pdf' => 'required',
-        ]);
+    public function store(SpphMultipleRequest $request) {
         
         $procurement = Procurement::where('id', $request->procurement)->first();
         $items = $procurement->items;
@@ -234,7 +233,11 @@ class ProcurementManualController extends Controller
             $bastExists = Bast::where($arrData)->exists();
 
             if (!$poExists) {
-                Po::create($arrData);
+                $masterPo = MasterPo::first();
+                $dataPo = $arrData;
+                $dataPo['ketentuan_pekerjaan'] = $masterPo->ketentuan_pekerjaan;
+                $dataPo['ketentuan_pembayaran'] = $masterPo->ketentuan_pembayaran;
+                Po::create($dataPo);
             }
 
             if (!$bastExists) {

@@ -20,6 +20,7 @@
 		
 		var myTable = $('#tabelItem').DataTable({
 			"searching" : false,
+			"scrollX": true,
 			"paging": false,
 			"lengthChange": false,
 			"ordering": false,
@@ -211,9 +212,9 @@
 								v.total_unit,
 								'',
 								v.vendor_id,
-								`<input type="text" class="form-control" id="keterangan_${id}" name="keterangan[]"  value="" required>`,
-								`<input type="text" class="form-control" id="evaluasi_${id}" name="evaluasi[]" value="" required>`,
-								`<input type="text" class="form-control" id="nilai_${id}" name="nilai[]" value="" required>`
+								`<textarea rows="3" class="form-control" id="keterangan_${id}" name="keterangan[]"  value="" required> </textarea>`,
+								`<textarea rows="3" class="form-control" id="evaluasi_${id}" name="evaluasi[]" value="" required> </textarea>`,
+								`<textarea rows="3" class="form-control" id="nilai_${id}" name="nilai[]" value="" required> </textarea>`
 							]).node().id = `baris${id}`;
 							myTable.draw(false);
 							jumlahItem++;
@@ -257,9 +258,9 @@
 								`<div style="font-weight: bold"> ${v.item.name} </div>`,
 								`<div style="font-weight: bold"> ${v.item.category.name} </div>`,
 								`<div style="font-weight: bold"> ${v.item.specs} </div>`,
-								`<div style="font-weight: bold"> ${v.item.price_est} </div>`,
+								`<div style="font-weight: bold"> ${v.harga_satuan} </div>`,
 								`<div style="font-weight: bold"> ${v.item.total_unit} </div>`,
-								`<div style="font-weight: bold"> ${v.item.price_total} </div>`,
+								`<div style="font-weight: bold"> ${v.item.total_unit * v.harga_satuan} </div>`,
 								`<div style="font-weight: bold"> ${v.spph.vendor.name} </div>`,
 							]).draw(false);
 						}
@@ -269,9 +270,9 @@
 								v.item.name,
 								v.item.category.name,
 								v.item.specs,
-								v.item.price_est,
+								v.harga_satuan,
 								v.item.total_unit,
-								v.item.price_total,
+								v.item.total_unit * v.harga_satuan,
 								v.spph.vendor.name,
 							]).draw(false);
 						}

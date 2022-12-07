@@ -41,7 +41,7 @@
 									<label> Unggah File Evaluasi Tender (.pdf) </label>
 									<input type="file" class="form-control" name="eval_tender_pdf">
 								</div>
-								<table class="table mt-5 mb-5" id="tabelItem">
+								<table width="130%" class="table mt-5 mb-5" id="tabelItem">
 									<thead>
 										<tr>
 											<th> Negosiasi </th>
@@ -52,8 +52,8 @@
 											<th> Kuantitas </th>
 											<th width="10%"> Harga Total </th>
 											<th> Nama Vendor </th>
-											<th width="10%"> Keterangan </th>
-											<th width="10%"> Evaluasi </th>
+											<th width="20%"> Keterangan </th>
+											<th width="20%"> Evaluasi </th>
 											@if($procurement->mechanism_id!=3)<th width="10%"> Nilai </th> @endif
 										</tr>
 									</thead>
