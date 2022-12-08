@@ -255,10 +255,6 @@ class ProcurementManualController extends Controller
             if (!$bastExists) {
                 Bast::create($arrData);
             }
-
-            $currSpph = ProcurementSpph::where('id', $penawaran->spph_id)->first();
-            $currSpph['tidakCetak'] = true;
-            app('App\Http\Controllers\PoController')->cetak($currSpph);
         }
     }
 
@@ -411,6 +407,10 @@ class ProcurementManualController extends Controller
                 'spph_id' => $v,
                 'procurement_id' => $request->procurement,
             ])->update($dataPo);
+
+            $currSpph = ProcurementSpph::where('id', $v)->first();
+            $currSpph['tidakCetak'] = true;
+            app('App\Http\Controllers\PoController')->cetak($currSpph);
             
             $dataBast = [
                 'spph_id' => $v,
