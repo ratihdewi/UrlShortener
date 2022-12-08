@@ -8,6 +8,7 @@ use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
+use App\Models\PoDetail;
 use App\Models\Po;
 use App\Models\MasterPo;
 use App\Models\VendorCategory;
@@ -237,12 +238,27 @@ class ProcurementManualController extends Controller
                 $dataPo = $arrData;
                 $dataPo['ketentuan_pekerjaan'] = $masterPo->ketentuan_pekerjaan;
                 $dataPo['ketentuan_pembayaran'] = $masterPo->ketentuan_pembayaran;
-                Po::create($dataPo);
+                
+                $po = Po::create($dataPo);
+                $spph = ProcurementSpph::where('id', $penawaran->spph_id)->first();
+
+                $detailPo = [
+                    'po_id' => $po->id,
+                    'harga_total' => $spph->penawarans->where('won', 1)->sum('harga_total'),
+                    'negosiasi' => $spph->negosiasi->negosiasi,
+                    'nilai_ppn' => $masterPo->nilai_ppn
+                ];
+
+                $PoDetail = PoDetail::create($detailPo);
             }
 
             if (!$bastExists) {
                 Bast::create($arrData);
             }
+
+            $currSpph = ProcurementSpph::where('id', $penawaran->spph_id)->first();
+            $currSpph['tidakCetak'] = true;
+            app('App\Http\Controllers\PoController')->cetak($currSpph);
         }
     }
 
@@ -290,6 +306,10 @@ class ProcurementManualController extends Controller
             $peserta->user_id = $row;
             $peserta->save();
         }
+
+        $currSpph = $spph;
+        $currSpph['tidakCetak'] = true;
+        app('App\Http\Controllers\BaNegosiasiController')->cetak($currSpph);
         
     }
 
@@ -344,6 +364,7 @@ class ProcurementManualController extends Controller
 
     public function storeFromBapp(BappMultipleRequest $request) {
 
+
         $dataBapp = [
             'procurement_id' => $request->procurement,
             'date' => $request->tanggal_bapp,
@@ -362,6 +383,10 @@ class ProcurementManualController extends Controller
         Procurement::where('id', $request->procurement)->update([
             'spph_sending_date' => $request->tanggal_kirim_spph
         ]);
+
+        $currProcurement = Procurement::where('id', $request->procurement)->first();
+        $currProcurement['tidakCetak'] = true;
+        app('App\Http\Controllers\BappController')->cetak($currProcurement);
 
         foreach ($request->po_spph_id as $i=>$v) {
 
@@ -411,6 +436,7 @@ class ProcurementManualController extends Controller
         }
 
         $procurement = Procurement::where('id', $request->procurement)->first();
+        Procurement::where('id', $procurement->id)->update(['status' => 7]);
         $msg = "Melakukan perubahan data BAPP, PO, dan/atau BAST secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");

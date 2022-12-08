@@ -153,9 +153,10 @@ class BaNegosiasiController extends Controller
         $pdf_save = PDF::loadview('module.procurement.detail.banegosiasi_cetak',['spph' => $spph, 'procurement' => $procurement, 'peserta_eksternal' => $peserta_eksternal]);
         $pdf_save->save($location.$pdf_name);
         
-
-        $file = public_path()."/".$location.$pdf_name;
-        return response()->download($file);
+        if(!isset($spph->tidakCetak)) {
+            $file = public_path()."/".$location.$pdf_name;
+            return response()->download($file);
+        }
     }
 
     public function lose(SpphPenawaran $penawaran)

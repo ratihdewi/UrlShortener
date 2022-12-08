@@ -172,8 +172,9 @@ class BappController extends Controller
             $pdf_save->save($location.$pdf_name);
         }
         
-
-        $file = public_path()."/".$location.$pdf_name;
-        return response()->download($file);
+        if (!isset($procurement->tidakCetak)) {
+            $file = public_path()."/".$location.$pdf_name;
+            return response()->download($file);
+        }        
     }
 }
