@@ -49,6 +49,7 @@
 						$('#bapp').show();
 						$('#fieldPO').html('');
 						$('#fieldBAST').html('');
+						$('#fieldPV').html('');
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
 
 						$('#loadBapp').click();
@@ -319,15 +320,23 @@
 								        </div>
 								        <div class="form-group">
 								            <label class="small mb-1">Disetujui Oleh </label>
-								            <select class="form-control select2" name="po_approved_by[]" id="po_approved_by${index}" style="width:100%">
+								            <select class="form-control select2" name="po_approved_by[]" id="po_approved_by${index}">
 								                @foreach($users as $user)
 								                <option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
 								                @endforeach
 								            </select>
 								        </div>
 								        <div class="form-group">
-								            <label class="small mb-1">PPN </label>
-								            <input name="po_ppn[]" id="po_ppn${index}" style="width:20px" checked value="1" class="form-control" type="checkbox"/>
+											<div class="row">
+												<div class="col-md-10">
+													<label class="small mb-1">Dokumen Pendukung</label>
+								            		<input name="po_dok_pendukung[]" id="po_dok_pendukung${index}" class="form-control" type="file"/>
+												</div>
+												<div class="col-md-2">
+													<label class="small mb-1">PPN </label>
+								            		<input name="po_ppn[]" id="po_ppn${index}" style="width:20px" checked value="1" class="form-control" type="checkbox"/>
+												</div>
+											</div>
 								        </div>
 								    </div>
 								</div>
@@ -416,11 +425,23 @@
 						        </div>
 						    </div>
 						</div>`;
+				
 						$('#fieldBAST').append(bastTag);
 						$(`#setSelectName${index}`).click();
 					});
 				}
 			});
+
+			// $.ajax({
+			// 	type: "GET",
+			// 	url: window.location.href + "/getVendor/" + $('#opsiProcurement').val(),
+			// 	success: function (res) {
+			// 		$.each(res, function (key, value){
+			// 			$('#fieldPV').append(value.name);
+			// 		})
+			// 	}
+			// });
+			
 		});
 
 	});

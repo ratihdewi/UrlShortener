@@ -139,6 +139,10 @@
 								<legend class="w-auto px-2"> BAST </legend>
 								<div id="fieldBAST"></div>
 							</fieldset>
+							<fieldset class="form-group border p-3">
+								<legend class="w-auto px-2"> Penilaian Vendor </legend>
+								<div id="fieldPV"></div>
+							</fieldset>
 						</nav>
 					</form>
 					<button class="btn btn-info" style="float: left" id="tambahDokumen"> Tambah Dokumen </button>

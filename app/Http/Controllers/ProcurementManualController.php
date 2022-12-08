@@ -408,6 +408,20 @@ class ProcurementManualController extends Controller
                 'procurement_id' => $request->procurement,
             ])->update($dataPo);
 
+            if(isset($request->po_dok_pendukung[$i])){
+                $file_pod = $request->file('po_dok_pendukung')[$i];
+                $nama_pod = 'Lampiran PO-'.$spph->vendor->name.'-'.$spph->id.'.'.$file_pod->getClientOriginalExtension();
+                $path_pod = $this->upload($nama_pod, $file_pod, 'po/lampiran');
+                $po = Po::where([
+                    'spph_id' => $v,
+                    'procurement_id' => $request->procurement,
+                ])->first();
+
+                PoDetail::where('po_id', $po->id)->update([
+                    'dok_pendukung' => $nama_pod
+                ]);
+            }
+
             $currSpph = ProcurementSpph::where('id', $v)->first();
             $currSpph['tidakCetak'] = true;
             app('App\Http\Controllers\PoController')->cetak($currSpph);
@@ -445,5 +459,7 @@ class ProcurementManualController extends Controller
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
             FlashMessage::SUCCESS));
     }
+
+    
 
 }
