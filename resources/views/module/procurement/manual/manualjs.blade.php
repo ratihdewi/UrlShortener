@@ -33,10 +33,18 @@
 			"ordering": false,
 		});
 
+		var tablePV = $('#tablePV').DataTable({
+			"searching" : false,
+			"paging": false,
+			"lengthChange": false,
+			"ordering": false,
+		});
+
 		$('#opsiProcurement').on('change', function() {
 			vendorSelect = [];
 			myTable.clear();
 			tableBapp.clear();
+			tablePV.clear();
 			jumlahVendor = 0;
 
 			$.ajax({
@@ -49,8 +57,8 @@
 						$('#bapp').show();
 						$('#fieldPO').html('');
 						$('#fieldBAST').html('');
-						$('#fieldPV').html('');
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
+						tablePV.clear();
 
 						$('#loadBapp').click();
 						$('#tambahDokumen').hide();
@@ -262,6 +270,7 @@
 								`<div style="font-weight: bold"> ${v.harga_satuan} </div>`,
 								`<div style="font-weight: bold"> ${v.item.total_unit} </div>`,
 								`<div style="font-weight: bold"> ${v.item.total_unit * v.harga_satuan} </div>`,
+								`<div style="font-weight: bold"> ${v.keterangan} </div>`,
 								`<div style="font-weight: bold"> ${v.spph.vendor.name} </div>`,
 							]).draw(false);
 						}
@@ -274,6 +283,7 @@
 								v.harga_satuan,
 								v.item.total_unit,
 								v.item.total_unit * v.harga_satuan,
+								v.keterangan,
 								v.spph.vendor.name,
 							]).draw(false);
 						}
@@ -310,7 +320,7 @@
 								        </div>
 								        <div class="form-group">
 								            <label class="small mb-1">No SPMP </label>
-								            <input name="po_no_spmp[]" id="po_no_spmp${index}" value="${val.po.no_spmp}" class="form-control" type="text"/>
+								            <input name="po_no_spmp[]" id="po_no_spmp${index}" value="${val.po.no_spmp}" class="form-control" type="text" onchange="setSpmpBast(${index})" />
 								        </div>
 								    </div>
 								    <div class="col-xl-6">
@@ -405,7 +415,7 @@
 						                    <div class="col-xl-6">
 						                        <div class="form-group">
 						                            <label class="small mb-1">Nomor SPMP </label>
-						                            <input disabled value="${val.po.no_spmp}" required class="form-control" type="text"/>
+						                            <input disabled value="${val.po.no_spmp}" id="bastSpmp${index}" required class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Nama Pihak Kedua </label>
@@ -432,15 +442,27 @@
 				}
 			});
 
-			// $.ajax({
-			// 	type: "GET",
-			// 	url: window.location.href + "/getVendor/" + $('#opsiProcurement').val(),
-			// 	success: function (res) {
-			// 		$.each(res, function (key, value){
-			// 			$('#fieldPV').append(value.name);
-			// 		})
-			// 	}
-			// });
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/getVendor/" + $('#opsiProcurement').val(),
+				success: function (res) {
+					$.each(res, function (key, value){
+						let komentar = ((value.comment == null) ? "-" : value.comment);
+						tablePV.row.add([
+							value.name,
+							value.no,
+							`<div class="form-inline">
+								<div class="form-group">
+									<label> <div id="indikatorPV${key+1}"> (${value.score}/5) </div> </label>
+									<input type="range" id="pv_score${key+1}" onchange="showIndikatorPV(${key+1})" class="mt-1 custom-range" min="0" max="5" step="1" name="pv_score[]" value="${value.score}">
+								</div>
+							</div>`,
+							`<textarea name="pv_comment[]" class="form-control" rows="2"> ${komentar} </textarea>`,
+						]).node().id = `barisPV${key+1}`;
+						tablePV.draw(false);
+					})
+				}
+			});
 			
 		});
 
@@ -538,6 +560,16 @@
 
 	function setSelectName(id, userId) {
 		$(`#pihakPertama${id}`).val(userId);
+	}
+
+	function setSpmpBast (id) {
+		var value = $(`#po_no_spmp${id}`).val();
+		$(`#bastSpmp${id}`).prop('value', value);
+	}
+
+	function showIndikatorPV (id) {
+		var value = $(`#pv_score${id}`).val();
+		$(`#indikatorPV${id}`).html(`(${value}/5)`);
 	}
 	
 

@@ -125,6 +125,7 @@
 												<th>Harga Satuan</th>
 												<th>Kuantitas</th>
 												<th>Total Harga</th>
+												<th>Keterangan</th>
 												<th>Nama Vendor</th>
 											</tr>
 										</thead>
@@ -141,7 +142,18 @@
 							</fieldset>
 							<fieldset class="form-group border p-3">
 								<legend class="w-auto px-2"> Penilaian Vendor </legend>
-								<div id="fieldPV"></div>
+								<div style="margin-top: 1.5% !important; margin-bottom: 3.5% !important;">
+									<table class="table" id="tablePV" width="100%" cellspacing="0">
+										<thead>
+											<tr>
+												<th> Nama Vendor </th>
+												<th> Nomor Vendor </th>
+												<th> Skor </th>
+												<th> Komentar </th>
+											</tr>
+										</thead>
+									</table>
+								</div>
 							</fieldset>
 						</nav>
 					</form>

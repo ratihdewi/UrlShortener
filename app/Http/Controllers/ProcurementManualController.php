@@ -81,7 +81,8 @@ class ProcurementManualController extends Controller
 
         $vendors = DB::table('vendors as v')
                    ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
-                   ->select('v.*')
+                   ->join('vendor_score as vs', 'vs.vendor_id', '=', 'v.id')
+                   ->select('v.*', 'vs.score', 'vs.comment')
                    ->where('delete', 0)
                    ->whereIn('vc.category_id', $catId)
                    ->groupBy('v.id')
