@@ -450,10 +450,12 @@
 						let komentar = ((value.comment == null) ? "-" : value.comment);
 						tablePV.row.add([
 							value.name,
-							value.no,
+							value.no_spph,
 							`<div class="form-inline">
 								<div class="form-group">
 									<label> <div id="indikatorPV${key+1}"> (${value.score}/5) </div> </label>
+									<input type="hidden" name="pv_spph_id[]" value="${value.spph_id}" />
+									<input type="hidden" name="pv_vendor_id[]" value="${value.id}" />
 									<input type="range" id="pv_score${key+1}" onchange="showIndikatorPV(${key+1})" class="mt-1 custom-range" min="0" max="5" step="1" name="pv_score[]" value="${value.score}">
 								</div>
 							</div>`,

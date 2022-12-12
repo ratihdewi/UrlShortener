@@ -147,7 +147,7 @@
 										<thead>
 											<tr>
 												<th> Nama Vendor </th>
-												<th> Nomor Vendor </th>
+												<th> Nomor SPPH </th>
 												<th> Skor </th>
 												<th> Komentar </th>
 											</tr>

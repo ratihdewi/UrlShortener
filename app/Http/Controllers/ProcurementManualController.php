@@ -12,6 +12,7 @@ use App\Models\PoDetail;
 use App\Models\Po;
 use App\Models\MasterPo;
 use App\Models\VendorCategory;
+use App\Models\VendorScore;
 use App\Models\User;
 use App\Http\Requests\BappMultipleRequest;
 use App\Http\Requests\SpphMultipleRequest;
@@ -82,8 +83,10 @@ class ProcurementManualController extends Controller
         $vendors = DB::table('vendors as v')
                    ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
                    ->join('vendor_score as vs', 'vs.vendor_id', '=', 'v.id')
-                   ->select('v.*', 'vs.score', 'vs.comment')
-                   ->where('delete', 0)
+                   ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
+                   ->select('v.*', 'vs.score', 'vs.comment', 'ps.no_spph', 'ps.id as spph_id')
+                   ->where('v.delete', 0)
+                   ->where('ps.procurement_id', $procurement->id)
                    ->whereIn('vc.category_id', $catId)
                    ->groupBy('v.id')
                    ->get();
@@ -361,7 +364,6 @@ class ProcurementManualController extends Controller
 
     public function storeFromBapp(BappMultipleRequest $request) {
 
-
         $dataBapp = [
             'procurement_id' => $request->procurement,
             'date' => $request->tanggal_bapp,
@@ -448,6 +450,16 @@ class ProcurementManualController extends Controller
                 'procurement_id' => $request->procurement,
             ])->update($dataBast);
             
+        }
+
+        foreach ($request->pv_comment as $key=>$komentar) {
+            VendorScore::where([
+                'vendor_id' => $request->pv_vendor_id[$key],
+                'user_id' => Auth::user()->id,
+            ])->update([
+                'score' => $request->pv_score[$key],
+                'comment' => $request->pv_comment[$key]
+            ]);
         }
 
         $procurement = Procurement::where('id', $request->procurement)->first();

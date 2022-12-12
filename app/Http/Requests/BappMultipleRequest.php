@@ -40,6 +40,10 @@ class BappMultipleRequest extends FormRequest
             'bast_user_id.*' => 'required',
             'bast_nama_pihak_kedua.*' => 'required',
             'bast_jabatan_pihak_kedua.*' => 'required',
+            'pv_spph_id.*' => 'required',
+            'pv_vendor_id.*' => 'required',
+            'pv_score.*' => 'required',
+            'pv_comment.*' => 'required',
         ];
     }
 
@@ -66,6 +70,10 @@ class BappMultipleRequest extends FormRequest
             $msg["bast_user_id.$key.required"] = "Pihak pertama pada kolom BAST urutan ke-$i wajib diisi";
             $msg["bast_nama_pihak_kedua.$key.required"] = "Nama pihak kedua pada kolom BAST urutan ke-$i wajib diisi";
             $msg["bast_jabatan_pihak_kedua.$key.required"] = "Jabatan pihak kedua pada kolom BAST urutan ke-$i wajib diisi";
+            $msg["pv_spph_id.$key.required"] = "SPPH pada penilaian vendor urutak ke-$i wajib diisi";
+            $msg["pv_vendor_id.$key.required"] = "Vendor pada penilaian vendor urutak ke-$i wajib diisi";
+            $msg["pv_score.$key.required"] = "Skor pada penilaian vendor urutak ke-$i wajib diisi";
+            $msg["pv_comment.$key.required"] = "Komentar pada penilaian vendor urutak ke-$i wajib diisi";
         }
 
         return $msg;
