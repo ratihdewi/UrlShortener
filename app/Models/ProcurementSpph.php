@@ -112,7 +112,8 @@ class ProcurementSpph extends Model
     public function getHasNilaiAttribute()
     {
         if($this->vendorScore()->exists()){
-            if($this->vendorScore->user_id==Auth::user()->id){
+            $vendorScore = $this->vendorScore()->first();
+            if($vendorScore->user_id==Auth::user()->id){
                 return true;
             } else {
                 return false;

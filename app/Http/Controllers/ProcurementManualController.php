@@ -349,7 +349,7 @@ class ProcurementManualController extends Controller
             $row['bast'] = $row->bast;
             array_push($spphs_won, $row);
         }
-
+    
         $data = [
             'procurement' => $procurement,
             'penawaran' => $penawaran,
@@ -457,6 +457,7 @@ class ProcurementManualController extends Controller
                 'vendor_id' => $request->pv_vendor_id[$key],
                 'user_id' => Auth::user()->id,
             ])->update([
+                'spph_id' => $request->pv_spph_id[$key],
                 'score' => $request->pv_score[$key],
                 'comment' => $request->pv_comment[$key]
             ]);
