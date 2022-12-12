@@ -44,6 +44,8 @@ class BappMultipleRequest extends FormRequest
             'pv_vendor_id.*' => 'required',
             'pv_score.*' => 'required',
             'pv_comment.*' => 'required',
+            'sp3_keterangan' => 'required',
+            'sp3_file' => 'required',
         ];
     }
 
@@ -56,6 +58,8 @@ class BappMultipleRequest extends FormRequest
             'lokasi.required' => 'Lokasi pada kolom BAPP wajib diisi',
             'dari.required' => "'Dari' pada kolom BAPP wajib diisi",
             'kepada.required' => "'Kepada' pada kolom BAPP wajib diisi",
+            'sp3_keterangan.required' => "Keterangan pada SP3 wajib diisi",
+            'sp3_file.required' => "Dokumen SP3 wajib diisi",
         ];
 
         foreach($this->get('po_spph_id') as $key=>$val) {

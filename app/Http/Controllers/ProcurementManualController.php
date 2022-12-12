@@ -10,6 +10,7 @@ use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\PoDetail;
 use App\Models\Po;
+use App\Models\Sp3;
 use App\Models\MasterPo;
 use App\Models\VendorCategory;
 use App\Models\VendorScore;
@@ -453,18 +454,43 @@ class ProcurementManualController extends Controller
         }
 
         foreach ($request->pv_comment as $key=>$komentar) {
-            VendorScore::where([
+            $check = [
                 'vendor_id' => $request->pv_vendor_id[$key],
                 'user_id' => Auth::user()->id,
-            ])->update([
                 'spph_id' => $request->pv_spph_id[$key],
+            ];
+
+            if (!VendorScore::where($check)->exists()) {
+                VendorScore::create($check);
+            }
+
+            VendorScore::where($check)->update([
                 'score' => $request->pv_score[$key],
                 'comment' => $request->pv_comment[$key]
             ]);
         }
 
         $procurement = Procurement::where('id', $request->procurement)->first();
-        Procurement::where('id', $procurement->id)->update(['status' => 7]);
+        
+        $dataSp3 = [
+            'procurement_id' => $procurement->id,
+            'keterangan' => $request->sp3_keterangan
+        ];
+
+        if($request->has('sp3_file')){
+            $sp3_file = $request->file('sp3_file');
+            $name = 'SP3-'.rand(10000, 100000).'-'.$procurement->id.'-'.$sp3_file->getClientOriginalName();
+            $dataSp3['sp3_file'] = $name;
+            $path = $this->upload($name, $sp3_file, 'sp3');
+        }
+
+        if (!Sp3::where('procurement_id', $procurement->id)->exists()){
+            Sp3::create($dataSp3);
+        } else {
+            Sp3::where('procurement_id', $procurement->id)->update($dataSp3);
+        }
+
+        Procurement::where('id', $procurement->id)->update(['status' => 9]);
         $msg = "Melakukan perubahan data BAPP, PO, dan/atau BAST secara manual";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");

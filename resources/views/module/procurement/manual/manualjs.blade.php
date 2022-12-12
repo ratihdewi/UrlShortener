@@ -57,6 +57,7 @@
 						$('#bapp').show();
 						$('#fieldPO').html('');
 						$('#fieldBAST').html('');
+						$('#fieldSP3').show();
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
 						tablePV.clear();
 
@@ -69,6 +70,7 @@
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
 
 						$('#fieldSpph').html('');
+						$('#fieldSP3').hide();
 						$('#fieldBA-Negosiasi').html('');
 						$('#tambahDokumen').show();
 						$('#tambahDokumen').click();

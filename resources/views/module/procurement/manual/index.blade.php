@@ -155,6 +155,19 @@
 									</table>
 								</div>
 							</fieldset>
+							<fieldset class="form-group border p-3">
+								<legend class="w-auto px-2"> Input SP3 </legend>
+								<div id="fieldSP3">
+									<div class="form-group">
+										<label> Keterangan </label>
+										<input type="text" name="sp3_keterangan" class="form-control" value="" />
+									</div>
+									<div class="form-group">
+										<label> Unggah File SP3 (.pdf) </label>
+										<input type="file" name="sp3_file" class="form-control" value="" />
+									</div>
+								</div>
+							</fieldset>
 						</nav>
 					</form>
 					<button class="btn btn-info" style="float: left" id="tambahDokumen"> Tambah Dokumen </button>
