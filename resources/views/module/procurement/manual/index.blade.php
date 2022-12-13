@@ -39,7 +39,7 @@
 								<legend class="w-auto px-2">Penawaran dan Tender Evaluasi</legend>
 								<div class="col-md-5 mb-4 mt-2">
 									<label> Unggah File Evaluasi Tender (.pdf) </label>
-									<input type="file" class="form-control" name="eval_tender_pdf">
+									<input type="file" class="form-control" id="eval_tender_pdf" name="eval_tender_pdf">
 								</div>
 								<table width="130%" class="table mt-5 mb-5" id="tabelItem">
 									<thead>

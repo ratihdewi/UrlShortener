@@ -46,6 +46,7 @@
 			tableBapp.clear();
 			tablePV.clear();
 			jumlahVendor = 0;
+			$('#storeData').prop('action', '');
 
 			$.ajax({
 				type: "GET",
@@ -58,7 +59,7 @@
 						$('#fieldPO').html('');
 						$('#fieldBAST').html('');
 						$('#fieldSP3').show();
-						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
+						
 						tablePV.clear();
 
 						$('#loadBapp').click();
@@ -67,7 +68,6 @@
 					} else {
 						$('#spph-negosiasi').show();
 						$('#bapp').hide();
-						$('#storeData').prop('action', "{{ route('manual.store') }}");
 
 						$('#fieldSpph').html('');
 						$('#fieldSP3').hide();
@@ -81,7 +81,7 @@
 
 		$('#tambahDokumen').on('click', function() {
 
-			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]" required></div></div>';
+			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+jumlahVendor+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+jumlahVendor+'" required></div></div>';
 			var collapse = `<div class="accordion" id="accordion${jumlahVendor}">
 				<div class="card" style="margin: 1.5%">
 					<div class="card-header" id="heading${jumlahVendor}">
@@ -96,22 +96,22 @@
 							<span class="form-row mb-2">
 								<div class="col">
 									<label class="small">Hari/Tanggal </label>
-									<input name="date[]" class="form-control" required="true" type="date"/>
+									<input name="date[]" id="date${jumlahVendor}" class="form-control" required="true" type="date"/>
 								</div>
 								<div class="col">
 									<label class="small">Waktu </label>
-									<input name="time[]" class="form-control" required="true" type="time"/>
+									<input name="time[]" id="time${jumlahVendor}" class="form-control" required="true" type="time"/>
 								</div>
 							</span>
 
 							<span class="form-row mb-2 mt-3">
 								<div class="col">
 									<label class="small"> Tempat </label>
-									<input name="location[]" class="form-control" required="true" type="text"/>
+									<input name="location[]" id="location${jumlahVendor}" class="form-control" required="true" type="text"/>
 								</div>
 								<div class="col">
 									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label>
-									<input name="peserta_eksternal[]" class="form-control" required="true" type="text"/>
+									<input name="peserta_eksternal[]" id="peserta_eksternal_${jumlahVendor}" class="form-control" required="true" type="text"/>
 								</div>
 							</span>
 
@@ -132,7 +132,7 @@
 								<div class="col-xl-12">
 									<div class="form-group">
 										<label class="small mb-1">Hasil Rapat </label>
-										<textarea name="meeting_result[]" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
+										<textarea name="meeting_result[]" id="meeting_result_${jumlahVendor}" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
 									</div>
 								</div>
 							</div>
@@ -141,13 +141,13 @@
 							<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label>
-										<input name="photo_doc[]" required class="form-control" type="file"/>
+										<input name="photo_doc[]" id="photo_doc_${jumlahVendor}" required class="form-control" type="file"/>
 									</div>
 								</div>
 								<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Negosiasi </label>(Rp)
-										<input name="negosiasi[]" required="true" class="form-control" type="text"/>
+										<input name="negosiasi[]" id="negosiasi${jumlahVendor}" required="true" class="form-control" type="text"/>
 									</div>
 								</div>
 							</div>
@@ -242,8 +242,38 @@
 		});
 
 		$('#save').on('click', function(){
+
 			$('#otherField').append(`<input type="hidden" name="arrNego" value="${arrNego}" />`);
-			$('#storeData').submit();
+			
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/getProcurement/" + $('#opsiProcurement').val(),
+				success: function(res) {
+
+					$('input').css("background-color", "white");
+					let isEmpty = true;
+
+					if(parseInt(res.status) >= 5) {
+						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
+
+					} else {
+						$('#storeData').prop('action', "{{ route('manual.store') }}");
+						let allInput = $('#spph-negosiasi input, textarea');
+
+						allInput.each(function(){
+							if (this.value.toString() == "" || this.value.toString() == " ") {
+								isEmpty = true;
+								$(`#${this.id}`).css({"background-color" : "#F67280"});
+							}
+						});
+					}
+
+					if (!isEmpty){
+						$('#storeData').submit();
+					} 
+				}
+			});
+
 		});
 
 		$('#loadBapp').on('click', function(){
