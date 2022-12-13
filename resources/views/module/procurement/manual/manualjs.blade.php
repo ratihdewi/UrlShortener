@@ -119,7 +119,7 @@
 								<div class="col-xl-12">
 									<div class="form-group">
 										<label class="small">Peserta Rapat Internal</label>
-										<select size="10" class="form-control select2" multiple="multiple" name="peserta_id[${jumlahVendor}][]" style="width:100%">
+										<select size="10" id="pesertaInternal${jumlahVendor}" class="form-control select2" multiple="multiple" name="peserta_id[${jumlahVendor}][]" style="width:100%">
 											@foreach($pesertas as $peserta)
 											<option class="mt-1 mb-1" value="{{$peserta->id}}">{{$peserta->name}}</option>
 											@endforeach
@@ -258,10 +258,10 @@
 
 					} else {
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
-						let allInput = $('#spph-negosiasi input, textarea');
+						let allInput = $('#spph-negosiasi input, textarea, select');
 
 						allInput.each(function(){
-							if (this.value.toString() == "" || this.value.toString() == " ") {
+							if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 								isEmpty = true;
 								$(`#${this.id}`).css({"background-color" : "#F67280"});
 							}
