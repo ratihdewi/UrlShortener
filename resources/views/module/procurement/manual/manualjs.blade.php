@@ -58,6 +58,7 @@
 						$('#bapp').show();
 						$('#fieldPO').html('');
 						$('#fieldBAST').html('');
+						$('#fieldBA-Negosiasi').html('');
 						$('#fieldSP3').show();
 						
 						tablePV.clear();
@@ -223,9 +224,9 @@
 								v.total_unit,
 								'',
 								v.vendor_id,
-								`<textarea rows="3" class="form-control" id="keterangan_${id}" name="keterangan[]"  value="" required> </textarea>`,
-								`<textarea rows="3" class="form-control" id="evaluasi_${id}" name="evaluasi[]" value="" required> </textarea>`,
-								`<textarea rows="3" class="form-control" id="nilai_${id}" name="nilai[]" value="" required> </textarea>`
+								`<textarea rows="3" class="form-control inputDataPenawaran" id="keterangan_${id}" name="keterangan[]"  value="" required> </textarea>`,
+								`<textarea rows="3" class="form-control inputDataPenawaran" id="evaluasi_${id}" name="evaluasi[]" value="" required> </textarea>`,
+								`<textarea rows="3" class="form-control inputDataPenawaran" id="nilai_${id}" name="nilai[]" value="" required> </textarea>`
 							]).node().id = `baris${id}`;
 							myTable.draw(false);
 							jumlahItem++;
@@ -243,8 +244,6 @@
 
 		$('#save').on('click', function(){
 
-			
-
 			$('#otherField').append(`<input type="hidden" name="arrNego" value="${arrNego}" />`);
 
 			$.ajax({
@@ -254,26 +253,32 @@
 
 					$('input:not(:disabled)').css("background-color", "white");
 					let isEmpty = false;
+					let emptyCol = 0;
 
 					if(parseInt(res.status) >= 5) {
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
-						let inputAll = $('#bapp input:not(.ck, .ck-hidden), textarea, select');
+						let inputAll = $('#bapp input:not(.ck, .ck-hidden), textarea:not(.inputDataPenawaran), select');
 
 						inputAll.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " ") {
 								isEmpty = true;
 								$(`#${this.id}`).css({"background-color" : "#F67280"});
+								emptyCol++;
+								// console.log(this.id);
 							}
 						});
 
 					} else {
+
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
-						let allInput = $('#spph-negosiasi input, textarea, select');
+						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden), textarea, select');
 
 						allInput.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 								isEmpty = true;
 								$(`#${this.id}`).css({"background-color" : "#F67280"});
+								emptyCol++;
+								// console.log(this.id);
 							}
 						});
 					}
@@ -296,7 +301,7 @@
 						Swal.fire({
 						  icon: 'error',
 						  title: 'Maaf, ',
-						  text: 'Terdapat beberapa kolom yang belum diisi',
+						  text: `Terdapat ${emptyCol} kolom yang belum diisi`,
 						});
 					}
 				}
@@ -497,6 +502,16 @@
 				
 						$('#fieldBAST').append(bastTag);
 						setSelectName(index, val.bast.user_id);
+
+						$.ajax({
+							type: "GET",
+							url: window.location.href + "/getSp3/" + $('#opsiProcurement').val(),
+							success: function(res) {
+								if(typeof res.keterangan !== 'undefined'){
+									$('#sp3_keterangan').prop('value', res.keterangan);
+								}
+							}
+						});
 					});
 				}
 			});
@@ -526,6 +541,8 @@
 			});
 			
 		});
+
+		
 
 	});
 

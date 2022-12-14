@@ -65,6 +65,7 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualController@storeFromBapp')->name('manual.storebapp');
             route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurement')->name('manual.getprocurement');
             route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementComponent')->name('manual.getprocurementcomponent');
+            route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualController@getSp3')->name('manual.getSp3');
         });
         
         Route::prefix('penawaran')->group(function () {

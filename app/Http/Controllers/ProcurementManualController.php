@@ -74,29 +74,43 @@ class ProcurementManualController extends Controller
     }
 
     public function getVendor ($proc_id) {
-        $procurement = Procurement::where('id', $proc_id)->first();
 
+        $procurement = Procurement::where('id', $proc_id)->first();
+        
         $spphId = array();
         foreach ($procurement->spphs as $spph) {
             array_push($spphId, $spph->id);
         }
-        
+            
         $catId = array();
         foreach ($procurement->items as $item) {
             array_push($catId, $item->category_id);
         }
 
-        $vendors = DB::table('vendors as v')
-                   ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
-                   ->join('vendor_score as vs', 'vs.vendor_id', '=', 'v.id')
-                   ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
-                   ->select('v.*', 'vs.score', 'vs.comment', 'ps.no_spph', 'ps.id as spph_id')
-                   ->where('v.delete', 0)
-                   ->where('ps.procurement_id', $procurement->id)
-                   ->whereIn('vs.spph_id', $spphId)
-                   ->whereIn('vc.category_id', $catId)
-                   ->groupBy('v.id')
-                   ->get();
+        if ($procurement->status > 5) {
+
+            $vendors = DB::table('vendors as v')
+                       ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                       ->join('vendor_score as vs', 'vs.vendor_id', '=', 'v.id')
+                       ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
+                       ->select('v.*', 'vs.score', 'vs.comment', 'ps.no_spph', 'ps.id as spph_id')
+                       ->where('v.delete', 0)
+                       ->where('ps.procurement_id', $procurement->id)
+                       ->whereIn('vs.spph_id', $spphId)
+                       ->whereIn('vc.category_id', $catId)
+                       ->groupBy('v.id')
+                       ->get();
+
+        } else {
+
+            $vendors = DB::table('vendors as v')
+                       ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                       ->select('v.*')
+                       ->where('delete', 0)
+                       ->whereIn('vc.category_id', $catId)
+                       ->get();
+        }
+       
         
         return response()->json($vendors);
     }
@@ -125,6 +139,12 @@ class ProcurementManualController extends Controller
             array_push($data, $item);
         }
         return response()->json($data);
+    }
+
+    public function getSp3 ($proc_id) {
+
+        $sp3 = Sp3::where('procurement_id', $proc_id)->first();
+        return response()->json($sp3);
     }
 
 
