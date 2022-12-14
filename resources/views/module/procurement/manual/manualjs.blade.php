@@ -287,7 +287,7 @@
 
 						Swal.fire({
 						  title: 'Konfirmasi',
-						  text: 'Tindakan berikut akan menyelesaikan proses penawaran, apakah akan dilanjutkan?',
+						  text: 'Tindakan berikut akan melanjutkan / menyelesaikan proses penawaran, apakah akan dilanjutkan?',
 						  showCancelButton: true,
 						  confirmButtonText: 'Ya',
 						  cancelButtonText: 'Tidak',
