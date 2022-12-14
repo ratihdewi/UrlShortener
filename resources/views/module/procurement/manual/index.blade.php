@@ -73,29 +73,29 @@
 									<div class="col-xl-6">
 										<div class="form-group">
 											<label class="small mb-1">Nomor Memo </label>
-											<input disabled name="nomor_memo_bapp" class="form-control" type="text"/>
+											<input disabled name="nomor_memo_bapp" id="nomor_memo_bapp" class="form-control" type="text"/>
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Nomor Surat </label>
-											<input class="form-control" name="no_surat_bapp" type="text" required/>
+											<input class="form-control" name="no_surat_bapp" id="no_surat_bapp" type="text" required/>
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Tanggal BAPP</label>
-											<input class="form-control" name="tanggal_bapp" type="date"/>
+											<input class="form-control" name="tanggal_bapp" id="tanggal_bapp" type="date"/>
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Tanggal Pengiriman SPPH</label>
-											<input class="form-control" name="tanggal_kirim_spph" type="date" required/>
+											<input class="form-control" name="tanggal_kirim_spph" id="tanggal_kirim_spph" type="date" required/>
 										</div>
 									</div>
 									<div class="col-xl-6">
 										<div class="form-group">
 											<label class="small mb-1">Perihal </label>
-											<input class="form-control" name="perihal" type="text" disabled/>
+											<input class="form-control" name="perihal" id="perihal" type="text" disabled/>
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Dari</label>
-											<select class="form-control" name="dari" style="width:100%">
+											<select class="form-control" name="dari" id="dari" style="width:100%">
 												@foreach($users as $user)
 													<option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
 												@endforeach
@@ -103,7 +103,7 @@
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Kepada</label>
-											<select class="form-control" name="kepada" style="width:100%">
+											<select class="form-control" name="kepada" id="kepada" style="width:100%">
 												@foreach($users as $user)
 													<option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
 												@endforeach
@@ -111,7 +111,7 @@
 										</div>
 										<div class="form-group">
 											<label class="small mb-1">Tempat </label>
-											<input name="lokasi" class="form-control" type="text"/>
+											<input name="lokasi" id="lokasi" class="form-control" type="text"/>
 										</div>
 									</div>
 								</div>
@@ -160,11 +160,11 @@
 								<div id="fieldSP3">
 									<div class="form-group">
 										<label> Keterangan </label>
-										<input type="text" name="sp3_keterangan" class="form-control" value="" />
+										<input type="text" name="sp3_keterangan" id="sp3_keterangan"  class="form-control" value="" />
 									</div>
 									<div class="form-group">
 										<label> Unggah File SP3 (.pdf) </label>
-										<input type="file" name="sp3_file" class="form-control" value="" />
+										<input type="file" name="sp3_file" id="sp3_file"  class="form-control" value="" />
 									</div>
 								</div>
 							</fieldset>

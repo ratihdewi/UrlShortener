@@ -123,7 +123,7 @@ class ProcurementManualController extends Controller
 
 
     public function store(SpphMultipleRequest $request) {
-        dd($request->all());
+
         $procurement = Procurement::where('id', $request->procurement)->first();
         $items = $procurement->items;
 

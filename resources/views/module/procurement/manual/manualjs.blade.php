@@ -244,7 +244,7 @@
 		$('#save').on('click', function(){
 
 			$('#otherField').append(`<input type="hidden" name="arrNego" value="${arrNego}" />`);
-			
+
 			$.ajax({
 				type: "GET",
 				url: window.location.href + "/getProcurement/" + $('#opsiProcurement').val(),
@@ -255,6 +255,14 @@
 
 					if(parseInt(res.status) >= 5) {
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
+						let inputAll = $('#bapp input:not(.ck, .ck-hidden), textarea, select');
+
+						inputAll.each(function(){
+							if (this.value.toString() == "" || this.value.toString() == " ") {
+								isEmpty = true;
+								$(`#${this.id}`).css({"background-color" : "#F67280"});
+							}
+						});
 
 					} else {
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
@@ -273,7 +281,7 @@
 					} 
 				}
 			});
-
+			
 		});
 
 		$('#loadBapp').on('click', function(){
@@ -422,19 +430,18 @@
 						                    <div class="col-xl-6">
 						                        <div class="form-group">
 						                            <label class="small mb-1">Nama Vendor </label>
-						                            <input disabled value="${val.vendor.name}" required class="form-control" type="text"/>
+						                            <input disabled value="${val.vendor.name}" id="bast_vn${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Perihal </label>
-						                            <input disabled value="${res.procurement.name}" required class="form-control" type="text"/>
+						                            <input disabled value="${res.procurement.name}" id="bast_perihal${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">No Surat </label>
-						                            <input name="bast_no_surat[]" value="${val.bast.no_surat}" required class="form-control" type="text"/>
+						                            <input name="bast_no_surat[]" value="${val.bast.no_surat}" id="bast_nosurat${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Pihak Pertama </label>
-													<button id="setSelectName${index}" onClick="setSelectName(${index}, ${val.bast.user_id})" hidden></button>
 						                            <select class="form-control select2" id="pihakPertama${index}" name="bast_user_id[]" style="width:100%">
 						                                @foreach($generalUsers as $user)
 						                                <option value="{{$user->id}}">
@@ -447,19 +454,19 @@
 						                    <div class="col-xl-6">
 						                        <div class="form-group">
 						                            <label class="small mb-1">Nomor SPMP </label>
-						                            <input disabled value="${val.po.no_spmp}" id="bastSpmp${index}" required class="form-control" type="text"/>
+						                            <input disabled value="${val.po.no_spmp}" id="bastSpmp${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Nama Pihak Kedua </label>
-						                            <input name="bast_nama_pihak_kedua[]" value="${val.bast.nama_pihak_kedua}" required class="form-control" type="text"/>
+						                            <input name="bast_nama_pihak_kedua[]" value="${val.bast.nama_pihak_kedua}" class="form-control" id="bast_nama_pihak_kedua${index}" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Jabatan Pihak Kedua</label>
-						                            <input name="bast_jabatan_pihak_kedua[]" value="${val.bast.jabatan_pihak_kedua}" required class="form-control" type="text"/>
+						                            <input name="bast_jabatan_pihak_kedua[]" value="${val.bast.jabatan_pihak_kedua}" id="bast_jabatan_pihak_kedua${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Upload Dokumen&nbsp;</label>
-						                            <input name="bast_file[]" required class="form-control" type="file"/>
+						                            <input name="bast_file[]" id="bast_file${index}" class="form-control" type="file" />
 						                        </div>
 						                    </div>
 						                </div>
@@ -469,7 +476,7 @@
 						</div>`;
 				
 						$('#fieldBAST').append(bastTag);
-						$(`#setSelectName${index}`).click();
+						setSelectName(index, val.bast.user_id);
 					});
 				}
 			});
@@ -491,7 +498,7 @@
 									<input type="range" id="pv_score${key+1}" onchange="showIndikatorPV(${key+1})" class="mt-1 custom-range" min="0" max="5" step="1" name="pv_score[]" value="${value.score}">
 								</div>
 							</div>`,
-							`<textarea name="pv_comment[]" class="form-control" rows="2"> ${komentar} </textarea>`,
+							`<textarea name="pv_comment[]" id="pv_comment${key+1}" class="form-control" rows="2"> ${komentar} </textarea>`,
 						]).node().id = `barisPV${key+1}`;
 						tablePV.draw(false);
 					})
