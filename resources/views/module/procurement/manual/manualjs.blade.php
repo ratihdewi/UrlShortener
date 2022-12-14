@@ -243,6 +243,8 @@
 
 		$('#save').on('click', function(){
 
+			
+
 			$('#otherField').append(`<input type="hidden" name="arrNego" value="${arrNego}" />`);
 
 			$.ajax({
@@ -250,8 +252,8 @@
 				url: window.location.href + "/getProcurement/" + $('#opsiProcurement').val(),
 				success: function(res) {
 
-					$('input').css("background-color", "white");
-					let isEmpty = true;
+					$('input:not(:disabled)').css("background-color", "white");
+					let isEmpty = false;
 
 					if(parseInt(res.status) >= 5) {
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
@@ -277,8 +279,26 @@
 					}
 
 					if (!isEmpty){
-						$('#storeData').submit();
-					} 
+
+						Swal.fire({
+						  title: 'Konfirmasi',
+						  text: 'Tindakan berikut akan menyelesaikan proses penawaran, apakah akan dilanjutkan?',
+						  showCancelButton: true,
+						  confirmButtonText: 'Ya',
+						  cancelButtonText: 'Tidak',
+						}).then((result) => {
+						  if (result.value) {
+						    $('#storeData').submit();
+						  }
+						});
+						
+					} else {
+						Swal.fire({
+						  icon: 'error',
+						  title: 'Maaf, ',
+						  text: 'Terdapat beberapa kolom yang belum diisi',
+						});
+					}
 				}
 			});
 			

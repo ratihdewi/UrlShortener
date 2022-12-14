@@ -75,6 +75,11 @@ class ProcurementManualController extends Controller
 
     public function getVendor ($proc_id) {
         $procurement = Procurement::where('id', $proc_id)->first();
+
+        $spphId = array();
+        foreach ($procurement->spphs as $spph) {
+            array_push($spphId, $spph->id);
+        }
         
         $catId = array();
         foreach ($procurement->items as $item) {
@@ -88,6 +93,7 @@ class ProcurementManualController extends Controller
                    ->select('v.*', 'vs.score', 'vs.comment', 'ps.no_spph', 'ps.id as spph_id')
                    ->where('v.delete', 0)
                    ->where('ps.procurement_id', $procurement->id)
+                   ->whereIn('vs.spph_id', $spphId)
                    ->whereIn('vc.category_id', $catId)
                    ->groupBy('v.id')
                    ->get();
@@ -364,7 +370,7 @@ class ProcurementManualController extends Controller
 
 
     public function storeFromBapp(BappMultipleRequest $request) {
-        dd($request->all());
+
         $dataBapp = [
             'procurement_id' => $request->procurement,
             'date' => $request->tanggal_bapp,
