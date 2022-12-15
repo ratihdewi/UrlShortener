@@ -36,10 +36,24 @@
                     Daftar Vendor Tender Terbuka
                 </a>
 
-                <a class="nav-link collapsed" href="{{route('procurement.manual')}}">
-                    <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
+                <a class="nav-link collapsed" data-toggle="collapse" href="#collapseMn" role="button" aria-expanded="false" aria-controls="collapseMn">
+                    <div class="nav-link-icon"> <i data-feather="arrow-right"></i> </div>
                     Pengadaan (Manual)
-                </a>
+                </a>  
+
+                <div class="collapse" id="collapseMn">
+                    <div>
+                    <a class="nav-link collapsed" href="{{route('procurement.manual')}}">
+                        <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
+                        Tender
+                    </a>
+                    <a class="nav-link collapsed" href="#">
+                        <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
+                        UMK
+                    </a>
+                    </div>
+                </div>
+                
 
                 @endif
                 @if(Auth::user()->role_id==1)

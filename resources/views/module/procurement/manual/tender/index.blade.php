@@ -182,6 +182,6 @@
     </div>
 </div>
 
-@include('module.procurement.manual.manualjs')
+@include('module.procurement.manual.tender.manualjs')
 
 @endsection

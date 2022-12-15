@@ -36,7 +36,7 @@ class ProcurementManualController extends Controller
             $pesertas = User::where('role_id', '<>', '1')->get();
             $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
             $generalUsers = User::all();
-            return view('module.procurement.manual.index', compact(
+            return view('module.procurement.manual.tender.index', compact(
                 'procurements',
                 'pesertas',
                 'users',

@@ -54,19 +54,6 @@ Route::group(['middleware' => ['auth'] ], function () {
         route::get('penawaran/tenderterbuka/submit/{penawaran}', 'App\Http\Controllers\TenderTerbukaController@submitPenawaran')->name('procurement.tenderterbuka.penawaran.submit');
         route::put('tenderterbuka/batas/ubah', 'App\Http\Controllers\TenderTerbukaController@ubahBatas')->name('procurement.tenderterbuka.batas');
         route::post('logs/store/{procurement}', 'App\Http\Controllers\LogsController@store')->name('procurement.logs.store');
-
-        Route::prefix('manual')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('procurement.manual');
-            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor')->name('manual.getvendor');
-            route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorCategory')->name('manual.getvendorcategory');
-            route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualController@getPenawaran')->name('manual.getpenawaran');
-            route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualController@getSpph')->name('manual.getspph');
-            route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('manual.store');
-            route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualController@storeFromBapp')->name('manual.storebapp');
-            route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurement')->name('manual.getprocurement');
-            route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementComponent')->name('manual.getprocurementcomponent');
-            route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualController@getSp3')->name('manual.getSp3');
-        });
         
         Route::prefix('penawaran')->group(function () {
             route::post('/upload/{procurement}', 'App\Http\Controllers\ProcurementController@uploadPenawaran')->name('procurement.upload.penawaran');
@@ -162,6 +149,21 @@ Route::group(['middleware' => ['auth'] ], function () {
             });
         });
         
+    });
+
+    Route::prefix('procurement-manual')->group(function(){
+        Route::prefix('tender')->group(function(){
+            route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('procurement.manual');
+            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor')->name('manual.getvendor');
+            route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorCategory')->name('manual.getvendorcategory');
+            route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualController@getPenawaran')->name('manual.getpenawaran');
+            route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualController@getSpph')->name('manual.getspph');
+            route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('manual.store');
+            route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualController@storeFromBapp')->name('manual.storebapp');
+            route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurement')->name('manual.getprocurement');
+            route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementComponent')->name('manual.getprocurementcomponent');
+            route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualController@getSp3')->name('manual.getSp3');
+        });
     });
 
     Route::prefix('slas')->group(function () {
