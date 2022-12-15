@@ -47,7 +47,7 @@
                         <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
                         Tender
                     </a>
-                    <a class="nav-link collapsed" href="#">
+                    <a class="nav-link collapsed" href="{{route('procurement.manual-umk')}}">
                         <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
                         UMK
                     </a>

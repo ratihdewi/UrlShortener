@@ -31,7 +31,7 @@ class ProcurementManualController extends Controller
 {
     public function index() {
 
-        $procurements = Procurement::where('status', '>', 1)->get();
+        $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', 1)->get();
         if (sizeof($procurements) > 0) {
             $pesertas = User::where('role_id', '<>', '1')->get();
             $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
@@ -43,7 +43,7 @@ class ProcurementManualController extends Controller
                 'generalUsers'
             ));
         } else {
-            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan tidak ada atau masih berstatus approval']);
+            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe Tender tidak ada atau masih berstatus approval']);
         }
         
     }
@@ -544,6 +544,45 @@ class ProcurementManualController extends Controller
             FlashMessage::SUCCESS));
     }
 
-    
+    // -- UMK -- //
 
+    public function indexUmk () {
+ 
+        $procurements = Procurement::where('status', '>', 0)->where('mechanism_id', 2)->get();
+        $itemCategory = ItemCategory::all();
+
+        if (sizeof($procurements) > 0) {
+            return view('module.procurement.manual.umk.index', compact(
+                'procurements',
+                'itemCategory',
+            ));
+        } else {
+            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe UMK tidak ada']);
+        }
+    }
+
+    public function getProcurementUmk ($id) {
+
+        $procurement = Procurement::where('id', $id)->first();
+
+        $catId = array();
+        foreach ($procurement->items as $item) {
+            array_push($catId, $item->category_id);
+        }
+
+        $vendors = DB::table('vendors as v')
+                        ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                        ->select('v.*')
+                        ->where('v.delete', 0)
+                        ->whereIn('vc.category_id', $catId)
+                        ->groupBy('v.id')
+                        ->get();
+
+        $data = [
+            'items' => $procurement->items,
+            'vendors' => $vendors
+        ];
+
+        return response()->json($data);
+    }
 }

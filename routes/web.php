@@ -152,6 +152,7 @@ Route::group(['middleware' => ['auth'] ], function () {
     });
 
     Route::prefix('procurement-manual')->group(function(){
+
         Route::prefix('tender')->group(function(){
             route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('procurement.manual');
             route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor')->name('manual.getvendor');
@@ -163,6 +164,11 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurement')->name('manual.getprocurement');
             route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementComponent')->name('manual.getprocurementcomponent');
             route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualController@getSp3')->name('manual.getSp3');
+        });
+
+        Route::prefix('umk')->group(function(){
+            route::get('/', 'App\Http\Controllers\ProcurementManualController@indexUmk')->name('procurement.manual-umk');
+            route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
         });
     });
 
