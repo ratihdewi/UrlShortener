@@ -610,14 +610,14 @@ class ProcurementManualController extends Controller
                 'price_total' => $request->harga[$key]*$request->total_unit[$key]
             ];
 
-            if (isset($request->brosur[$key])) {
+            // if (isset($request->brosur[$key])) {
 
-                $file = $request->file('brosur')[$key];
-                $name = 'Brosur-'.$file->getClientOriginalName();
-                $path = $this->upload($name, $file, 'brosur');
+            //     $file = $request->file('brosur')[$key];
+            //     $name = 'Brosur-'.$file->getClientOriginalName().'.'.$file->getClientOriginalExtension();;
+            //     $path = $this->upload($name, $file, 'brosur');
 
-                $dataItem['brosur_file'] = $name;
-            }
+            //     $dataItem['brosur_file'] = $name;
+            // }
 
             ProcurementItem::where('id', $request->item_id[$key])->update($dataItem);
             UmkItemVendor::where('item_id', $request->item_id[$key])->update([
@@ -625,5 +625,9 @@ class ProcurementManualController extends Controller
             ]);
 
         }
+
+        return redirect('/procurement-manual/umk')->with('message', 
+        new FlashMessage('Berhasil memperbaharui pengadaan UMK secara manual', 
+            FlashMessage::SUCCESS));
     }
 }
