@@ -169,6 +169,7 @@ Route::group(['middleware' => ['auth'] ], function () {
         Route::prefix('umk')->group(function(){
             route::get('/', 'App\Http\Controllers\ProcurementManualController@indexUmk')->name('procurement.manual-umk');
             route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
+            route::post('/store', 'App\Http\Controllers\ProcurementManualController@storeUmk')->name('manual.umk.store');
         });
     });
 

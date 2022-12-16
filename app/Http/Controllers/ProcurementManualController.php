@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use App\Models\Procurement;
 use App\Models\ProcurementSpph;
+use App\Models\ProcurementItem;
 use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\PoDetail;
@@ -24,6 +25,7 @@ use App\Utilities\FlashMessage;
 use App\Services\LogsInsertor;
 use App\Models\BaNegosiasi;
 use App\Models\BaNegosiasiPeserta;
+use App\Models\UmkItemVendor;
 use DB;
 use Auth;
 
@@ -557,7 +559,7 @@ class ProcurementManualController extends Controller
                 'itemCategory',
             ));
         } else {
-            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe UMK tidak ada']);
+            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe UMK tidak ada atau masih berstatus Draft']);
         }
     }
 
@@ -566,8 +568,11 @@ class ProcurementManualController extends Controller
         $procurement = Procurement::where('id', $id)->first();
 
         $catId = array();
+        $itemId = array();
+
         foreach ($procurement->items as $item) {
             array_push($catId, $item->category_id);
+            array_push($itemId, $item->id);
         }
 
         $vendors = DB::table('vendors as v')
@@ -578,11 +583,47 @@ class ProcurementManualController extends Controller
                         ->groupBy('v.id')
                         ->get();
 
+        $umkItem = UmkItemVendor::whereIn('item_id', $itemId)->orderBy('item_id', 'ASC')->get();
+
         $data = [
+            'procurement' => $procurement,
             'items' => $procurement->items,
-            'vendors' => $vendors
+            'vendors' => $vendors,
+            'umkItem' => $umkItem
         ];
 
         return response()->json($data);
+    }
+
+    public function storeUmk (Request $request) {
+
+        $procurement = Procurement::where('id', $request->procurement)->first();
+
+        foreach ($request->item_id as $key=>$value) {
+
+            $dataItem = [
+                'name' => $request->nama_barang[$key],
+                'price_est' => $request->harga[$key],
+                'total_unit' => $request->total_unit[$key],
+                'specs' => $request->specs[$key],
+                'category_id' => $request->category_id[$key],
+                'price_total' => $request->harga[$key]*$request->total_unit[$key]
+            ];
+
+            if (isset($request->brosur[$key])) {
+
+                $file = $request->file('brosur')[$key];
+                $name = 'Brosur-'.$file->getClientOriginalName();
+                $path = $this->upload($name, $file, 'brosur');
+
+                $dataItem['brosur_file'] = $name;
+            }
+
+            ProcurementItem::where('id', $request->item_id[$key])->update($dataItem);
+            UmkItemVendor::where('item_id', $request->item_id[$key])->update([
+                'vendor_id' => $request->vendor_id[$key]
+            ]);
+
+        }
     }
 }
