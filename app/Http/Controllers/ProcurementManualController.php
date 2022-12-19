@@ -726,4 +726,13 @@ class ProcurementManualController extends Controller
 
         return response()->json($vendor);
     }
+
+    public function deleteItem ($id) {
+
+        UmkItemVendor::where('item_id', $id)->delete();
+        ProcurementItem::where('id', $id)->delete();
+
+        return response()->json('success');
+
+    }
 }

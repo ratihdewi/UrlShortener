@@ -172,7 +172,7 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::post('/store', 'App\Http\Controllers\ProcurementManualController@storeUmk')->name('manual.umk.store');
             route::get('/loadDataUmk/{id}', 'App\Http\Controllers\ProcurementManualController@loadDataUmk')->name('procurement.manual-umk.loadDataUmk');
             route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorByCategory');
-
+            route::delete('/deleteItem/{id}', 'App\Http\Controllers\ProcurementManualController@deleteItem');
         });
     });
 

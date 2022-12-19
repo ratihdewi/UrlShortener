@@ -47,7 +47,7 @@
 							`<input type="file" name="brosur[]" class="form-control not-required" id="brosur${k}">`,
 							`<input type="text" id="harga_total${k}" class="form-control" name="harga_total[]" disabled value="${v.price_total}" />`,
 							`<select name="vendor_id[]" id="vendor_id${k}" class="form-control"> </select>`,
-							`<button type="button" class="btn btn-danger btn-sm mr-2"> Hapus </button>`
+							`<button type="button" class="btn btn-danger btn-sm mr-2" onclick="deleteItem(this, ${v.id})" > Hapus </button>`
 							]);
 						tableApproval.draw(false);
 
@@ -158,6 +158,33 @@
 			}
 
 		});
+	}
+
+	function deleteItem(v, id) {
+
+		Swal.fire({
+			title: 'Perhatian',
+			text: `Tindakan berikut akan menghapus item dan tidak dapat dikembalikan lagi, apakah akan dilanjutkan?`,
+			showCancelButton: true,
+			confirmButtonText: 'Ya',
+			cancelButtonText: 'Tidak',
+		}).then((result) => {
+			if (result.value) {
+				v.closest('tr').remove();
+
+				$.ajax({
+					type: "DELETE",
+					headers: {
+						'X-CSRF-TOKEN': '{{ csrf_token() }}'
+					},
+					url: window.location.href + "/deleteItem/" + id,
+					success: function(res) {
+						console.log(res);
+					}
+				});
+			}
+		});
+		
 	}
 
 </script>
