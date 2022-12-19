@@ -23,6 +23,12 @@
 			$('#bast').show();
 			$('#pjUmk').show();
 
+			$('#sp3 input').val('');
+			$('#bast input').val('');
+			$('#pjUmk input').val('');
+
+			tableApproval.clear();
+
 			$.ajax({
 
 				type: "GET",
