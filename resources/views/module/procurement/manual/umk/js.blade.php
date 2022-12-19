@@ -64,6 +64,7 @@
 					});
 
 					for (let i=0; i<sumItem; i++) {
+						$(`#vendor_id${i}`).append(`<option disabled selected> Pilih Vendor </option>`);
 						$.each(res.vendors, function(k,v){
 							$(`#vendor_id${i}`).append(`<option value="${v.id}"> ${v.name} </option>`);
 						});
@@ -104,7 +105,7 @@
 
 			let inputAll = $('input:not(.ck, .ck-hidden, .not-required), select');
 			inputAll.each(function(){
-				if (this.value.toString() == "" || this.value.toString() == " ") {
+				if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 					isEmpty = true;
 					$(`#${this.id}`).css({"background-color" : "#F67280"});
 					emptyCol++;
