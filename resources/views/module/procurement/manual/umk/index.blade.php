@@ -17,7 +17,7 @@
 					</div>
 					@endif
 
-					<form method="POST" id="submitData">
+					<form method="POST" id="submitData" enctype="multipart/form-data">
 						@csrf
 						<div class="form-group mb-4">
 							<label> Pengadaan </label>

@@ -36,7 +36,7 @@
 						tableApproval.row.add([
 							`<input type="hidden" name="item_id[]" value="${v.id}" class="form-control" id="item_id${k}" />
 							<input type="text" name="nama_barang[]" value="${v.name}" class="form-control" id="nama_barang${k}">`,
-							`<select name="category_id[]" id="opsiKategori${k}" class="form-control select2"> 
+							`<select name="category_id[]" id="opsiKategori${k}" onchange="changeVendorOption(${k})" class="form-control select2"> 
 							@foreach($itemCategory as $ic)
 							<option value="{{ $ic->id }}"> {{ $ic->name }} </option>
 							@endforeach
@@ -75,11 +75,24 @@
 				}
 			});
 
+
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/loadDataUmk/" + $('#opsiProcurement').val(),
+				success: function (res) {
+
+					for (const [key, value] of Object.entries(res)) {
+						$(`input[name=${key}]`).val(value);
+					}
+				}
+			});
+
 		});
 
 		$('#save').on('click', function(){
 
 			$('input:not(:disabled)').css("background-color", "white");
+			$('select').css("background-color", "white");
 			let isEmpty = false;
 			let emptyCol = 0;
 
@@ -125,6 +138,26 @@
 		let y = $(`#total_unit${id}`).val();
 
 		$(`#harga_total${id}`).prop('value', x*y);
+	}
+
+	function changeVendorOption (id) {
+
+		$(`#vendor_id${id}`).html('');
+
+		$.ajax({
+
+			type: "GET",
+			url: window.location.href + "/getVendorByCategory/" + $(`#opsiKategori${id}`).val(),
+
+			success: function (res) {
+
+				$.each(res, function(k,v){
+					$(`#vendor_id${id}`).append(`<option value="${v.id}"> ${v.name} </option>`);
+				});
+
+			}
+
+		});
 	}
 
 </script>

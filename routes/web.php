@@ -170,6 +170,9 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/', 'App\Http\Controllers\ProcurementManualController@indexUmk')->name('procurement.manual-umk');
             route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
             route::post('/store', 'App\Http\Controllers\ProcurementManualController@storeUmk')->name('manual.umk.store');
+            route::get('/loadDataUmk/{id}', 'App\Http\Controllers\ProcurementManualController@loadDataUmk')->name('procurement.manual-umk.loadDataUmk');
+            route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorByCategory');
+
         });
     });
 

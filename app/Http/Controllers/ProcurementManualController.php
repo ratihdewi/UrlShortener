@@ -26,6 +26,8 @@ use App\Services\LogsInsertor;
 use App\Models\BaNegosiasi;
 use App\Models\BaNegosiasiPeserta;
 use App\Models\UmkItemVendor;
+use App\Models\UmkBast;
+use App\Models\UmkPj;
 use DB;
 use Auth;
 
@@ -610,14 +612,14 @@ class ProcurementManualController extends Controller
                 'price_total' => $request->harga[$key]*$request->total_unit[$key]
             ];
 
-            // if (isset($request->brosur[$key])) {
+            if (isset($request->brosur[$key])) {
 
-            //     $file = $request->file('brosur')[$key];
-            //     $name = 'Brosur-'.$file->getClientOriginalName().'.'.$file->getClientOriginalExtension();;
-            //     $path = $this->upload($name, $file, 'brosur');
+                $file = $request->file('brosur')[$key];
+                $name = 'Brosur-'.$file->getClientOriginalName().'.'.$file->getClientOriginalExtension();;
+                $path = $this->upload($name, $file, 'brosurs');
 
-            //     $dataItem['brosur_file'] = $name;
-            // }
+                $dataItem['brosur_file'] = $name;
+            }
 
             ProcurementItem::where('id', $request->item_id[$key])->update($dataItem);
             UmkItemVendor::where('item_id', $request->item_id[$key])->update([
@@ -626,8 +628,102 @@ class ProcurementManualController extends Controller
 
         }
 
-        return redirect('/procurement-manual/umk')->with('message', 
+        $dataSp3 = [
+            'procurement_id' => $procurement->id,
+            'keterangan' => $request->sp3_keterangan
+        ];
+
+        if($request->has('sp3_file')){
+            $sp3_file = $request->file('sp3_file');
+            $name = 'SP3-'.rand(10000, 100000).'-'.$procurement->id.'-'.$sp3_file->getClientOriginalName();
+            $dataSp3['sp3_file'] = $name;
+            $path = $this->upload($name, $sp3_file, 'sp3');
+        }
+
+        if (!Sp3::where('procurement_id', $procurement->id)->exists()){
+            Sp3::create($dataSp3);
+        } else {
+            Sp3::where('procurement_id', $procurement->id)->update($dataSp3);
+        }
+
+
+        $dataBast = [
+            'procurement_id' => $procurement->id,
+            'keterangan' => $request->bast_keterangan
+        ];
+
+        if (isset($request->bast_file)) {
+            $file_bast = $request->file('bast_file');
+            $name_bast = 'BAST-UMK-'.rand(10000, 100000).'-'.$procurement->id.'-'.$file_bast->getClientOriginalName();
+            $path = $this->upload($name_bast, $file_bast, 'bast');
+            $dataBast['bast_file'] = $name_bast;
+        }
+
+        if (!UmkBast::where('procurement_id', $procurement->id)->exists()){
+            UmkBast::create($dataBast);
+        } else {
+            UmkBast::where('procurement_id', $procurement->id)->update($dataBast);
+        }
+
+        $dataPjUmk = [
+            'no_memo_umk' => $request->no_memo_umk,
+            'name' => $request->name,
+            'no_pekerja' => $request->no_pekerja,
+            'jabatan' => $request->jabatan,
+            'fungsi' => $request->fungsi,
+            'gl_account' => $request->gl_account,
+            'cost_center' => $request->cost_center,
+            'total' => $request->total,
+        ];
+
+        if($request->has('invoice_file')){
+            $invoice_file = $request->file('invoice_file');
+            $name = 'INVOICE-'.$procurement->id.'.'.$invoice_file->getClientOriginalExtension();
+            $dataPjUmk['invoice_file'] = $name;
+            $path = $this->upload($name, $invoice_file, 'invoice');
+        }
+
+        if (!UmkPj::where('procurement_id', $procurement->id)->exists()){
+            UmkPj::create($dataPjUmk);
+        } else {
+            UmkPj::where('procurement_id', $procurement->id)->update($dataPjUmk);
+        }
+
+        $procurement->status = 4;
+        $procurement->save();
+
+        return redirect("/procurement/show/$procurement->id/$procurement->status")->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan UMK secara manual', 
             FlashMessage::SUCCESS));
+    }
+
+    public function loadDataUmk ($id) {
+
+        $data = UmkPj::where('procurement_id', $id)->first();
+        $sp3 = Sp3::where('procurement_id', $id)->first();
+        $bast = UmkBast::where('procurement_id', $id)->first();
+
+        $data['sp3_keterangan'] = $sp3->keterangan;
+        $data['bast_keterangan'] = $bast->keterangan;
+
+        $except = ['id', 'procurement_id', 'created_at', 'updated_at', 'invoice_file'];
+        foreach ($except as $e) {
+            unset($data[$e]);
+        }
+
+        return response()->json($data);
+
+    }
+
+    public function getVendorByCategory ($id) {
+
+        $vendor = DB::table('vendors as v')
+                  ->join('vendor_categories as vc', 'v.id','=', 'vc.vendor_id')
+                  ->select('v.*')
+                  ->where('vc.category_id', $id)
+                  ->orderBy('v.id', 'ASC')
+                  ->get();
+
+        return response()->json($vendor);
     }
 }
