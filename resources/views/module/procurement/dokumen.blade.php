@@ -17,11 +17,6 @@
                             <label class="small mb-1">Spph&nbsp;</label>
                             <div class="timeline timeline-sm">
                                 <table style="margin-left:10px;font-size:9pt">
-                                <!-- @foreach($procurement->spphs as $row)
-                                    <tr>
-                                        <td><a id="viewTor" data-url="{{route('procurement.file.view', [$row->id, 'spph'])}}" href="#."> {{$row->vendor->name}} </a></td>
-                                    </tr>
-                                @endforeach -->
                                 @if(count($dataSpphValid)>0)
                                     @foreach($dataSpphValid as $row)
                                         <tr>

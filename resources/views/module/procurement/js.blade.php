@@ -1,4 +1,46 @@
 <script type="text/javascript">
+
+    let vendorUrl = window.location.origin + '/procurement-manual/umk/getVendorByCategory/';
+
+    $(document).ready(function() {
+        $('#inputManual').hide();
+        $('#inputList').hide();
+    });
+
+    $('#methodVendor').on('change', function(){
+
+        if(this.value == 1){
+            $('#inputManual').hide();
+            $('#inputList').show();
+
+            loadVendorOption();
+        } else {
+            $('#inputManual').show();
+            $('#inputList').hide();
+
+            $('#listVendor').html('');
+        }
+
+    });
+
+    $('#category').on('change', function(){
+        loadVendorOption();
+    });
+
+    function loadVendorOption () {
+        $('#listVendor').html('');
+        $.ajax({
+            type: "GET",
+            url: vendorUrl + $('#category').val(),
+            success: function (res) {
+                $('#listVendor').append('<option disabled selected> -- Pilih Vendor -- </option>');
+                $.each(res, function(k,v){
+                    $('#listVendor').append(`<option value="${v.id}"> ${v.name} </option>`);
+                });
+            }
+        });
+    }
+
     $('#btn-hapus-procurement').on('click', function(e){
         e.preventDefault();
         var id = $(this).data('id');

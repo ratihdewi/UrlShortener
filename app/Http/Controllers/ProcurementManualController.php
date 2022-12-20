@@ -116,6 +116,18 @@ class ProcurementManualController extends Controller
                         ->whereIn('vc.category_id', $catId)
                         ->groupBy('v.id')
                         ->get();
+
+                if (sizeof($vendors) == 0) {
+                    $vendors = DB::table('vendors as v')
+                        ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                        ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
+                        ->select('v.*', 'ps.no_spph', 'ps.id as spph_id')
+                        ->where('v.delete', 0)
+                        ->where('ps.procurement_id', $procurement->id)
+                        ->whereIn('vc.category_id', $catId)
+                        ->groupBy('v.id')
+                        ->get();
+                }
                 
                 foreach ($vendors as $vendor) {
                     $vendor->score = 2;

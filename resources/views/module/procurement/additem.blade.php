@@ -73,10 +73,22 @@
                             @endif
                         </div>
                         <div class="form-group">
-                            <label class="small mb-1">Rekomendasi Vendor </label> 
-                            <input type="button" class="btn btn-primary btn-sm add" value="+" id="add"/>
+                            <label class="small mb-1">Rekomenasi Vendor &nbsp;</label>
+                            <select class="form-control" id="methodVendor">
+                                <option disabled value="0" selected> -- Pilih Opsi --</option> 
+                                <option value="1"> Pilih dari daftar </option>
+                                <option value="2"> Masukkan secara manual </option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="inputManual">
+                            <input type="button" class="btn btn-primary btn-sm add" value="Tambah" id="add"/>
                             <div id="vendor-form" style="margin-top:10px;">
                             </div>
+                        </div>
+                        <div class="form-group" id="inputList">
+                            <label class="small mb-1"> Pilih Vendor </label> 
+                            <select class="form-control" name="vendor_select" id="listVendor">
+                            </select>
                         </div>
                     </div>
                 </div>

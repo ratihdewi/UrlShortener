@@ -649,6 +649,19 @@ class ProcurementController extends Controller
      */
     public function itemStore(ProcItemRequest $request, $procurement_id, VendorInsertor $service)
     {
+
+        if($request->vendor_name!=null){
+            foreach($request->vendor_name as $key => $value){
+                $exist = Vendor::where([
+                    'email' => $request->vendor_email[$key],
+                ])->exists();
+
+                if ($exist) {
+                    return response()->json(['message' => 'Error']);
+                }
+            }
+        }
+
         $procurement = Procurement::find($procurement_id);
         $data = [];
         $data = $request->all();
@@ -667,12 +680,20 @@ class ProcurementController extends Controller
         $proc_item = ProcurementItem::create($data);
 
         /*vendor temp recomendation from user*/
-        if($request->vendor_name!=null){
-            foreach($request->vendor_name as $key => $i){
-                $service->insertTemp($i, $request->vendor_email[$key], $proc_item->id, $request->category_id);
+        if ($request->vendor_select != null) {
+            ProcurementVendorRecomendation::create([
+                'item_id' => $proc_item->id,
+                'vendor_id' => $request->vendor_select
+            ]);
+        } else {
+            if($request->vendor_name!=null){
+                foreach($request->vendor_name as $key => $i){
+                    $service->insertTemp($i, $request->vendor_email[$key], $proc_item->id, $request->category_id);
+                }
             }
         }
 
+        
         if($procurement_id==0){
             $items = ProcurementItem::where('user_id', Auth::user()->id)->where('temporary', 1)->get();
             return view('module.procurement.itemlist', compact('items'));

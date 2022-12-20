@@ -1,5 +1,5 @@
 <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
@@ -73,10 +73,22 @@
                             @endif
                         </div>
                         <div class="form-group">
-                            <label class="small mb-1">Rekomendasi Vendor </label> 
-                            <input type="button" class="btn btn-primary btn-sm add" value="+" id="add"/>
+                            <label class="small mb-1">Rekomenasi Vendor &nbsp;</label>
+                            <select class="form-control" id="methodVendor">
+                                <option disabled value="0" selected> -- Pilih Opsi --</option> 
+                                <option value="1"> Pilih dari daftar </option>
+                                <option value="2"> Masukkan secara manual </option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="inputManual">
+                            <input type="button" class="btn btn-primary btn-sm add" value="Tambah" id="add"/>
                             <div id="vendor-form" style="margin-top:10px;">
                             </div>
+                        </div>
+                        <div class="form-group" id="inputList">
+                            <label class="small mb-1"> Pilih Vendor </label> 
+                            <select class="form-control chosen-select" name="vendor_select" id="listVendor">
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -93,6 +105,47 @@
 
 <script type="text/javascript">
 
+    let vendorUrl = window.location.origin + '/procurement-manual/umk/getVendorByCategory/';
+
+    $(document).ready(function() {
+        $('#inputManual').hide();
+        $('#inputList').hide();
+    });
+
+    $('#methodVendor').on('change', function(){
+
+        if(this.value == 1){
+            $('#inputManual').hide();
+            $('#inputList').show();
+
+            loadVendorOption();
+        } else {
+            $('#inputManual').show();
+            $('#inputList').hide();
+
+            $('#listVendor').html('');
+        }
+
+    });
+
+    $('#category').on('change', function(){
+        loadVendorOption();
+    });
+
+    function loadVendorOption () {
+        $('#listVendor').html('');
+        $.ajax({
+            type: "GET",
+            url: vendorUrl + $('#category').val(),
+            success: function (res) {
+                $('#listVendor').append('<option disabled selected> -- Pilih Vendor -- </option>');
+                $.each(res, function(k,v){
+                    $('#listVendor').append(`<option value="${v.id}"> ${v.name} </option>`);
+                });
+            }
+        });
+    }
+
     function ajaxSave(filename, content) {
         content = typeof content !== 'undefined' ? content : 'content';
         $('.loading').show();
@@ -108,13 +161,29 @@
             contentType: false,
             processData: false,
             success: function (data) {
-                $("#" + content).html(data);
-                $('.loading').hide();
-                $('#addItemModal').modal('toggle');
-                clearForm("#formItem");
+
+                if (data.message == "Error") {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Galat',
+                      text: 'Email Vendor Yang Dimasukkan Sudah Terdaftar',
+                    });
+                } else {
+                    $("#" + content).html(data);
+                    $('.loading').hide();
+                    $('#addItemModal').modal('toggle');
+                    clearForm("#formItem");
+                }
             },
             error: function (xhr, status, error) {
-                alert(xhr.responseText);
+                let txt = JSON.parse(xhr.responseText).errors;
+                console.log(txt);
+
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Galat',
+                  text: 'Data tidak lengkap',
+                });
             }
         });
     }
