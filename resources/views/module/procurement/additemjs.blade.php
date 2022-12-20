@@ -86,8 +86,8 @@
                             </div>
                         </div>
                         <div class="form-group" id="inputList">
-                            <label class="small mb-1"> Pilih Vendor </label> 
-                            <select class="form-control chosen-select" name="vendor_select" id="listVendor">
+                            <label class="small mb-1"> Pilih Vendor </label> <br>
+                            <select class="form-control select2" style="width: 100%" name="vendor_select" id="listVendor">
                             </select>
                         </div>
                     </div>
