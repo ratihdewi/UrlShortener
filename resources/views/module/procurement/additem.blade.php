@@ -8,7 +8,7 @@
             <form action="{{route('procurement.item.store', [$procurement->id])}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
-                    <div class="col-xl-12">
+                    <div class="col-xl-6">
                         <div class="form-group">
                             <input name="procurement_id" value="{{$procurement->id}}" type="hidden"/>
                             <label class="small mb-1">Nama </label><label class="small mb-1" style="color:red">*</label>
@@ -55,6 +55,8 @@
                                 </span>
                             @endif
                         </div>
+                    </div>
+                    <div class="col-xl-6">
                         <div class="form-group">
                             <label class="small mb-1">Category </label>
                             <select name="category_id" class="form-control" id="category">

@@ -48,7 +48,7 @@
                                 @if($row->vendor->delete == 0)
                                     @if($class->validatePenawaranVendor($row->vendor, $procurement->items))
                                         @if (!$row->hidden)
-                                            <tr>
+                                            <tr class="{{ $class->isVendorRecomendation($row) ? 'table-info' : '' }} ">
                                                 @if($procurement->mechanism_id!=6)
                                                     <td class="text-center">
                                                         @if(Auth::user()->role_id <=3)

@@ -36,6 +36,7 @@
 		var tablePV = $('#tablePV').DataTable({
 			"searching" : false,
 			"paging": false,
+			"scrollX": true,
 			"lengthChange": false,
 			"ordering": false,
 		});
@@ -82,7 +83,7 @@
 
 		$('#tambahDokumen').on('click', function() {
 
-			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label><input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+jumlahVendor+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label><input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+jumlahVendor+'" required></div></div>';
+			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <label class="small mb-1" style="color:red">*</label>  <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>  <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+jumlahVendor+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+jumlahVendor+'" required></div></div>';
 			var collapse = `<div class="accordion" id="accordion${jumlahVendor}">
 				<div class="card" style="margin: 1.5%">
 					<div class="card-header" id="heading${jumlahVendor}">
@@ -96,22 +97,22 @@
 						<div class="card-body" style="border: none !important">
 							<span class="form-row mb-2">
 								<div class="col">
-									<label class="small">Hari/Tanggal </label>
+									<label class="small">Hari/Tanggal </label> <label class="small mb-1" style="color:red">*</label> 
 									<input name="date[]" id="date${jumlahVendor}" class="form-control" required="true" type="date"/>
 								</div>
 								<div class="col">
-									<label class="small">Waktu </label>
+									<label class="small">Waktu </label> <label class="small mb-1" style="color:red">*</label> 
 									<input name="time[]" id="time${jumlahVendor}" class="form-control" required="true" type="time"/>
 								</div>
 							</span>
 
 							<span class="form-row mb-2 mt-3">
 								<div class="col">
-									<label class="small"> Tempat </label>
+									<label class="small"> Tempat </label> <label class="small mb-1" style="color:red">*</label> 
 									<input name="location[]" id="location${jumlahVendor}" class="form-control" required="true" type="text"/>
 								</div>
 								<div class="col">
-									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label>
+									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label class="small mb-1" style="color:red">*</label>  <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label> <label class="small mb-1" style="color:red">*</label> 
 									<input name="peserta_eksternal[]" id="peserta_eksternal_${jumlahVendor}" class="form-control" required="true" type="text"/>
 								</div>
 							</span>
@@ -119,7 +120,7 @@
 							<div class="form-row mb-2 mt-3">
 								<div class="col-xl-12">
 									<div class="form-group">
-										<label class="small">Peserta Rapat Internal</label>
+										<label class="small">Peserta Rapat Internal</label> <label class="small mb-1" style="color:red">*</label> 
 										<select size="10" id="pesertaInternal${jumlahVendor}" class="form-control select2" multiple="multiple" name="peserta_id[${jumlahVendor}][]" style="width:100%">
 											@foreach($pesertas as $peserta)
 											<option class="mt-1 mb-1" value="{{$peserta->id}}">{{$peserta->name}}</option>
@@ -132,7 +133,7 @@
 							<div class="form-row mb-2 mt-3">
 								<div class="col-xl-12">
 									<div class="form-group">
-										<label class="small mb-1">Hasil Rapat </label>
+										<label class="small mb-1">Hasil Rapat </label> <label class="small mb-1" style="color:red">*</label> 
 										<textarea name="meeting_result[]" id="meeting_result_${jumlahVendor}" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
 									</div>
 								</div>
@@ -141,13 +142,13 @@
 							<div class="form-row mb-2 mt-3">
 							<div class="col">
 									<div class="form-group">
-										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label>
+										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label> <label class="small mb-1" style="color:red">*</label> 
 										<input name="photo_doc[]" id="photo_doc_${jumlahVendor}" required class="form-control" type="file"/>
 									</div>
 								</div>
 								<div class="col">
 									<div class="form-group">
-										<label class="small mb-1">Negosiasi </label>(Rp)
+										<label class="small mb-1">Negosiasi </label> <label class="small mb-1" style="color:red">*</label> (Rp)
 										<input name="negosiasi[]" id="negosiasi${jumlahVendor}" required="true" class="form-control" type="text"/>
 									</div>
 								</div>
@@ -322,6 +323,8 @@
 					$('input[name=no_surat_bapp]').prop('value', res.bapp.no_surat);
 					$('input[name=tanggal_bapp]').prop('value', res.bapp.date.slice(0,10));
 					$('input[name=lokasi]').prop('value', res.bapp.location);
+					$('#dari').val(res.bapp.dari);
+					$('#kepada').val(res.bapp.kepada);
 
 					if (res.procurement.spph_sending_date != null) {
 						$('input[name=tanggal_kirim_spph]').prop('value', res.procurement.spph_sending_date.slice(0,10));
@@ -374,7 +377,7 @@
 						        <div class="row">
 								    <div class="col-xl-6">
 								        <div class="form-group">
-								            <label class="small mb-1">Nomor Memo </label>
+								            <label class="small mb-1">Nomor Memo </label> <label class="small mb-1" style="color:red">*</label> 
 								            <input name="po_no_memo[]" value="${res.procurement.no_memo}" disabled class="form-control" type="text"/>
 								        </div>
 
@@ -382,21 +385,21 @@
 										<input name="po_spph_id[]" value="${val.id}" hidden type="text" />
 
 								        <div class="form-group">
-								            <label class="small mb-1">Perihal </label>
+								            <label class="small mb-1">Perihal </label> <label class="small mb-1" style="color:red">*</label> 
 								            <input name="po_perihal[]" value="${res.procurement.name}" disabled class="form-control" type="text"/>
 								        </div>
 								        <div class="form-group">
-								            <label class="small mb-1">No SPMP </label>
+								            <label class="small mb-1">No SPMP </label> <label class="small mb-1" style="color:red">*</label> 
 								            <input name="po_no_spmp[]" id="po_no_spmp${index}" value="${val.po.no_spmp}" class="form-control" type="text" onchange="setSpmpBast(${index})" />
 								        </div>
 								    </div>
 								    <div class="col-xl-6">
 								        <div class="form-group">
-								            <label class="small mb-1">Tanggal </label>
+								            <label class="small mb-1">Tanggal </label> <label class="small mb-1" style="color:red">*</label> 
 								            <input name="po_date[]" id="po_date${index}" class="form-control" value="${val.po.date.slice(0,10)}" type="date"/>
 								        </div>
 								        <div class="form-group">
-								            <label class="small mb-1">Disetujui Oleh </label>
+								            <label class="small mb-1">Disetujui Oleh </label> <label class="small mb-1" style="color:red">*</label> 
 								            <select class="form-control select2" name="po_approved_by[]" id="po_approved_by${index}">
 								                @foreach($users as $user)
 								                <option value="{{$user->id}}">{{$user->name}} - {{$user->jabatan_caption}}</option>
@@ -406,11 +409,11 @@
 								        <div class="form-group">
 											<div class="row">
 												<div class="col-md-10">
-													<label class="small mb-1">Dokumen Pendukung</label>
+													<label class="small mb-1">Dokumen Pendukung</label> <label class="small mb-1" style="color:red">*</label> 
 								            		<input name="po_dok_pendukung[]" id="po_dok_pendukung${index}" class="form-control" type="file"/>
 												</div>
 												<div class="col-md-2">
-													<label class="small mb-1">PPN </label>
+													<label class="small mb-1">PPN </label> <label class="small mb-1" style="color:red">*</label> 
 								            		<input name="po_ppn[]" id="po_ppn${index}" style="width:20px" checked value="1" class="form-control" type="checkbox"/>
 												</div>
 											</div>
@@ -420,11 +423,11 @@
 								<div class="row">
 								    <div class="col-xl-12">
 								        <div class="form-group">
-								            <label class="small mb-1">Ketentuan Pekerjaan </label><label class="small mb-1" style="color:red">*</label>
+								            <label class="small mb-1">Ketentuan Pekerjaan </label> <label class="small mb-1" style="color:red">*</label> 
 								            <textarea id="ket_kerja${index}" name="po_ketentuan_pekerjaan[]" id="po_ketentuan_pekerjaan${index}" rows="4" class="form-control"> ${val.po.ketentuan_pekerjaan} </textarea>
 								        </div>
 								        <div class="form-group">
-								            <label class="small mb-1">Ketentuan Pembayaran </label><label class="small mb-1" style="color:red">*</label>
+								            <label class="small mb-1">Ketentuan Pembayaran </label> <label class="small mb-1" style="color:red">*</label>
 								            <textarea id="ket_bayar${index}" name="po_ketentuan_pembayaran[]" id="po_ketentuan_pembayaran${index}" rows="4" class="form-control"> ${val.po.ketentuan_pembayaran} </textarea>
 								        </div>
 								    </div>
@@ -456,19 +459,19 @@
 						                <div class="row">
 						                    <div class="col-xl-6">
 						                        <div class="form-group">
-						                            <label class="small mb-1">Nama Vendor </label>
+						                            <label class="small mb-1">Nama Vendor </label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input disabled value="${val.vendor.name}" id="bast_vn${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
-						                            <label class="small mb-1">Perihal </label>
+						                            <label class="small mb-1">Perihal </label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input disabled value="${res.procurement.name}" id="bast_perihal${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
-						                            <label class="small mb-1">No Surat </label>
+						                            <label class="small mb-1">No Surat </label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input name="bast_no_surat[]" value="${val.bast.no_surat}" id="bast_nosurat${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
-						                            <label class="small mb-1">Pihak Pertama </label>
+						                            <label class="small mb-1">Pihak Pertama </label> <label class="small mb-1" style="color:red">*</label> 
 						                            <select class="form-control select2" id="pihakPertama${index}" name="bast_user_id[]" style="width:100%">
 						                                @foreach($generalUsers as $user)
 						                                <option value="{{$user->id}}">
@@ -480,19 +483,19 @@
 						                    </div>
 						                    <div class="col-xl-6">
 						                        <div class="form-group">
-						                            <label class="small mb-1">Nomor SPMP </label>
+						                            <label class="small mb-1">Nomor SPMP </label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input disabled value="${val.po.no_spmp}" id="bastSpmp${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
-						                            <label class="small mb-1">Nama Pihak Kedua </label>
+						                            <label class="small mb-1">Nama Pihak Kedua </label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input name="bast_nama_pihak_kedua[]" value="${val.bast.nama_pihak_kedua}" class="form-control" id="bast_nama_pihak_kedua${index}" type="text"/>
 						                        </div>
 						                        <div class="form-group">
-						                            <label class="small mb-1">Jabatan Pihak Kedua</label>
+						                            <label class="small mb-1">Jabatan Pihak Kedua</label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input name="bast_jabatan_pihak_kedua[]" value="${val.bast.jabatan_pihak_kedua}" id="bast_jabatan_pihak_kedua${index}" class="form-control" type="text"/>
 						                        </div>
 						                        <div class="form-group">
-						                            <label class="small mb-1">Upload Dokumen&nbsp;</label>
+						                            <label class="small mb-1">Upload Dokumen&nbsp;</label> <label class="small mb-1" style="color:red">*</label> 
 						                            <input name="bast_file[]" id="bast_file${index}" class="form-control" type="file" />
 						                        </div>
 						                    </div>
@@ -504,6 +507,7 @@
 				
 						$('#fieldBAST').append(bastTag);
 						setSelectName(index, val.bast.user_id);
+						$(`#po_approved_by${index}`).val(val.po.approved_by);
 
 						$.ajax({
 							type: "GET",

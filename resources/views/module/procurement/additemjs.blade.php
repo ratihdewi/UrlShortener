@@ -8,7 +8,7 @@
             <form action="{{route('procurement.item.store', ['0'])}}" method="POST" id="formItem" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
-                    <div class="col-xl-12">
+                    <div class="col-xl-6">
                         <div class="form-group">
                             <input name="procurement_id" value="0" type="hidden"/>
                             <label class="small mb-1">Nama </label><label class="small mb-1" style="color:red">*</label>
@@ -55,8 +55,10 @@
                                 </span>
                             @endif
                         </div>
+                    </div>
+                    <div class="col-xl-6">
                         <div class="form-group">
-                            <label class="small mb-1">Category </label>
+                            <label class="small mb-1">Category </label> <label class="small mb-1" style="color:red">*</label>
                             <select name="category_id" class="form-control" id="category">
                                 @foreach($categories as $category)
                                     <option value="{{$category->id}}">{{$category->name}}</option>
@@ -78,6 +80,7 @@
                                 <option disabled value="0" selected> -- Pilih Opsi --</option> 
                                 <option value="1"> Pilih dari daftar </option>
                                 <option value="2"> Masukkan secara manual </option>
+                                <option value="3" class="flex-option"> Custom </option>
                             </select>
                         </div>
                         <div class="form-group" id="inputManual">
@@ -112,6 +115,15 @@
         $('#inputList').hide();
     });
 
+    $('#mechanism_id').on('change', function(){
+        if (this.value != 2) {
+            $('.flex-option').prop('disabled', false);
+        } else {
+            $('.flex-option').prop('disabled', true);
+        }
+        
+    });
+
     $('#methodVendor').on('change', function(){
 
         if(this.value == 1){
@@ -119,11 +131,16 @@
             $('#inputList').show();
 
             loadVendorOption();
-        } else {
+        } else if (this.value == 2) {
             $('#inputManual').show();
             $('#inputList').hide();
 
             $('#listVendor').html('');
+        } else {
+            $('#inputManual').show();
+            $('#inputList').show();   
+
+            loadVendorOption();         
         }
 
     });

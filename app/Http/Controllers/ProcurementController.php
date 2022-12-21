@@ -685,13 +685,13 @@ class ProcurementController extends Controller
                 'item_id' => $proc_item->id,
                 'vendor_id' => $request->vendor_select
             ]);
-        } else {
-            if($request->vendor_name!=null){
-                foreach($request->vendor_name as $key => $i){
-                    $service->insertTemp($i, $request->vendor_email[$key], $proc_item->id, $request->category_id);
-                }
+        } 
+        if($request->vendor_name!=null){
+            foreach($request->vendor_name as $key => $i){
+                $service->insertTemp($i, $request->vendor_email[$key], $proc_item->id, $request->category_id);
             }
         }
+        
 
         
         if($procurement_id==0){
@@ -1385,6 +1385,21 @@ class ProcurementController extends Controller
         }
 
         return $isDitawarkan;
+    }
+
+    public function isVendorRecomendation (ProcurementSpph $spph) {
+
+        $let = ProcurementVendorRecomendation::where([
+            'vendor_id' => $spph->vendor->id,
+            'item_id' => $spph->item_id
+        ])->first();
+
+        if (!is_null($let)) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public function getYearProcurement() {

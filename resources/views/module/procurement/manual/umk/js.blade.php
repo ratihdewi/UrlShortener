@@ -49,7 +49,7 @@
 							</select>`,
 							`<input type="text" name="harga[]" value="${v.price_est}" class="form-control" id="harga${k}" onchange="setHargaTotal(${k})">`,
 							`<input type="text" name="total_unit[]" value="${v.total_unit}" class="form-control" id="total_unit${k}" onchange="setHargaTotal(${k})">`,
-							`<input type="text" name="specs[]" value="${v.specs}" class="form-control" id="specs${k}">`,
+							`<textarea name="specs[]" class="form-control" rows="4" id="specs${k}"> ${v.specs} </textarea>`,
 							`<input type="file" name="brosur[]" class="form-control not-required" id="brosur${k}">`,
 							`<input type="text" id="harga_total${k}" class="form-control" name="harga_total[]" disabled value="${v.price_total}" />`,
 							`<select name="vendor_id[]" id="vendor_id${k}" class="form-control"> </select>`,
@@ -100,10 +100,11 @@
 
 			$('input:not(:disabled)').css("background-color", "white");
 			$('select').css("background-color", "white");
+			$('textarea').css("background-color", "white");
 			let isEmpty = false;
 			let emptyCol = 0;
 
-			let inputAll = $('input:not(.ck, .ck-hidden, .not-required), select');
+			let inputAll = $('input:not(.ck, .ck-hidden, .not-required), select, textarea');
 			inputAll.each(function(){
 				if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 					isEmpty = true;
