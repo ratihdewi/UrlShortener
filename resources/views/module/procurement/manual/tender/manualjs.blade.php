@@ -252,6 +252,8 @@
 				success: function(res) {
 
 					$('input:not(:disabled)').css("background-color", "white");
+					$('textarea:not(.inputDataPenawaran)').css("background-color", "white");
+					$('select').css("background-color", "white");
 					let isEmpty = false;
 					let emptyCol = 0;
 
