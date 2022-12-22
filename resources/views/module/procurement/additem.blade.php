@@ -80,6 +80,7 @@
                                 <option disabled value="0" selected> -- Pilih Opsi --</option> 
                                 <option value="1"> Pilih dari daftar </option>
                                 <option value="2"> Masukkan secara manual </option>
+                                <option value="3" class="flex-option"> Custom </option>
                             </select>
                         </div>
                         <div class="form-group" id="inputManual">

@@ -6,6 +6,7 @@
 		$('#tambahDokumen').hide();
 		$('#spph-negosiasi').hide();
 		$('#bapp').hide();
+
     });
 
 	var vendorSelect = [];
@@ -49,6 +50,7 @@
 			jumlahVendor = 0;
 			$('#storeData').prop('action', '');
 
+
 			$.ajax({
 				type: "GET",
 				url: window.location.href + "/getProcurement/" + this.value,
@@ -74,8 +76,10 @@
 						$('#fieldSpph').html('');
 						$('#fieldSP3').hide();
 						$('#fieldBA-Negosiasi').html('');
+
 						$('#tambahDokumen').show();
 						$('#tambahDokumen').click();
+						$('#tambahDokumen').hide();
 					}
 				}
 			});
@@ -164,6 +168,7 @@
 			generateOption(jumlahVendor);
 
 			jumlahVendor++;
+			$('#tambahDokumen').hide();
 		});
 
 		$('#addRowTable').on('click', function() {
@@ -558,6 +563,7 @@
 		var vendor_id = $('#opsiVendor_'+id).val();
 		vendorSelect[id] = vendor_id;
 		$('#nomorSpph_'+id).prop('value', '');
+		$('#tambahDokumen').show();
 
 		$.ajax({
 			type: "GET",

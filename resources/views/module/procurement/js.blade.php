@@ -14,11 +14,16 @@
             $('#inputList').show();
 
             loadVendorOption();
-        } else {
+        } else if (this.value == 2) {
             $('#inputManual').show();
             $('#inputList').hide();
 
             $('#listVendor').html('');
+        } else {
+            $('#inputManual').show();
+            $('#inputList').show();   
+
+            loadVendorOption();         
         }
 
     });
@@ -153,6 +158,7 @@
         fieldWrapper.append(fEmail);
         fieldWrapper.append(removeButton);
         $("#vendor-form").append(fieldWrapper);
+        
     });
 
     $(function(){
