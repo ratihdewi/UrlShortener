@@ -88,7 +88,7 @@
 		$('#tambahDokumen').on('click', function() {
 
 			var logHtml = '<span id="partSpph'+vendorSelect.length+'"> <div class="form-row"> <div class="col"> <label> No.SPPH </label> <label class="small mb-1" style="color:red">*</label>  <input type="text" id="nomorSpph_'+vendorSelect.length+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>  <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+vendorSelect.length+'" onchange="ubahVendor('+vendorSelect.length+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+vendorSelect.length+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+vendorSelect.length+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+vendorSelect.length+'" required></div></div> </span>';
-			var collapse = `<div class="accordion" id="accordion${vendorSelect.length}">
+			var collapse = `<div class="accordion" id="accordionBA${vendorSelect.length}">
 				<div class="card" style="margin: 1.5%">
 					<div class="card-header" id="heading${vendorSelect.length}">
 						<h2 class="mb-0">
@@ -97,7 +97,7 @@
 							</button>
 						</h2>
 					</div>
-					<div id="collapse${vendorSelect.length}" class="collapse" aria-labelledby="heading${vendorSelect.length}" data-parent="#accordion${vendorSelect.length}">
+					<div id="collapse${vendorSelect.length}" class="collapse" aria-labelledby="heading${vendorSelect.length}" data-parent="#accordionBA${vendorSelect.length}">
 						<div class="card-body" style="border: none !important">
 							<span class="form-row mb-2">
 								<div class="col">
@@ -249,8 +249,8 @@
 		});
 
 		$('#deleteRowTable').on('click', function() {
+
 			myTable.row(this.value).remove().draw(false);
-			//Reset indexing
 
 			let baris = $("[id ^= 'baris']").length;
 
@@ -278,8 +278,17 @@
 				$("[id ^= 'opsiVendor_']").get(j).id = `opsiVendor_${j}`;
 				$("[id ^= 'spph_pdf_']").get(j).id = `spph_pdf_${j}`;
 				$("[id ^= 'penawaran_pdf_']").get(j).id = `penawaran_pdf_${j}`;
-
 				$(`#opsiVendor_${j}`).attr('onchange', `ubahVendor(${j})`);
+
+				$("[id ^= 'accordionBA']").get(j).id = `accordionBA${j}`;
+				$("[id ^= 'date']").get(j).id = `date${j}`;
+				$("[id ^= 'time']").get(j).id = `time${j}`;
+				$("[id ^= 'location']").get(j).id = `location${j}`;
+				$("[id ^= 'peserta_eksternal_']").get(j).id = `peserta_eksternal_${j}`;
+				$("[id ^= 'pesertaInternal']").get(j).id = `pesertaInternal${j}`;
+				$("[id ^= 'meeting_result_']").get(j).id = `meeting_result_${j}`;
+				$("[id ^= 'photo_doc_']").get(j).id = `photo_doc_${j}`;
+				$("[id ^= 'negosiasi']").get(j).id = `negosiasi${j}`;
 			}
 
 		});
@@ -630,15 +639,12 @@
 	function deleteVendorSel(id) {
 
 		$(`#partSpph${id}`).remove();
-		$(`#accordion${id}`).remove();
+		$(`#accordionBA${id}`).remove();
 
 		let name = $(`#itemVendor${id}`).get(0).innerHTML;
 		let indexItemStart = id*jumlahItem;
-		let indexItemFinish = id+jumlahItem-1;
+		let indexItemFinish = indexItemStart+jumlahItem-1;
 
-		if (indexItemStart > 0) {
-			indexItemFinish++;	
-		}
 
 		for (let i=indexItemFinish; i>=indexItemStart; i--) {
 			$('#deleteRowTable').prop('value', i);
@@ -646,6 +652,12 @@
 		}
 
 		$(`#itemVendor${id}`).remove();
+
+		let partItemVendor = $("[id ^= 'itemVendor']").length;
+		for (let k=0; k<partItemVendor; k++) {
+			$("[id ^= 'itemVendor']").get(k).id = `itemVendor${k}`;
+			$(`#itemVendor${k}`).attr('onclick', `deleteVendorSel(${k})`);
+		}
 
 		vendorSelect.splice(id, 1);
 
