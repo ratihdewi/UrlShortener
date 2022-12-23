@@ -171,11 +171,17 @@
 						</nav>
 					</form>
 					<button class="btn btn-info" style="float: left" id="tambahDokumen"> Tambah Dokumen </button>
+					<div class="btn-group" role="group">
+						<button data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-danger ml-2 dropdown-toggle" style="float: left" id="hapusDokumen"> Hapus Dokumen </button>
+						<div class="dropdown-menu item-hapus-vendor" aria-labelledby="hapusDokumen">
+					    </div>
+					</div>
 					<button id="save" class="btn btn-primary" style="float: right;"> Submit </button>
 					<button id="addRowTable" hidden> </button>
 					<button id="initTable" hidden> </button>
 					<button id="setTotal" hidden> </button>
 					<button id="loadBapp" hidden></button>
+					<button id="deleteRowTable" hidden> </button>
                 </div>
             </div>
         </div>

@@ -87,37 +87,37 @@
 
 		$('#tambahDokumen').on('click', function() {
 
-			var logHtml = '<div class="form-row"> <div class="col"> <label> No.SPPH </label> <label class="small mb-1" style="color:red">*</label>  <input type="text" id="nomorSpph_'+jumlahVendor+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>  <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+jumlahVendor+'" onchange="ubahVendor('+jumlahVendor+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+jumlahVendor+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+jumlahVendor+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+jumlahVendor+'" required></div></div>';
-			var collapse = `<div class="accordion" id="accordion${jumlahVendor}">
+			var logHtml = '<span id="partSpph'+vendorSelect.length+'"> <div class="form-row"> <div class="col"> <label> No.SPPH </label> <label class="small mb-1" style="color:red">*</label>  <input type="text" id="nomorSpph_'+vendorSelect.length+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>  <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+vendorSelect.length+'" onchange="ubahVendor('+vendorSelect.length+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+vendorSelect.length+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+vendorSelect.length+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+vendorSelect.length+'" required></div></div> </span>';
+			var collapse = `<div class="accordion" id="accordion${vendorSelect.length}">
 				<div class="card" style="margin: 1.5%">
-					<div class="card-header" id="heading${jumlahVendor}">
+					<div class="card-header" id="heading${vendorSelect.length}">
 						<h2 class="mb-0">
-							<button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapse${jumlahVendor}" aria-expanded="true" aria-controls="collapse${jumlahVendor}">
-								<div id="headerBA${jumlahVendor}"> -- </div>
+							<button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapse${vendorSelect.length}" aria-expanded="true" aria-controls="collapse${vendorSelect.length}">
+								<div id="headerBA${vendorSelect.length}"> -- </div>
 							</button>
 						</h2>
 					</div>
-					<div id="collapse${jumlahVendor}" class="collapse" aria-labelledby="heading${jumlahVendor}" data-parent="#accordion${jumlahVendor}">
+					<div id="collapse${vendorSelect.length}" class="collapse" aria-labelledby="heading${vendorSelect.length}" data-parent="#accordion${vendorSelect.length}">
 						<div class="card-body" style="border: none !important">
 							<span class="form-row mb-2">
 								<div class="col">
 									<label class="small">Hari/Tanggal </label> <label class="small mb-1" style="color:red">*</label> 
-									<input name="date[]" id="date${jumlahVendor}" class="form-control" required="true" type="date"/>
+									<input name="date[]" id="date${vendorSelect.length}" class="form-control" required="true" type="date"/>
 								</div>
 								<div class="col">
 									<label class="small">Waktu </label> <label class="small mb-1" style="color:red">*</label> 
-									<input name="time[]" id="time${jumlahVendor}" class="form-control" required="true" type="time"/>
+									<input name="time[]" id="time${vendorSelect.length}" class="form-control" required="true" type="time"/>
 								</div>
 							</span>
 
 							<span class="form-row mb-2 mt-3">
 								<div class="col">
 									<label class="small"> Tempat </label> <label class="small mb-1" style="color:red">*</label> 
-									<input name="location[]" id="location${jumlahVendor}" class="form-control" required="true" type="text"/>
+									<input name="location[]" id="location${vendorSelect.length}" class="form-control" required="true" type="text"/>
 								</div>
 								<div class="col">
 									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label class="small mb-1" style="color:red">*</label>  <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label> <label class="small mb-1" style="color:red">*</label> 
-									<input name="peserta_eksternal[]" id="peserta_eksternal_${jumlahVendor}" class="form-control" required="true" type="text"/>
+									<input name="peserta_eksternal[]" id="peserta_eksternal_${vendorSelect.length}" class="form-control" required="true" type="text"/>
 								</div>
 							</span>
 
@@ -125,7 +125,7 @@
 								<div class="col-xl-12">
 									<div class="form-group">
 										<label class="small">Peserta Rapat Internal</label> <label class="small mb-1" style="color:red">*</label> 
-										<select size="10" id="pesertaInternal${jumlahVendor}" class="form-control select2" multiple="multiple" name="peserta_id[${jumlahVendor}][]" style="width:100%">
+										<select size="10" id="pesertaInternal${vendorSelect.length}" class="form-control select2" multiple="multiple" name="peserta_id[${vendorSelect.length}][]" style="width:100%">
 											@foreach($pesertas as $peserta)
 											<option class="mt-1 mb-1" value="{{$peserta->id}}">{{$peserta->name}}</option>
 											@endforeach
@@ -138,7 +138,7 @@
 								<div class="col-xl-12">
 									<div class="form-group">
 										<label class="small mb-1">Hasil Rapat </label> <label class="small mb-1" style="color:red">*</label> 
-										<textarea name="meeting_result[]" id="meeting_result_${jumlahVendor}" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
+										<textarea name="meeting_result[]" id="meeting_result_${vendorSelect.length}" rows="4" class="form-control{{ $errors->has('meeting_result') ? ' is-invalid' : '' }}">{{ old('meeting_result') }}</textarea>
 									</div>
 								</div>
 							</div>
@@ -147,13 +147,13 @@
 							<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Upload Dokumentasi Meeting (.jpg | .png) </label> <label class="small mb-1" style="color:red">*</label> 
-										<input name="photo_doc[]" id="photo_doc_${jumlahVendor}" required class="form-control" type="file"/>
+										<input name="photo_doc[]" id="photo_doc_${vendorSelect.length}" required class="form-control" type="file"/>
 									</div>
 								</div>
 								<div class="col">
 									<div class="form-group">
 										<label class="small mb-1">Negosiasi </label> <label class="small mb-1" style="color:red">*</label> (Rp)
-										<input name="negosiasi[]" id="negosiasi${jumlahVendor}" required="true" class="form-control" type="text"/>
+										<input name="negosiasi[]" id="negosiasi${vendorSelect.length}" required="true" class="form-control" type="text"/>
 									</div>
 								</div>
 							</div>
@@ -165,7 +165,7 @@
 
 			$('#fieldSpph').append(logHtml);
 			$('#fieldBA-Negosiasi').append(collapse);
-			generateOption(jumlahVendor);
+			generateOption(vendorSelect.length);
 
 			jumlahVendor++;
 			$('#tambahDokumen').hide();
@@ -246,6 +246,42 @@
 		$('#setTotal').on('click', function(){
 			let arr = this.value.split(',');
 			myTable.cell(arr[0],6).data(arr[1]);
+		});
+
+		$('#deleteRowTable').on('click', function() {
+			myTable.row(this.value).remove().draw(false);
+			//Reset indexing
+
+			let baris = $("[id ^= 'baris']").length;
+
+			for (let i=0; i<baris; i++) {
+
+				$("[id ^= 'baris']").get(i).id = `baris${i}`;
+
+				$("[id ^= 'checkbox_']").get(i).id = `checkbox_${i}`;
+				$("[id ^= 'harga_satuan_']").get(i).id = `harga_satuan_${i}`;
+				$("[id ^= 'keterangan_']").get(i).id = `keterangan_${i}`;
+				$("[id ^= 'evaluasi_']").get(i).id = `evaluasi_${i}`;
+				$("[id ^= 'nilai_']").get(i).id = `nilai_${i}`;
+
+			}
+
+
+			let partSpph = $("[id ^= 'partSpph']").length;
+
+			for (let j=0; j<partSpph; j++) {
+
+				$("[id ^= 'partSpph']").get(j).id = `partSpph${j}`;
+
+				$("[id ^= 'nomorSpph_']").get(j).id = `nomorSpph_${j}`;
+				$("[id ^= 'linkSpph_']").get(j).id = `linkSpph_${j}`;
+				$("[id ^= 'opsiVendor_']").get(j).id = `opsiVendor_${j}`;
+				$("[id ^= 'spph_pdf_']").get(j).id = `spph_pdf_${j}`;
+				$("[id ^= 'penawaran_pdf_']").get(j).id = `penawaran_pdf_${j}`;
+
+				$(`#opsiVendor_${j}`).attr('onchange', `ubahVendor(${j})`);
+			}
+
 		});
 
 		$('#save').on('click', function(){
@@ -552,7 +588,8 @@
 			});
 			
 		});
-
+		
+		
 		
 
 	});
@@ -574,6 +611,8 @@
 				
 				var arr = [vendor_id, res.vendor_name];
 
+				$('.item-hapus-vendor').append(`<a class="dropdown-item" id="itemVendor${id}" style="cursor: pointer" onclick="deleteVendorSel(${id})"> ${res.vendor_name} </a>`);
+
 				$(`#headerBA${id}`).html(res.vendor_name);
 				$('#addRowTable').prop('value', arr);
 				$('#addRowTable').click();
@@ -584,6 +623,31 @@
 				}
 			}
 		});
+
+	}
+
+
+	function deleteVendorSel(id) {
+
+		$(`#partSpph${id}`).remove();
+		$(`#accordion${id}`).remove();
+
+		let name = $(`#itemVendor${id}`).get(0).innerHTML;
+		let indexItemStart = id*jumlahItem;
+		let indexItemFinish = id+jumlahItem-1;
+
+		if (indexItemStart > 0) {
+			indexItemFinish++;	
+		}
+
+		for (let i=indexItemFinish; i>=indexItemStart; i--) {
+			$('#deleteRowTable').prop('value', i);
+			$('#deleteRowTable').click();
+		}
+
+		$(`#itemVendor${id}`).remove();
+
+		vendorSelect.splice(id, 1);
 
 	}
 

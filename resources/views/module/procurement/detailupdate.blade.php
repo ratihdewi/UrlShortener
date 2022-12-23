@@ -1,5 +1,5 @@
 <div class="modal fade" id="edit-detail-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Ubah Detail Pengadaan</h5>
@@ -62,7 +62,30 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div id="changeVendorRec">
+                                <div class="form-group">
+                                    <label class="small mb-1">Rekomenasi Vendor &nbsp;</label>
+                                    <select class="form-control" id="methodVendor" onchange="setShowVendor(this)">
+                                        <option value="0"> -- Pilih Opsi --</option> 
+                                        <option value="1"> Pilih dari daftar </option>
+                                        <option value="2"> Masukkan secara manual </option>
+                                        <option value="3" class="flex-option"> Custom </option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="inputManual" hidden>
+                                    <input type="button" class="btn btn-primary btn-sm add" value="Tambah" id="add"/>
+                                    <div id="vendor-form" style="margin-top:10px;">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="inputList" hidden>
+                                    <label class="small mb-1"> Pilih Vendor </label> <br>
+                                    <select class="form-control select2" style="width: 100%" name="vendor_select" id="listVendor">
+                                    </select>
+                                </div>
+                            </div>
                         @endif
+
                         <div id="penunjukan_langsung">
                             <div class="form-group">
                                 <label class="small mb-1">Vendor</label><br>
@@ -106,6 +129,7 @@
                                 </select>
                             </div>
                         @endif
+
                     </div>
                 </div>
             </div>
@@ -119,10 +143,12 @@
 </div>
 
 <script type="text/javascript">
+
     $(document).ready(function () {
 
         $("#penunjukan_langsung").hide();
         $("#afiliasi").hide();
+        $("#changeVendorRec").hide();
 
         var passedMemos = @json($data_memos);
         $("#select_memo").on("change", function () {
@@ -131,20 +157,27 @@
         });
 
         $('#mechanism_type').change(function() {
-        id = $(this).val()
-        if(id==3) {
-            $("#penunjukan_langsung").show();
-            $("#afiliasi").hide();
-        } else if(id==4) {
-            $("#penunjukan_langsung").hide();
-            $("#afiliasi").show();
-        } else {
-            $("#penunjukan_langsung").hide();
-            $("#afiliasi").hide();
-        }
-    })
+            $("#changeVendorRec").show();
+            id = $(this).val()
+            if(id==3) {
+                $("#penunjukan_langsung").show();
+                $("#afiliasi").hide();
+            } else if(id==4) {
+                $("#penunjukan_langsung").hide();
+                $("#afiliasi").show();
+            } else {
+                $("#penunjukan_langsung").hide();
+                $("#afiliasi").hide();
+            }
+        });
+
     });
 
+
+    function setShowVendor(sel) {
+
+        console.log(sel.value);
+    }
     
 
 </script>
