@@ -264,6 +264,8 @@
 				$("[id ^= 'evaluasi_']").get(i).id = `evaluasi_${i}`;
 				$("[id ^= 'nilai_']").get(i).id = `nilai_${i}`;
 
+				let qty = $(`#baris${i}`).children().eq(5).get(0).innerHTML;
+				$(`#harga_satuan_${i}`).attr('onchange', `setHargaTotal(${i}, ${qty})`);
 			}
 
 
