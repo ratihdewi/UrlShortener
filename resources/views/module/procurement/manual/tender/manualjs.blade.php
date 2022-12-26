@@ -6,6 +6,7 @@
 		$('#tambahDokumen').hide();
 		$('#spph-negosiasi').hide();
 		$('#bapp').hide();
+		$('#hapusDokumen').hide();
 
     });
 
@@ -634,6 +635,7 @@
 		vendorSelect[id] = vendor_id;
 		$('#nomorSpph_'+id).prop('value', '');
 		$('#tambahDokumen').show();
+		$('#hapusDokumen').show();
 
 		$.ajax({
 			type: "GET",
@@ -690,6 +692,12 @@
 
 		vendorSelect.splice(id, 1);
 
+
+		if ($('.item-hapus-vendor').children().length == 0) {
+			$('#hapusDokumen').hide();
+		} else {
+			$('#hapusDokumen').show();
+		}
 	}
 
 	function generateOption(i) {
