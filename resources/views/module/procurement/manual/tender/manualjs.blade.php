@@ -90,14 +90,14 @@
 			var logHtml = '<span id="partSpph'+vendorSelect.length+'"> <div class="form-row"> <div class="col"> <label> No.SPPH </label> <label class="small mb-1" style="color:red">*</label>  <input type="text" id="nomorSpph_'+vendorSelect.length+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>  <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+vendorSelect.length+'" onchange="ubahVendor('+vendorSelect.length+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+vendorSelect.length+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+vendorSelect.length+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+vendorSelect.length+'" required></div></div> </span>';
 			var collapse = `<div class="accordion" id="accordionBA${vendorSelect.length}">
 				<div class="card" style="margin: 1.5%">
-					<div class="card-header" id="heading${vendorSelect.length}">
+					<div class="card-header" id="headingBA${vendorSelect.length}">
 						<h2 class="mb-0">
-							<button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapse${vendorSelect.length}" aria-expanded="true" aria-controls="collapse${vendorSelect.length}">
+							<button class="btn text-left" type="button" data-toggle="collapse" data-target="#collapseBA${vendorSelect.length}" aria-expanded="true" aria-controls="collapseBA${vendorSelect.length}">
 								<div id="headerBA${vendorSelect.length}"> -- </div>
 							</button>
 						</h2>
 					</div>
-					<div id="collapse${vendorSelect.length}" class="collapse" aria-labelledby="heading${vendorSelect.length}" data-parent="#accordionBA${vendorSelect.length}">
+					<div id="collapseBA${vendorSelect.length}" class="collapse" aria-labelledby="headingBA${vendorSelect.length}" data-parent="#accordionBA${vendorSelect.length}">
 						<div class="card-body" style="border: none !important">
 							<span class="form-row mb-2">
 								<div class="col">
@@ -252,6 +252,8 @@
 
 			myTable.row(this.value).remove().draw(false);
 
+			arrNego = [];
+
 			let baris = $("[id ^= 'baris']").length;
 
 			for (let i=0; i<baris; i++) {
@@ -266,6 +268,14 @@
 
 				let qty = $(`#baris${i}`).children().eq(5).get(0).innerHTML;
 				$(`#harga_satuan_${i}`).attr('onchange', `setHargaTotal(${i}, ${qty})`);
+				$(`#checkbox_${i}`).attr('onchange', `ubahArrNego(${i})`);
+
+				if ($(`#checkbox_${i}`).is(':checked')) {
+					arrNego[i] = i;
+				} else {
+					arrNego[i] = -1;
+				}
+				
 			}
 
 
@@ -288,9 +298,21 @@
 				$("[id ^= 'location']").get(j).id = `location${j}`;
 				$("[id ^= 'peserta_eksternal_']").get(j).id = `peserta_eksternal_${j}`;
 				$("[id ^= 'pesertaInternal']").get(j).id = `pesertaInternal${j}`;
+
+				$(`#pesertaInternal${j}`).attr('name', `peserta_id[${j}][]`);
+
 				$("[id ^= 'meeting_result_']").get(j).id = `meeting_result_${j}`;
 				$("[id ^= 'photo_doc_']").get(j).id = `photo_doc_${j}`;
 				$("[id ^= 'negosiasi']").get(j).id = `negosiasi${j}`;
+
+
+				$(`#accordionBA${j} button`).attr('data-target', `#collapseBA${j}`);
+				$(`#accordionBA${j} button`).attr('aria-controls', `#collapseBA${j}`);
+
+				$("[id ^= 'collapseBA']").get(j).id = `collapseBA${j}`;
+				$("[id ^= 'headerBA']").get(j).id = `headerBA${j}`;
+				$(`#collapseBA${j}`).attr('aria-labelledby', `headingBA${j}`);
+				$(`#collapseBA${j}`).attr('data-parent', `#accordionBA${j}`);
 			}
 
 		});
@@ -622,7 +644,12 @@
 				
 				var arr = [vendor_id, res.vendor_name];
 
-				$('.item-hapus-vendor').append(`<a class="dropdown-item" id="itemVendor${id}" style="cursor: pointer" onclick="deleteVendorSel(${id})"> ${res.vendor_name} </a>`);
+				if ($('.item-hapus-vendor').children().get(id) == null) {
+					$('.item-hapus-vendor').append(`<a class="dropdown-item" id="itemVendor${id}" style="cursor: pointer" onclick="deleteVendorSel(${id})"> ${res.vendor_name} </a>`);
+				} else {
+					$(`#itemVendor${id}`).get(0).innerHTML = res.vendor_name;
+				}
+				
 
 				$(`#headerBA${id}`).html(res.vendor_name);
 				$('#addRowTable').prop('value', arr);

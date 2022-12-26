@@ -1389,10 +1389,16 @@ class ProcurementController extends Controller
 
     public function isVendorRecomendation (ProcurementSpph $spph) {
 
+        $procurement = Procurement::where('id', $spph->procurement_id)->first();
+        $arrItem = [];
+
+        foreach ($procurement->items as $item) {
+            array_push($arrItem, $item->id);
+        } 
+
         $let = ProcurementVendorRecomendation::where([
-            'vendor_id' => $spph->vendor->id,
-            'item_id' => $spph->item_id
-        ])->first();
+            'vendor_id' => $spph->vendor->id
+        ])->whereIn('item_id', $arrItem)->first();
 
         if (!is_null($let)) {
             return true;
