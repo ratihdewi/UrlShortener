@@ -29,15 +29,11 @@
                         </div>
                         <div class="form-group">
                             <label class="small mb-1">Kerangka Acuan Kerja (ToR)&nbsp;</label><label class="small mb-1"><a href="{{route('procurement.file.download', [$procurement->id, 'tor'])}}"> Download file saat ini </a></label>
-                            <div class="row" style="margin-left:1px;">
-                                <input name="tor_file" class="form-control" style="width:300px" type="file"/>
-                            </div>
+                            <input name="tor_file" class="form-control" type="file"/>
                         </div>
                         <div class="form-group">
                             <label class="small mb-1">Nomor RKA</label>
-                            <div class="row" style="margin-left:1px;">
-                                <input name="no_rka" class="form-control" value="{{ $procurement->no_rka }}" style="width:350px" type="text"/>
-                            </div>
+                            <input name="no_rka" class="form-control" value="{{ $procurement->no_rka }}" type="text"/>
                         </div>
 
                         @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
@@ -61,28 +57,6 @@
                                         <option value="{{$mechanism->id}}" @if($mechanism->id==$procurement->mechanism_id) selected @endif>{{$mechanism->name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-
-                            <div id="changeVendorRec">
-                                <div class="form-group">
-                                    <label class="small mb-1">Rekomenasi Vendor &nbsp;</label>
-                                    <select class="form-control" id="methodVendor" onchange="setShowVendor(this)">
-                                        <option value="0"> -- Pilih Opsi --</option> 
-                                        <option value="1"> Pilih dari daftar </option>
-                                        <option value="2"> Masukkan secara manual </option>
-                                        <option value="3" class="flex-option"> Custom </option>
-                                    </select>
-                                </div>
-                                <div class="form-group" id="inputManual" hidden>
-                                    <input type="button" class="btn btn-primary btn-sm add" value="Tambah" id="add"/>
-                                    <div id="vendor-form" style="margin-top:10px;">
-                                    </div>
-                                </div>
-                                <div class="form-group" id="inputList" hidden>
-                                    <label class="small mb-1"> Pilih Vendor </label> <br>
-                                    <select class="form-control select2" style="width: 100%" name="vendor_select" id="listVendor">
-                                    </select>
-                                </div>
                             </div>
                         @endif
 
@@ -148,7 +122,6 @@
 
         $("#penunjukan_langsung").hide();
         $("#afiliasi").hide();
-        $("#changeVendorRec").hide();
 
         var passedMemos = @json($data_memos);
         $("#select_memo").on("change", function () {
@@ -157,8 +130,7 @@
         });
 
         $('#mechanism_type').change(function() {
-            $("#changeVendorRec").show();
-            id = $(this).val()
+            id = $(this).val();
             if(id==3) {
                 $("#penunjukan_langsung").show();
                 $("#afiliasi").hide();
@@ -172,12 +144,5 @@
         });
 
     });
-
-
-    function setShowVendor(sel) {
-
-        console.log(sel.value);
-    }
     
-
 </script>
