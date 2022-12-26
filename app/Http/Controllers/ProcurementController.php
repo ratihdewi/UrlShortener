@@ -272,7 +272,7 @@ class ProcurementController extends Controller
 
         $vendors = DB::table('vendors as v')
                    ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
-                   ->select('v.*')
+                   ->select('v.*', 'vc.category_id')
                    ->where('delete', 0)
                    ->whereIn('vc.category_id', $catId)
                    ->get();
@@ -429,6 +429,7 @@ class ProcurementController extends Controller
 
     public function update(Procurement $procurement, Request $request)
     {
+
         //update semua nya di sini
         $old_procurement = clone $procurement;
 
@@ -573,6 +574,11 @@ class ProcurementController extends Controller
             
         } else {
             $procurement->vendor_id_penunjukan_langsung = $request->vendor_id;
+
+            if ($procurement->mechanism_id == 1 || $procurement->mechanism_id == 2) {
+
+
+            }
         }
 
         //Show vendor

@@ -9,7 +9,7 @@
                 @csrf
                 {{ method_field('PUT') }}
                 <div class="row">
-                    <div class="col-xl-12">
+                    <div class="col-xl-6">
                         <div class="form-group">
                             <label class="small mb-1">No. Memo&nbsp;</label><label class="small mb-1" style="color:red">*</label>
                             <br><select class="form-control select2" name="no_memo" id="select_memo" style='width:100%'>
@@ -35,7 +35,8 @@
                             <label class="small mb-1">Nomor RKA</label>
                             <input name="no_rka" class="form-control" value="{{ $procurement->no_rka }}" type="text"/>
                         </div>
-
+                    </div>
+                    <div class="col-xl-6">
                         @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                             <div class="form-group">
                                 <label class="small mb-1">Ditugaskan </label><br>
@@ -103,7 +104,41 @@
                                 </select>
                             </div>
                         @endif
-
+                    </div>
+                    <div class="col-xl-12">
+                        <div id="tableVendorEdit">
+                        <table class="table" width="100%" id="tableEditVendorRec" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Kategori</th>
+                                    <th>Nama Barang</th>
+                                    <th>Rekomendasi Vendor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($procurement->items as $row)
+                                <tr>
+                                    <td>{{$row->category->name}}</td>
+                                    <td>{{$row->name}}</td>
+                                    <td>
+                                        <select class="form-control" name="vendorSelected[]" id="vendorOpt">
+                                            <option disabled selected> -- Pilih Vendor --</option>
+                                            @foreach($vendors as $vendor) 
+                                                @if ($row->category->id == $vendor->category_id)
+                                                    <option value="{{ $vendor->id }}"> {{ $vendor->name }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="10"><center><i>Tidak ada data.</i></center></td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,6 +157,16 @@
 
         $("#penunjukan_langsung").hide();
         $("#afiliasi").hide();
+        $("#tableVendorEdit").hide();
+        setShowHideField($('#mechanism_type').val());
+
+        var myTable = $('#tableEditVendorRec').DataTable({
+            "searching" : false,
+            "paging": false,
+            "lengthChange": false,
+            "ordering": false,
+            "bInfo" : false
+        });
 
         var passedMemos = @json($data_memos);
         $("#select_memo").on("change", function () {
@@ -131,17 +176,29 @@
 
         $('#mechanism_type').change(function() {
             id = $(this).val();
-            if(id==3) {
+            setShowHideField(id);
+        });
+
+        function setShowHideField(id) {
+            if (id==1 || id==2){
+                $("#tableVendorEdit").show();
+                $("#penunjukan_langsung").hide();
+                $("#afiliasi").hide();
+            }
+            else if(id==3) {
                 $("#penunjukan_langsung").show();
                 $("#afiliasi").hide();
+                $("#tableVendorEdit").hide();
             } else if(id==4) {
                 $("#penunjukan_langsung").hide();
+                $("#tableVendorEdit").hide();
                 $("#afiliasi").show();
             } else {
                 $("#penunjukan_langsung").hide();
                 $("#afiliasi").hide();
+                $("#tableVendorEdit").hide();
             }
-        });
+        }
 
     });
     

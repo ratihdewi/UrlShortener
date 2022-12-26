@@ -105,7 +105,6 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
 
     let vendorUrl = window.location.origin + '/procurement-manual/umk/getVendorByCategory/';
