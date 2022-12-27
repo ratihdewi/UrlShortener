@@ -1,3 +1,7 @@
+<?php 
+    use App\Models\ProcurementVendorRecomendation;
+?>
+
 <div class="modal fade" id="edit-detail-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -116,24 +120,37 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @forelse($procurement->items as $row)
+                            @forelse($procurement->items as $key=>$row)
                                 <tr>
                                     <td>{{$row->category->name}}</td>
                                     <td>{{$row->name}}</td>
                                     <td>
-                                        <select class="form-control" name="vendorSelected[]" id="vendorOpt">
-                                            <option disabled selected> -- Pilih Vendor --</option>
+                                        <select class="form-control select2" multiple="" style="width:100%" name="vendorSelected[{{$key}}][]" id="vendorOpt{{$key}}">
                                             @foreach($vendors as $vendor) 
                                                 @if ($row->category->id == $vendor->category_id)
-                                                    <option value="{{ $vendor->id }}"> {{ $vendor->name }} </option>
+
+                                                    <?php 
+                                                        $exists = ProcurementVendorRecomendation::where([
+                                                            'item_id' => $row->id,
+                                                            'vendor_id' => $vendor->id
+                                                        ])->exists();
+                                                    ?>
+
+                                                    @if ($exists)
+                                                        <option value="{{ $vendor->id }}" selected> {{ $vendor->name }} </option>
+                                                    @else
+                                                        <option value="{{ $vendor->id }}"> {{ $vendor->name }} </option>
+                                                    @endif
+
                                                 @endif
                                             @endforeach
                                         </select>
+                                        <input type="hidden" name="itemId[]" value="{{ $row->id }}">
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10"><center><i>Tidak ada data.</i></center></td>
+                                    <td colspan="3"><center><i>Tidak ada data.</i></center></td>
                                 </tr>
                             @endforelse
                             </tbody>
@@ -184,6 +201,17 @@
                 $("#tableVendorEdit").show();
                 $("#penunjukan_langsung").hide();
                 $("#afiliasi").hide();
+
+                let vendorOpt = $("[id ^= 'vendorOpt']").length;
+
+                let isMulti = true;
+                if (id == 2) {
+                    isMulti = false;
+                }
+
+                for (let i=0; i<vendorOpt; i++) {
+                    $(`#vendorOpt${i}`).prop('multiple', isMulti);
+                }
             }
             else if(id==3) {
                 $("#penunjukan_langsung").show();

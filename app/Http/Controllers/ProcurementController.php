@@ -340,9 +340,16 @@ class ProcurementController extends Controller
         ->whereIn('status',[2,3])
         ->get();
         
+        $arrItem = [];
+        foreach ($procurement->items as $item) {
+            array_push($arrItem, $item->id);
+        }
+
+        $vendorRecomendation = ProcurementVendorRecomendation::whereIn('item_id', $arrItem)->get();
         
         return view('module.procurement.detail', compact('data_memos','mechanism_type', 'slas', 'status_dispo', 'mechanisms', 'logs', 'procurement', 'vendors','vendor_afiliasis', 'categories', 'users', 'status_choosen'))
         ->with('penawaran',$dataPenawaran)
+        ->with('vendorRecomendation', $vendorRecomendation)
         ->with('dataSpphValid',$dataSpphValid);
     }
 
@@ -429,8 +436,7 @@ class ProcurementController extends Controller
 
     public function update(Procurement $procurement, Request $request)
     {
-
-        //update semua nya di sini
+        //update semua nya di sini[]
         $old_procurement = clone $procurement;
 
         //Ubah status
@@ -577,7 +583,18 @@ class ProcurementController extends Controller
 
             if ($procurement->mechanism_id == 1 || $procurement->mechanism_id == 2) {
 
-
+                foreach ($request->itemId as $key=>$row) {
+                    ProcurementVendorRecomendation::where('item_id', $row)->delete();
+                    
+                    if (isset($request->vendorSelected[$key])) {
+                        foreach ($request->vendorSelected[$key] as $val) {
+                            ProcurementVendorRecomendation::create([
+                                    'item_id' => $row,
+                                    'vendor_id' => $val
+                            ]);
+                        }
+                    }
+                }
             }
         }
 
