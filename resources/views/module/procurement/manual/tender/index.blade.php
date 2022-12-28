@@ -143,16 +143,19 @@
 							<fieldset class="form-group border p-3">
 								<legend class="w-auto px-2"> Penilaian Vendor </legend>
 								<div style="margin-top: 1.5% !important; margin-bottom: 3.5% !important;">
-									<table class="table" id="tablePV" width="130%" cellspacing="0">
-										<thead>
-											<tr>
-												<th> Nama Vendor </th>
-												<th> Nomor SPPH </th>
-												<th> Skor </th>
-												<th> Komentar </th>
-											</tr>
-										</thead>
-									</table>
+									<div class="table-responsive">
+										<table class="table" id="tablePV" width="100%" cellspacing="0">
+											<thead>
+												<tr>
+													<th> Nama Vendor </th>
+													<th> Nomor SPPH </th>
+													<th> Skor </th>
+													<th> Komentar </th>
+													<th> Action </th>
+												</tr>
+											</thead>
+										</table>
+									</div>
 								</div>
 							</fieldset>
 							<fieldset class="form-group border p-3">

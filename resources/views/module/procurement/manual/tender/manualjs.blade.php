@@ -6,7 +6,7 @@
 		$('#tambahDokumen').hide();
 		$('#spph-negosiasi').hide();
 		$('#bapp').hide();
-		$('#hapusDokumen').hide();
+		$('#hapusDokumen').hide(); 
     });
 
 	var vendorSelect = [];
@@ -37,9 +37,9 @@
 		var tablePV = $('#tablePV').DataTable({
 			"searching" : false,
 			"paging": false,
-			"scrollX": true,
 			"lengthChange": false,
 			"ordering": false,
+			"bInfo" : false,
 		});
 
 		$('#opsiProcurement').on('change', function() {
@@ -48,6 +48,10 @@
 			tableBapp.clear();
 			tablePV.clear();
 			jumlahVendor = 0;
+			vendorSelect = [];
+			arrNego = [];
+			jumlahItem = 0;
+			currOpt = 0;
 			$('#storeData').prop('action', '');
 
 
@@ -624,27 +628,29 @@
 						tablePV.row.add([
 							value.name,
 							value.no_spph,
-							`<div class="form-inline">
-								<div class="form-group">
-									<label> <div id="indikatorPV${key+1}"> (${value.score}/5) </div> </label>
-									<input type="hidden" name="pv_spph_id[]" value="${value.spph_id}" />
-									<input type="hidden" name="pv_vendor_id[]" value="${value.id}" />
-									<input type="range" id="pv_score${key+1}" onchange="showIndikatorPV(${key+1})" class="mt-1 custom-range" min="0" max="5" step="1" name="pv_score[]" value="${value.score}">
-								</div>
-							</div>`,
+							`
+							<label> <div id="indikatorPV${key+1}"> (${value.score}/5) </div> </label>
+							<input type="hidden" name="pv_spph_id[]" value="${value.spph_id}" />
+							<input type="hidden" name="pv_vendor_id[]" value="${value.id}" />
+							<input type="range" id="pv_score${key+1}" onchange="showIndikatorPV(${key+1})" class="mt-1 custom-range" min="0" max="5" step="1" name="pv_score[]" value="${value.score}">
+							`,
 							`<textarea name="pv_comment[]" id="pv_comment${key+1}" class="form-control" rows="2"> ${komentar} </textarea>`,
+							`<a style="color: white" class="mt-2 btn btn-sm btn-danger" onclick="javascript:deletePV(${key+1})">
+								Hapus 
+							</a>`,
 						]).node().id = `barisPV${key+1}`;
 						tablePV.draw(false);
-					})
+					});
 				}
 			});
 			
 		});
-		
-		
-		
 
 	});
+
+	function deletePV(id) {
+		$(`#barisPV${id}`).remove();
+	}
 
 	function ubahVendor(id) {
 
