@@ -7,7 +7,6 @@
 		$('#spph-negosiasi').hide();
 		$('#bapp').hide();
 		$('#hapusDokumen').hide();
-
     });
 
 	var vendorSelect = [];
@@ -89,6 +88,7 @@
 		$('#tambahDokumen').on('click', function() {
 
 			var logHtml = '<span id="partSpph'+vendorSelect.length+'"> <div class="form-row"> <div class="col"> <label> No.SPPH </label> <label class="small mb-1" style="color:red">*</label>  <input type="text" id="nomorSpph_'+vendorSelect.length+'" class="form-control" name="no_spph[]" required> </div> <div class="col"> <label> Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>  <select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_'+vendorSelect.length+'" onchange="ubahVendor('+vendorSelect.length+')"></select> </div> </div> <div class="form-group mt-3 mb-3"> <a href="" id="linkSpph_'+vendorSelect.length+'"> Unduh Dokumen SPPH </a> </div>  <div class="form-row mb-5"><div class="col"><label> Update File SPPH (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="spph_pdf[]" id="spph_pdf_'+vendorSelect.length+'" required></div><div class="col"><label> Unggah File Penawaran Harga (.pdf) </label> <label class="small mb-1" style="color:red">*</label> <input type="file" class="form-control" name="penawaran_pdf[]" id="penawaran_pdf_'+vendorSelect.length+'" required></div></div> </span>';
+
 			var collapse = `<div class="accordion" id="accordionBA${vendorSelect.length}">
 				<div class="card" style="margin: 1.5%">
 					<div class="card-header" id="headingBA${vendorSelect.length}">
@@ -117,7 +117,7 @@
 									<input name="location[]" id="location${vendorSelect.length}" class="form-control" required="true" type="text"/>
 								</div>
 								<div class="col">
-									<label class="small">Peserta Rapat Vendor/Eksternal</label> <label class="small mb-1" style="color:red">*</label>  <label style="font-size:8pt" class="small mb-1">Pisahkan nama dengan tanda koma ","</label> <label class="small mb-1" style="color:red">*</label> 
+									<label class="small">Peserta Rapat Eksternal <i> Pisahkan dengan tanda koma "," </i> </label> <label class="small mb-1" style="color:red">*</label> 
 									<input name="peserta_eksternal[]" id="peserta_eksternal_${vendorSelect.length}" class="form-control" required="true" type="text"/>
 								</div>
 							</span>
@@ -126,7 +126,7 @@
 								<div class="col-xl-12">
 									<div class="form-group">
 										<label class="small">Peserta Rapat Internal</label> <label class="small mb-1" style="color:red">*</label> 
-										<select size="10" id="pesertaInternal${vendorSelect.length}" class="form-control select2" multiple="multiple" name="peserta_id[${vendorSelect.length}][]" style="width:100%">
+										<select id="pesertaInternal${vendorSelect.length}" class="form-control" name="peserta_id[${vendorSelect.length}][]" style="width:100%" multiple>
 											@foreach($pesertas as $peserta)
 											<option class="mt-1 mb-1" value="{{$peserta->id}}">{{$peserta->name}}</option>
 											@endforeach
@@ -166,6 +166,8 @@
 
 			$('#fieldSpph').append(logHtml);
 			$('#fieldBA-Negosiasi').append(collapse);
+			$(`#pesertaInternal${vendorSelect.length}`).select2();
+			// $(`#opsiVendor_${vendorSelect.length}`).select2();
 			generateOption(vendorSelect.length);
 
 			jumlahVendor++;
@@ -335,7 +337,7 @@
 
 					if(parseInt(res.status) >= 5) {
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
-						let inputAll = $('#bapp input:not(.ck, .ck-hidden), textarea:not(.inputDataPenawaran), select');
+						let inputAll = $('#bapp input:not(.ck, .ck-hidden, .select2-search__field), textarea:not(.inputDataPenawaran), select');
 
 						inputAll.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " ") {
@@ -349,7 +351,7 @@
 					} else {
 
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
-						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden), textarea, select');
+						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea, select');
 
 						allInput.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
