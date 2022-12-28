@@ -351,6 +351,20 @@
 					} else {
 
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
+
+						let pesertaInternalName = $("[id ^= 'pesertaInternal']").length;
+
+						for (let l=0; l<pesertaInternalName; l++) {
+							if ($(`#pesertaInternal${l}`).val().length < 1) {
+								$(`#pesertaInternal${l}`).next().children().children().css({"background-color" : "#F67280"});
+								isEmpty = true;
+								emptyCol++;
+							} else {
+								$(`#pesertaInternal${l}`).next().children().children().css({"background-color" : "white"});
+								isEmpty = false;
+							}
+						}
+
 						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea, select');
 
 						allInput.each(function(){
@@ -361,6 +375,8 @@
 								// console.log(this.id);
 							}
 						});
+
+						
 					}
 
 					if (!isEmpty){
