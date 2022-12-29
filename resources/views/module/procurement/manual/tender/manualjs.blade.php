@@ -14,6 +14,9 @@
 	var jumlahItem = 0;
 	var currOpt = 0;
 
+	const subSpph = $('#spph-negosiasi').clone();
+	const subBapp = $('#bapp').clone();
+
 	$(function(){
 		
 		var currUrl = "{{ \Request::fullUrl() }}";
@@ -43,6 +46,7 @@
 		});
 
 		$('#opsiProcurement').on('change', function() {
+
 			vendorSelect = [];
 			myTable.clear();
 			tableBapp.clear();
@@ -52,8 +56,8 @@
 			arrNego = [];
 			jumlahItem = 0;
 			currOpt = 0;
-			$('#storeData').prop('action', '');
 
+			$('#storeData').prop('action', '');
 
 			$.ajax({
 				type: "GET",
@@ -80,6 +84,8 @@
 						$('#fieldSpph').html('');
 						$('#fieldSP3').hide();
 						$('#fieldBA-Negosiasi').html('');
+
+						myTable.clear();
 
 						$('#tambahDokumen').show();
 						$('#tambahDokumen').click();
@@ -639,7 +645,7 @@
 							`<a style="color: white" class="mt-2 btn btn-sm btn-danger" onclick="javascript:deletePV(${key+1})">
 								Hapus 
 							</a>`,
-						]).node().id = `barisPV${key+1}`;
+						]).node().id = `linePV${key+1}`;
 						tablePV.draw(false);
 					});
 					$(`.rateit`).rateit();
@@ -651,7 +657,7 @@
 	});
 
 	function deletePV(id) {
-		$(`#barisPV${id}`).remove();
+		$(`#linePV${id}`).remove();
 	}
 
 	function ubahVendor(id) {
