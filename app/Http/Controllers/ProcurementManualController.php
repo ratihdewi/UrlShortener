@@ -91,6 +91,13 @@ class ProcurementManualController extends Controller
             array_push($catId, $item->category_id);
         }
 
+        $arrVendor = array();
+        foreach ($procurement->spphs as $spph){
+            if ($spph->status > 0) {
+                array_push($arrVendor, $spph->vendor_id);
+            }
+        }
+
         if ($procurement->status >= 5) {
 
             $vendors = DB::table('vendors as v')
@@ -102,6 +109,7 @@ class ProcurementManualController extends Controller
                        ->where('ps.procurement_id', $procurement->id)
                        ->whereIn('vs.spph_id', $spphId)
                        ->whereIn('vc.category_id', $catId)
+                       ->whereIn('v.id', $arrVendor)
                        ->groupBy('v.id')
                        ->get();
 
@@ -114,6 +122,7 @@ class ProcurementManualController extends Controller
                         ->where('v.delete', 0)
                         ->where('ps.procurement_id', $procurement->id)
                         ->whereIn('vc.category_id', $catId)
+                        ->whereIn('v.id', $arrVendor)
                         ->groupBy('v.id')
                         ->get();
 
@@ -125,6 +134,7 @@ class ProcurementManualController extends Controller
                         ->where('v.delete', 0)
                         ->where('ps.procurement_id', $procurement->id)
                         ->whereIn('vc.category_id', $catId)
+                        ->whereIn('v.id', $arrVendor)
                         ->groupBy('v.id')
                         ->get();
                 }
@@ -747,4 +757,5 @@ class ProcurementManualController extends Controller
         return response()->json('success');
 
     }
+
 }
