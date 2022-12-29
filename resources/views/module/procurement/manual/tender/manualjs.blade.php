@@ -334,14 +334,14 @@
 				success: function(res) {
 
 					$('input:not(:disabled)').css("background-color", "white");
-					$('textarea:not(.inputDataPenawaran)').css("background-color", "white");
+					$('textarea').css("background-color", "white");
 					$('select').css("background-color", "white");
 					let isEmpty = false;
 					let emptyCol = 0;
 
 					if(parseInt(res.status) >= 5) {
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
-						let inputAll = $('#bapp input:not(.ck, .ck-hidden, .select2-search__field), textarea:not(.inputDataPenawaran), select');
+						let inputAll = $('#bapp input:not(.ck, .ck-hidden, .select2-search__field, :disabled), textarea:not(.inputDataPenawaran), select');
 
 						inputAll.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " ") {
@@ -629,10 +629,11 @@
 							value.name,
 							value.no_spph,
 							`
-							<label> <div id="indikatorPV${key+1}"> (${value.score}/5) </div> </label>
 							<input type="hidden" name="pv_spph_id[]" value="${value.spph_id}" />
 							<input type="hidden" name="pv_vendor_id[]" value="${value.id}" />
 							<input type="range" id="pv_score${key+1}" onchange="showIndikatorPV(${key+1})" class="mt-1 custom-range" min="0" max="5" step="1" name="pv_score[]" value="${value.score}">
+							<div class="rateit rateit-bg" data-rateit-backingfld="#pv_score${key+1}" data-rateit-resetable="false"  data-rateit-ispreset="true"> </div>
+							<div id="indikatorPV${key+1}"> (${value.score}/5) </div>
 							`,
 							`<textarea name="pv_comment[]" id="pv_comment${key+1}" class="form-control" rows="2"> ${komentar} </textarea>`,
 							`<a style="color: white" class="mt-2 btn btn-sm btn-danger" onclick="javascript:deletePV(${key+1})">
@@ -641,6 +642,7 @@
 						]).node().id = `barisPV${key+1}`;
 						tablePV.draw(false);
 					});
+					$(`.rateit`).rateit();
 				}
 			});
 			

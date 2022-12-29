@@ -2,7 +2,7 @@
 
 @section("content")
 <?php 
-	$bapp = "Test word!";
+	$bapp = "";
 ?>
 <div class="container mt-4">
     <div class="row">
