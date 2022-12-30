@@ -177,7 +177,7 @@
 			$('#fieldSpph').append(logHtml);
 			$('#fieldBA-Negosiasi').append(collapse);
 			$(`#pesertaInternal${vendorSelect.length}`).select2();
-			// $(`#opsiVendor_${vendorSelect.length}`).select2();
+			$(`#opsiVendor_${vendorSelect.length}`).select2();
 			generateOption(vendorSelect.length);
 
 			jumlahVendor++;
@@ -347,7 +347,20 @@
 
 					if(parseInt(res.status) >= 5) {
 						$('#storeData').prop('action', "{{ route('manual.storebapp') }}");
-						let inputAll = $('#bapp input:not(.ck, .ck-hidden, .select2-search__field, :disabled), textarea:not(.inputDataPenawaran), select');
+
+						let vendorName = $("[id ^= 'pihakPertama']").length;
+						for (let i=0; i<vendorName; i++) {
+							if ($(`#pihakPertama${i}`).val() == null) {
+								$(`#pihakPertama${i}`).next().children().children().css({"background-color" : "#F67280"});
+								isEmpty = true;
+								emptyCol++;
+							} else {
+								$(`#pihakPertama${i}`).next().children().children().css({"background-color" : "white"});
+							}
+						}
+
+
+						let inputAll = $('#bapp input:not(.ck, .ck-hidden, .select2-search__field, :disabled), textarea:not(.inputDataPenawaran), select:not(.pihakPertama)');
 
 						inputAll.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " ") {
@@ -363,7 +376,6 @@
 						$('#storeData').prop('action', "{{ route('manual.store') }}");
 
 						let pesertaInternalName = $("[id ^= 'pesertaInternal']").length;
-
 						for (let l=0; l<pesertaInternalName; l++) {
 							if ($(`#pesertaInternal${l}`).val().length < 1) {
 								$(`#pesertaInternal${l}`).next().children().children().css({"background-color" : "#F67280"});
@@ -371,22 +383,29 @@
 								emptyCol++;
 							} else {
 								$(`#pesertaInternal${l}`).next().children().children().css({"background-color" : "white"});
-								isEmpty = false;
 							}
 						}
 
-						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea, select');
 
+						let vendorName = $("[id ^= 'opsiVendor_']").length;
+						for (let i=0; i<vendorName; i++) {
+							if ($(`#opsiVendor_${i}`).val() == null) {
+								$(`#opsiVendor_${i}`).next().children().children().css({"background-color" : "#F67280"});
+								isEmpty = true;
+								emptyCol++;
+							} else {
+								$(`#opsiVendor_${i}`).next().children().children().css({"background-color" : "white"});
+							}
+						}
+
+						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea');
 						allInput.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 								isEmpty = true;
 								$(`#${this.id}`).css({"background-color" : "#F67280"});
 								emptyCol++;
-								// console.log(this.id);
 							}
 						});
-
-						
 					}
 
 					if (!isEmpty){
@@ -575,7 +594,7 @@
 						                        </div>
 						                        <div class="form-group">
 						                            <label class="small mb-1">Pihak Pertama </label> <label class="small mb-1" style="color:red">*</label> 
-						                            <select class="form-control select2" id="pihakPertama${index}" name="bast_user_id[]" style="width:100%">
+						                            <select class="form-control select2 pihakPertama" id="pihakPertama${index}" name="bast_user_id[]" style="width:100%">
 						                                @foreach($generalUsers as $user)
 						                                <option value="{{$user->id}}">
 						                                	{{$user->name}} - {{$user->role_caption}}
@@ -611,6 +630,7 @@
 						$('#fieldBAST').append(bastTag);
 						setSelectName(index, val.bast.user_id);
 						$(`#po_approved_by${index}`).val(val.po.approved_by);
+						$(`#pihakPertama${index}`).select2();
 
 						$.ajax({
 							type: "GET",
