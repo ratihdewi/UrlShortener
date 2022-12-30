@@ -672,6 +672,7 @@ class ProcurementManualController extends Controller
         }
 
         $dataPjUmk = [
+            'procurement_id' => $procurement->id,
             'no_memo_umk' => $request->no_memo_umk,
             'name' => $request->name,
             'no_pekerja' => $request->no_pekerja,

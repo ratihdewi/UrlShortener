@@ -49,7 +49,29 @@
 							</select>`,
 							`<input type="text" name="harga[]" value="${v.price_est}" class="form-control" id="harga${k}" onchange="setHargaTotal(${k})">`,
 							`<input type="text" name="total_unit[]" value="${v.total_unit}" class="form-control" id="total_unit${k}" onchange="setHargaTotal(${k})">`,
-							`<textarea name="specs[]" class="form-control" rows="4" id="specs${k}"> ${v.specs} </textarea>`,
+							`
+							<button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#modalSpesifikasi">
+							  Edit spesifikasi
+							</button>
+
+
+							<div class="modal fade" id="modalSpesifikasi" tabindex="-1" role="dialog" aria-labelledby="modalSpesifikasiTitle" aria-hidden="true">
+							  <div class="modal-dialog" role="document">
+							    <div class="modal-content">
+							      <div class="modal-header">
+							        <h5 class="modal-title" id="modalSpesifikasiTitle">Edit spesifikasi</h5>
+							        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							          <span aria-hidden="true">&times;</span>
+							        </button>
+							      </div>
+							      <div class="modal-body">
+							        <textarea name="specs[]" class="form-control" rows="6" id="specs${k}"> ${v.specs} </textarea>
+							      </div>
+							    </div>
+							  </div>
+							</div>
+
+							`,
 							`<input type="file" name="brosur[]" class="form-control not-required" id="brosur${k}">`,
 							`<input type="text" id="harga_total${k}" class="form-control" name="harga_total[]" disabled value="${v.price_total}" />`,
 							`<select name="vendor_id[]" id="vendor_id${k}" class="form-control"> </select>`,
