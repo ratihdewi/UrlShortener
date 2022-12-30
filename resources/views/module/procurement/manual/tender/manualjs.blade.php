@@ -177,7 +177,10 @@
 			$('#fieldSpph').append(logHtml);
 			$('#fieldBA-Negosiasi').append(collapse);
 			$(`#pesertaInternal${vendorSelect.length}`).select2();
+			$(`#pesertaInternal${vendorSelect.length}`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
+
 			$(`#opsiVendor_${vendorSelect.length}`).select2();
+			$(`#opsiVendor_${vendorSelect.length}`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
 			generateOption(vendorSelect.length);
 
 			jumlahVendor++;
@@ -631,6 +634,7 @@
 						setSelectName(index, val.bast.user_id);
 						$(`#po_approved_by${index}`).val(val.po.approved_by);
 						$(`#pihakPertama${index}`).select2();
+						$(`#pihakPertama${index}`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
 
 						$.ajax({
 							type: "GET",
