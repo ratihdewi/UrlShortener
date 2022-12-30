@@ -101,47 +101,31 @@ class ProcurementManualController extends Controller
         if ($procurement->status >= 5) {
 
             $vendors = DB::table('vendors as v')
-                       ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
-                       ->join('vendor_score as vs', 'vs.vendor_id', '=', 'v.id')
-                       ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
-                       ->select('v.*', 'vs.score', 'vs.comment', 'ps.no_spph', 'ps.id as spph_id')
-                       ->where('v.delete', 0)
-                       ->where('ps.procurement_id', $procurement->id)
-                       ->whereIn('vs.spph_id', $spphId)
-                       ->whereIn('vc.category_id', $catId)
-                       ->whereIn('v.id', $arrVendor)
-                       ->groupBy('v.id')
-                       ->get();
+                    ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
+                    ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
+                    ->select('v.*', 'ps.no_spph', 'ps.id as spph_id')
+                    ->where('v.delete', 0)
+                    ->where('ps.procurement_id', $procurement->id)
+                    ->whereIn('vc.category_id', $catId)
+                    ->whereIn('v.id', $arrVendor)
+                    ->groupBy('v.id')
+                    ->get();
 
-            if (sizeof($vendors) == 0) {
-                $vendors = DB::table('vendors as v')
-                        ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
-                        ->join('vendor_score as vs', 'vs.vendor_id', '=', 'v.id')
-                        ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
-                        ->select('v.*', 'vs.score', 'vs.comment', 'ps.no_spph', 'ps.id as spph_id')
-                        ->where('v.delete', 0)
-                        ->where('ps.procurement_id', $procurement->id)
-                        ->whereIn('vc.category_id', $catId)
-                        ->whereIn('v.id', $arrVendor)
-                        ->groupBy('v.id')
-                        ->get();
+            foreach ($vendors as $vendor) {
 
-                if (sizeof($vendors) == 0) {
-                    $vendors = DB::table('vendors as v')
-                        ->join('vendor_categories as vc', 'vc.vendor_id', '=', 'v.id')
-                        ->join('procurement_spphs as ps', 'ps.vendor_id', '=', 'v.id')
-                        ->select('v.*', 'ps.no_spph', 'ps.id as spph_id')
-                        ->where('v.delete', 0)
-                        ->where('ps.procurement_id', $procurement->id)
-                        ->whereIn('vc.category_id', $catId)
-                        ->whereIn('v.id', $arrVendor)
-                        ->groupBy('v.id')
-                        ->get();
-                }
-                
-                foreach ($vendors as $vendor) {
+                $vs = VendorScore::where([
+                    'spph_id' => $vendor->spph_id,
+                    'vendor_id' => $vendor->id
+                ]);
+
+                if (!$vs->exists()) {
                     $vendor->score = 2;
                     $vendor->comment = "-";
+                } else {
+
+                    $dataVs = $vs->first();
+                    $vendor->score = $dataVs->score;
+                    $vendor->comment = $dataVs->comment;
                 }
             }
 
