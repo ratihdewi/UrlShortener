@@ -17,14 +17,13 @@
 <!-- Main page content-->
 <div class="container mt-n10">
     <div class="row">
-        <div class="col-xxl-10 col-xl-10 mb-4">
+        <div class="col-xxl-4 col-xl-4 mb-4">
         </div>
-        <div class="col-xxl-2 col-xl-2 mb-4">
-            <select class="form-control" name="year_select" id="year_select">
-                @for($i = $tahun[1]; $i >= $tahun[0]; $i--)
-                    <option value="{{route('dashboard.index.with.year', [$i])}}" @if($year == $i) selected @endif>{{$i}}</option>
-                @endfor
-            </select>
+        <div class="col-xxl-8 col-xl-8 mb-4">
+            <div style="float: right; background-color: white; padding: 1%">
+                <label id="label_year_select"> </label>
+                <input style="float: right;" type="range" min="{{ $tahun[0] }}" max="{{ $tahun[1] }}" class="form-range range-wrap ml-3 mt-1" name="year_select" step="1" id="year_select"> 
+            </div>
         </div>
     </div>
     <div class="row">
@@ -189,9 +188,22 @@
 @include('module.dashboard.chart')
 
 <script type="text/javascript">
+
+    let startYear = "{{ $tahun[0] }}";
+    let finishYear = "{{ $tahun[1] }}";
+
     $(document).ready(function () {
         $("#sort_waktu").show();
         $("#sort_total").hide();
+
+        if (window.location.pathname.length > 3) {
+            let currYear = window.location.pathname.split('/')[2];
+            $('#label_year_select').append('(' + currYear.toString() + ' / ' + finishYear.toString() + ')');
+            $('#year_select').val(currYear.toString());
+
+        } else {
+            $('#label_year_select').append('(' + finishYear.toString() + ' / ' + finishYear.toString() + ')');
+        }
     });
     $('#sortby').change(function() {
         sort = $(this).val()
@@ -207,13 +219,17 @@
     $(function(){
       // bind change event to select
       $('#year_select').on('change', function () {
-          var url = $(this).val(); // get selected value
+          var url = '/year/' + $(this).val(); // get selected value
           if (url) { // require a URL
               window.location = url; // redirect
           }
           return false;
       });
+      $('#year_select').on('input', function () {
+         $('#label_year_select').html('(' + this.value + ' / ' + finishYear.toString() + ')');
+      });
     })
+
 </script>
 
 @endsection
