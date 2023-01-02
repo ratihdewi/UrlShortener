@@ -51,26 +51,38 @@
 						<nav id="sp3">
 							<fieldset class="form-group border p-3">
 								<legend class="w-auto px-2"> SP3 </legend>
-								<div class="form-group">
-									<label> Keterangan </label> <label class="small mb-1" style="color:red">*</label>
-									<input type="text" name="sp3_keterangan" id="sp3_keterangan"  class="form-control" value="" />
-								</div>
-								<div class="form-group">
-									<label> Unggah File SP3 (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-									<input type="file" name="sp3_file" id="sp3_file"  class="form-control" value="" />
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label> Keterangan </label> <label class="small mb-1" style="color:red">*</label>
+											<input type="text" name="sp3_keterangan" id="sp3_keterangan"  class="form-control" value="" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label> Unggah File SP3 (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
+											<input type="file" name="sp3_file" id="sp3_file"  class="form-control" value="" />
+										</div>
+									</div>
 								</div>
 							</fieldset>
 						</nav>
 						<nav id="bast">
 							<fieldset class="form-group border p-3">
 								<legend class="w-auto px-2"> BAST </legend>
-								<div class="form-group">
-									<label> Keterangan </label> <label class="small mb-1" style="color:red">*</label>
-									<input type="text" name="bast_keterangan" id="bast_keterangan"  class="form-control" value="" />
-								</div>
-								<div class="form-group">
-									<label> Unggah File BAST (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-									<input type="file" name="bast_file" id="bast_file"  class="form-control" value="" />
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label> Keterangan </label> <label class="small mb-1" style="color:red">*</label>
+											<input type="text" name="bast_keterangan" id="bast_keterangan"  class="form-control" value="" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label> Unggah File BAST (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
+											<input type="file" name="bast_file" id="bast_file"  class="form-control" value="" />
+										</div>
+									</div>
 								</div>
 							</fieldset>
 						</nav>

@@ -28,6 +28,7 @@
 			"paging": false,
 			"lengthChange": false,
 			"ordering": false,
+			"bInfo" : false,
 		});
 
 		var tableBapp = $('#tableBappVendor').DataTable({
@@ -35,6 +36,7 @@
 			"paging": false,
 			"lengthChange": false,
 			"ordering": false,
+			"bInfo" : false,
 		});
 
 		var tablePV = $('#tablePV').DataTable({
@@ -242,7 +244,7 @@
 								v.name,
 								v.category_name,
 								v.specs,
-								`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})" required>`,
+								`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})" onkeypress="return validateNumber(event)" required>`,
 								v.total_unit,
 								'',
 								v.vendor_id,
@@ -688,12 +690,14 @@
 
 		var proc_id = $('#opsiProcurement').val();
 		var vendor_id = $('#opsiVendor_'+id).val();
-		vendorSelect[id] = vendor_id;
-		$('#nomorSpph_'+id).prop('value', '');
-		$('#tambahDokumen').show();
-		$('#hapusDokumen').show();
 
 		if (vendor_id != null) {
+
+			vendorSelect[id] = vendor_id;
+			$('#nomorSpph_'+id).prop('value', '');
+			$('#tambahDokumen').show();
+			$('#hapusDokumen').show();
+
 			$.ajax({
 				type: "GET",
 				url: window.location.href + "/getSpph/" + proc_id + "/" + vendor_id,
@@ -758,6 +762,15 @@
 		}
 	}
 
+	function validateNumber (event) {
+		let val = event.keyCode
+		if (val>=48 && val<=57) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function generateOption(i) {
 
 		$('#opsiVendor_'+i).html('');
@@ -781,6 +794,7 @@
 						$('#opsiVendor_'+i).append('<option value='+value.id+'>'+ value.name +'</option>');
 					}
 				});
+
 				$('#opsiVendor_'+i).val('').trigger('change');
 				if (currOpt < 2) {
 					$('#tambahDokumen').hide();
