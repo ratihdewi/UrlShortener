@@ -20,15 +20,12 @@
                         <tbody>
                             @if(Auth::user()->role_id!=4)
                                 @forelse($procurement->spphs as $row)
+                                    @if($row->has_penawaran)
                                     <tr>
                                         <td>{{$row->vendor->name}}</td>
                                         <td>{{$row->no_spph}}</td>
                                         <td>
-                                            @if($row->has_penawaran) 
                                             <a class="btn btn-sm btn-light" data-toggle="modal" id="getDetailPenawaran" data-target="#penawaranDetailModal" data-url="{{route('procurement.penawaran.detail', [$row])}}" href="#."><small>Lihat Penawaran</small></a>
-                                            @else 
-                                                Tidak Mengirimkan
-                                            @endif
                                         </td>
                                         <td class="text-center"><div class="rateit" data-rateit-value="{{$row->vendor->score}}" style="font-family:fontawesome" data-rateit-resetable="false" data-rateit-readonly="true"></div></td>
                                         <td>
@@ -43,6 +40,7 @@
                                             @endif
                                         </td>
                                     </tr>
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="5"><center><i>Tidak ada data.</i></center></td>

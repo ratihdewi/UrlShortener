@@ -693,32 +693,34 @@
 		$('#tambahDokumen').show();
 		$('#hapusDokumen').show();
 
-		$.ajax({
-			type: "GET",
-			url: window.location.href + "/getSpph/" + proc_id + "/" + vendor_id,
-			success: function(res) {
-				$('#nomorSpph_'+id).prop('value', res.no_spph);
-				$('#linkSpph_'+id).prop('href', "{{ url('/spph-tor/download') }}" + "/" + res.id);
-				
-				var arr = [vendor_id, res.vendor_name];
+		if (vendor_id != null) {
+			$.ajax({
+				type: "GET",
+				url: window.location.href + "/getSpph/" + proc_id + "/" + vendor_id,
+				success: function(res) {
+					$('#nomorSpph_'+id).prop('value', res.no_spph);
+					$('#linkSpph_'+id).prop('href', "{{ url('/spph-tor/download') }}" + "/" + res.id);
+					
+					var arr = [vendor_id, res.vendor_name];
 
-				if ($('.item-hapus-vendor').children().get(id) == null) {
-					$('.item-hapus-vendor').append(`<a class="dropdown-item" id="itemVendor${id}" style="cursor: pointer" onclick="deleteVendorSel(${id})"> ${res.vendor_name} </a>`);
-				} else {
-					$(`#itemVendor${id}`).get(0).innerHTML = res.vendor_name;
+					if ($('.item-hapus-vendor').children().get(id) == null) {
+						$('.item-hapus-vendor').append(`<a class="dropdown-item" id="itemVendor${id}" style="cursor: pointer" onclick="deleteVendorSel(${id})"> ${res.vendor_name} </a>`);
+					} else {
+						$(`#itemVendor${id}`).get(0).innerHTML = res.vendor_name;
+					}
+					
+
+					$(`#headerBA${id}`).html(res.vendor_name);
+					$('#addRowTable').prop('value', arr);
+					$('#addRowTable').click();
+
+					for(let i=id+1; i<vendorSelect.length; i++){
+						vendorSelect[i] = '-';
+						generateOption(i);
+					}
 				}
-				
-
-				$(`#headerBA${id}`).html(res.vendor_name);
-				$('#addRowTable').prop('value', arr);
-				$('#addRowTable').click();
-
-				for(let i=id+1; i<vendorSelect.length; i++){
-					vendorSelect[i] = '-';
-					generateOption(i);
-				}
-			}
-		});
+			});
+		}
 
 	}
 
@@ -779,7 +781,7 @@
 						$('#opsiVendor_'+i).append('<option value='+value.id+'>'+ value.name +'</option>');
 					}
 				});
-
+				$('#opsiVendor_'+i).val('').trigger('change');
 				if (currOpt < 2) {
 					$('#tambahDokumen').hide();
 				}

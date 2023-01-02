@@ -42,7 +42,7 @@
 						tableApproval.row.add([
 							`<input type="hidden" name="item_id[]" value="${v.id}" class="form-control" id="item_id${k}" />
 							<input type="text" name="nama_barang[]" value="${v.name}" class="form-control" id="nama_barang${k}">`,
-							`<select name="category_id[]" id="opsiKategori${k}" onchange="changeVendorOption(${k})" class="form-control select2"> 
+							`<select name="category_id[]" id="opsiKategori${k}" onchange="changeVendorOption(${k})" class="form-control"> 
 							@foreach($itemCategory as $ic)
 							<option value="{{ $ic->id }}"> {{ $ic->name }} </option>
 							@endforeach
@@ -83,6 +83,12 @@
 						sumItem++;
 
 						$(`#opsiKategori${k}`).val(v.category_id);
+
+						$(`#opsiKategori${k}`).select2();
+						$(`#opsiKategori${k}`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
+
+						$(`#vendor_id${k}`).select2();
+						$(`#vendor_id${k}`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
 					});
 
 					for (let i=0; i<sumItem; i++) {
@@ -95,7 +101,7 @@
 					$.each(res.umkItem, function(k,v){
 
 						let index = arrItemId.indexOf(v.item_id);
-						$(`#vendor_id${index}`).val(v.vendor_id);
+						$(`#vendor_id${index}`).val(v.vendor_id).trigger('change');
 
 					});
 
@@ -126,7 +132,18 @@
 			let isEmpty = false;
 			let emptyCol = 0;
 
-			let inputAll = $('input:not(.ck, .ck-hidden, .not-required), select, textarea');
+			let listVendor = $("[id ^= 'vendor_id']").length;
+			for (let k=0; k<listVendor; k++) {
+				if ($(`#vendor_id${k}`).val() == null) {
+					$(`#vendor_id${k}`).next().children().children().css({"background-color" : "#F67280"});
+					isEmpty = true;
+					emptyCol++;
+				} else {
+					$(`#vendor_id${k}`).next().children().children().css({"background-color" : "white"});
+				}
+			}
+
+			let inputAll = $('input:not(.ck, .ck-hidden, .not-required), textarea');
 			inputAll.each(function(){
 				if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 					isEmpty = true;
@@ -188,6 +205,8 @@
 			}
 
 		});
+
+		$(`#vendor_id${id}`).val('').trigger('change');
 	}
 
 	function deleteItem(v, id) {
