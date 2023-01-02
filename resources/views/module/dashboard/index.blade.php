@@ -203,6 +203,7 @@
 
         } else {
             $('#label_year_select').append('(' + finishYear.toString() + ' / ' + finishYear.toString() + ')');
+            $('#year_select').val(finishYear.toString());
         }
     });
     $('#sortby').change(function() {
