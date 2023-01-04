@@ -174,6 +174,11 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorByCategory');
             route::delete('/deleteItem/{id}', 'App\Http\Controllers\ProcurementManualController@deleteItem');
         });
+
+        Route::prefix('pl')->group(function(){
+            route::get('/', 'App\Http\Controllers\ProcurementManualController@indexPl')->name('procurement.manual-pl');
+        });
+
     });
 
     Route::prefix('slas')->group(function () {

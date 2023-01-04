@@ -221,13 +221,21 @@ class ProcurementManualController extends Controller
                         'spph_id' => $prcSpph->id
                     ];
 
-                    $dataInput = [
-                        'keterangan' => $request->keterangan[$i],
-                        'harga_satuan' => $request->harga_satuan[$i],
-                        'evaluasi' => $request->evaluasi[$i],
-                        'nilai' => $request->nilai[$i],
-                    ];
-    
+                    if ($procurement->mechanism_id == 3) {
+                        $dataInput = [
+                            'keterangan' => $request->keterangan[$i],
+                            'harga_satuan' => $request->harga_satuan[$i],
+                            'evaluasi' => $request->evaluasi[$i],
+                        ];
+                    } else {
+                        $dataInput = [
+                            'keterangan' => $request->keterangan[$i],
+                            'harga_satuan' => $request->harga_satuan[$i],
+                            'evaluasi' => $request->evaluasi[$i],
+                            'nilai' => $request->nilai[$i],
+                        ];
+                    }
+
                     if($listNego[$i] >= 0) {
                         $dataInput['negosiasi'] = 1;
                         $dataInput['can_win'] = 1;
@@ -741,6 +749,30 @@ class ProcurementManualController extends Controller
 
         return response()->json('success');
 
+    }
+
+
+    // Penunjukkan langsung //
+    public function indexPl () {
+
+        $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', 3)->get();
+        if (sizeof($procurements) > 0) {
+
+            $pesertas = User::where('role_id', '<>', '1')->get();
+            $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+            $generalUsers = User::all();
+
+            return view('module.procurement.manual.penunjukkan-langsung.index', compact(
+                'procurements',
+                'pesertas',
+                'users',
+                'generalUsers'
+            ));
+
+
+        } else {
+            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe Penunjukkan Langsung tidak ada atau masih berstatus approval']);
+        }
     }
 
 }

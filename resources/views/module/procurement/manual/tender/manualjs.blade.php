@@ -551,11 +551,11 @@
 								    <div class="col-xl-12">
 								        <div class="form-group">
 								            <label class="small mb-1">Ketentuan Pekerjaan </label> <label class="small mb-1" style="color:red">*</label> 
-								            <textarea id="ket_kerja${index}" name="po_ketentuan_pekerjaan[]" id="po_ketentuan_pekerjaan${index}" rows="4" class="form-control"> ${val.po.ketentuan_pekerjaan} </textarea>
+								            <textarea name="po_ketentuan_pekerjaan[]" id="po_ketentuan_pekerjaan${index}" rows="4" class="form-control"> ${val.po.ketentuan_pekerjaan} </textarea>
 								        </div>
 								        <div class="form-group">
 								            <label class="small mb-1">Ketentuan Pembayaran </label> <label class="small mb-1" style="color:red">*</label>
-								            <textarea id="ket_bayar${index}" name="po_ketentuan_pembayaran[]" id="po_ketentuan_pembayaran${index}" rows="4" class="form-control"> ${val.po.ketentuan_pembayaran} </textarea>
+								            <textarea name="po_ketentuan_pembayaran[]" id="po_ketentuan_pembayaran${index}" rows="4" class="form-control"> ${val.po.ketentuan_pembayaran} </textarea>
 								        </div>
 								    </div>
 								</div>

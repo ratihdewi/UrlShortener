@@ -51,6 +51,10 @@
                         <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
                         UMK
                     </a>
+                    <a class="nav-link collapsed" href="{{route('procurement.manual-pl')}}">
+                        <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
+                        Penunjukkan Langsung
+                    </a>
                     </div>
                 </div>
                 

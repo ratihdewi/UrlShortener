@@ -98,7 +98,7 @@
                         </div>
 
                         @if($procurement->mechanism_id==3 || $procurement->mechanism_id==4)
-                            <div class="form-group">
+                            <div class="form-group" id="field-PL">
                                 <label class="small mb-1">Vendors </label><br>
                                 <select class="form-control select2" style='width:100%' name="vendor_id" id="select_assign_vendor">
                                     <option value="0">Belum ada vendor dipilih</option>
@@ -174,7 +174,9 @@
 
         $("#penunjukan_langsung").hide();
         $("#afiliasi").hide();
+        $("#field-PL").hide();
         $("#tableVendorEdit").hide();
+        
         setShowHideField($('#mechanism_type').val());
 
         var myTable = $('#tableEditVendorRec').DataTable({
@@ -201,6 +203,7 @@
                 $("#tableVendorEdit").show();
                 $("#penunjukan_langsung").hide();
                 $("#afiliasi").hide();
+                $("#field-PL").hide();
 
                 let vendorOpt = $("[id ^= 'vendorOpt']").length;
 
@@ -217,14 +220,17 @@
                 $("#penunjukan_langsung").show();
                 $("#afiliasi").hide();
                 $("#tableVendorEdit").hide();
+                $("#field-PL").show();
             } else if(id==4) {
                 $("#penunjukan_langsung").hide();
                 $("#tableVendorEdit").hide();
                 $("#afiliasi").show();
+                $("#field-PL").show();
             } else {
                 $("#penunjukan_langsung").hide();
                 $("#afiliasi").hide();
                 $("#tableVendorEdit").hide();
+                $("#field-PL").hide();
             }
         }
 
