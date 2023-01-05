@@ -1395,6 +1395,7 @@ class ProcurementController extends Controller
     }
 
     public function validatePenawaranVendor ($vendor, $itemPenawaran) {
+
         $isDitawarkan = false;
         $arrItemPenawaran = array();
 
@@ -1406,6 +1407,13 @@ class ProcurementController extends Controller
                 $isDitawarkan = true;
                 break;
            }
+        }
+
+
+        if ($isDitawarkan) {
+            if (is_null($vendor->email) || is_null($vendor->name)) {
+                $isDitawarkan = false;
+            }
         }
 
         return $isDitawarkan;

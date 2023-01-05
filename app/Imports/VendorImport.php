@@ -24,7 +24,7 @@ class VendorImport implements ToModel, WithBatchInserts
 
         $this->count++;
         
-        if ($this->count > 1 && sizeof($row) == 13) {
+        if ($this->count > 1 && $row[0] != NULL) {
             
             if (strtolower($row[7]) == 'ya') {
                 $row[7] = 1;
