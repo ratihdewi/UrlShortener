@@ -19,41 +19,80 @@ class VendorInsertor
      */
     public function insert(array $data)
     {
-        if($this->emailIsExists($data['email'])){
-            return false;
-        } else {
-            if(!isset($data['afiliasi'])){
-                $data['afiliasi'] = 0; 
+
+        if (isset($data['email']) && isset($data['category_id'])) {
+
+            if($this->emailIsExists($data['email'])){
+                return false;
+            } else {
+                if(!isset($data['afiliasi'])){
+                    $data['afiliasi'] = 0; 
+                }
+
+                if (!isset($data['delete'])) {
+                    $data['delete'] = 0;
+                }
+                
+                $vendor = Vendor::create($data);
+                $vendor_update = Vendor::find($vendor->id);
+                $vendor_update->no = (new CreateNoVendor)->createNo($vendor->id);
+                $vendor_update->save();
+
+                if ($data['category_id'] == NULL) {
+                    $data['category_id'] = array(1);
+                }
+
+                foreach($data['category_id'] as $row){
+                    $cat = new VendorCategory();
+                    $cat->vendor_id = $vendor->id;
+                    $cat->category_id = $row;
+                    $cat->save();
+                }
+
+                $vendor_score = new VendorScore();
+                $vendor_score->vendor_id = $vendor->id;
+                $vendor_score->score = 4;
+                $vendor_score->user_id = Auth::user()->id;
+                $vendor_score->save();
+
+                return true;
             }
 
-            if (!isset($data['delete'])) {
+        } else {
+
+             if(!isset($data['afiliasi'])){
+                $data['afiliasi'] = 0; 
+             }
+
+             if (!isset($data['delete'])) {
                 $data['delete'] = 0;
-            }
-            
+             }
+                
             $vendor = Vendor::create($data);
             $vendor_update = Vendor::find($vendor->id);
             $vendor_update->no = (new CreateNoVendor)->createNo($vendor->id);
             $vendor_update->save();
 
-            if ($data['category_id'] == NULL) {
-                $data['category_id'] = array(1);
+            if (isset($data['category_id'])) {
+
+                foreach($data['category_id'] as $row){
+                    $cat = new VendorCategory();
+                    $cat->vendor_id = $vendor->id;
+                    $cat->category_id = $row;
+                    $cat->save();
+                }
+
+                $vendor_score = new VendorScore();
+                $vendor_score->vendor_id = $vendor->id;
+                $vendor_score->score = 4;
+                $vendor_score->user_id = Auth::user()->id;
+                $vendor_score->save();
             }
 
-            foreach($data['category_id'] as $row){
-                $cat = new VendorCategory();
-                $cat->vendor_id = $vendor->id;
-                $cat->category_id = $row;
-                $cat->save();
-            }
-
-            $vendor_score = new VendorScore();
-            $vendor_score->vendor_id = $vendor->id;
-            $vendor_score->score = 4;
-            $vendor_score->user_id = Auth::user()->id;
-            $vendor_score->save();
-
-            return true;
+             return true;
         }
+
+        
     }
 
     public function insertTenderTerbuka(array $data)

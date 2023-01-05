@@ -33,7 +33,7 @@
                             <div class="col-xl-6">
                                 <!-- Form Group (username)-->
                                 <div class="form-group">
-                                    <label class="small mb-1">Nama Vendor </label><label class="small mb-1" style="color:red">*</label>
+                                    <label class="small mb-1">Nama Vendor </label> <label class="small mb-1" style="color:red">*</label>
                                     <input name="name" required="true" value="{{ $vendor->name }}" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" type="text"/>
                                     @if ($errors->has('name'))
                                         <span class="small" style="color:red" role="alert">
@@ -42,7 +42,7 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1">Alamat Vendor </label><label class="small mb-1" style="color:red">*</label>
+                                    <label class="small mb-1">Alamat Vendor </label>
                                     <textarea name="address" rows="4" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}">{{ $vendor->address }}</textarea>
                                     @if ($errors->has('address'))
                                         <span class="small" style="color:red" role="alert">
@@ -51,8 +51,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1">No. Telepon </label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="no_telp" required="true" value="{{ $vendor->no_telp }}" class="form-control{{ $errors->has('no_telp') ? ' is-invalid' : '' }}" type="number"/>
+                                    <label class="small mb-1">No. Telepon </label>
+                                    <input name="no_telp"  value="{{ $vendor->no_telp }}" class="form-control{{ $errors->has('no_telp') ? ' is-invalid' : '' }}" type="number"/>
                                     @if ($errors->has('no_telp'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('no_telp') }}</strong>
@@ -60,8 +60,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1">Alamat Email </label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="email" required="true" value="{{ $vendor->email }}" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" type="email"/>
+                                    <label class="small mb-1">Alamat Email </label>
+                                    <input name="email"  value="{{ $vendor->email }}" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" type="email"/>
                                     @if ($errors->has('email'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('email') }}</strong>
@@ -69,8 +69,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1">Nama PIC </label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="pic_name" required="true" value="{{ $vendor->pic_name }}" class="form-control{{ $errors->has('pic_name') ? ' is-invalid' : '' }}" type="text"/>
+                                    <label class="small mb-1">Nama PIC </label>
+                                    <input name="pic_name"  value="{{ $vendor->pic_name }}" class="form-control{{ $errors->has('pic_name') ? ' is-invalid' : '' }}" type="text"/>
                                     @if ($errors->has('pic_name'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('pic_name') }}</strong>
@@ -88,8 +88,8 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1">Nomor Rekening </label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="no_rek" required="true" value="{{ $vendor->no_rek }}" class="form-control{{ $errors->has('no_rek') ? ' is-invalid' : '' }}" type="number"/>
+                                    <label class="small mb-1">Nomor Rekening </label>
+                                    <input name="no_rek"  value="{{ $vendor->no_rek }}" class="form-control{{ $errors->has('no_rek') ? ' is-invalid' : '' }}" type="number"/>
                                     @if ($errors->has('no_rek'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('no_rek') }}</strong>
@@ -97,8 +97,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1">Nama Bank </label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="bank_name" required="true" value="{{ $vendor->bank_name }}" class="form-control{{ $errors->has('bank_name') ? ' is-invalid' : '' }}" type="text"/>
+                                    <label class="small mb-1">Nama Bank </label>
+                                    <input name="bank_name"  value="{{ $vendor->bank_name }}" class="form-control{{ $errors->has('bank_name') ? ' is-invalid' : '' }}" type="text"/>
                                     @if ($errors->has('bank_name'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('bank_name') }}</strong>
@@ -106,8 +106,8 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <label class="small mb-1"> NPWP / TIN (Tax Identification Number) </label><label class="small mb-1" style="color:red">*</label>
-                                    <input name="no_tax" required="true" value="{{ $vendor->no_tax }}" class="form-control{{ $errors->has('no_tax') ? ' is-invalid' : '' }}" type="text"/>
+                                    <label class="small mb-1"> NPWP / TIN (Tax Identification Number) </label>
+                                    <input name="no_tax"  value="{{ $vendor->no_tax }}" class="form-control{{ $errors->has('no_tax') ? ' is-invalid' : '' }}" type="text"/>
                                     @if ($errors->has('no_tax'))
                                         <span class="small" style="color:red" role="alert">
                                             <strong>{{ $errors->first('no_tax') }}</strong>

@@ -25,15 +25,15 @@ class VendorRequest extends FormRequest
     {
         return [
             'name' => 'required|String',
-            'email' => 'required|email',
-            'category_id' => 'required|array',
-            'no_rek' => 'required|String',
-            'address' => 'required|String',
-            'bank_name' => 'required|String',
-            'no_telp' => 'required|String',
-            'no_tax' => 'required|String',
-            'afiliasi' => 'nullable|Boolean',
-            'pic_name' => 'required|String'
+            // 'email' => 'required|email',
+            // 'category_id' => 'required|array',
+            // 'no_rek' => 'required|String',
+            // 'address' => 'required|String',
+            // 'bank_name' => 'required|String',
+            // 'no_telp' => 'required|String',
+            // 'no_tax' => 'required|String',
+            // 'afiliasi' => 'nullable|Boolean',
+            // 'pic_name' => 'required|String'
         ];
     }
 

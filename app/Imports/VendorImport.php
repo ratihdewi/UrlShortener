@@ -21,100 +21,63 @@ class VendorImport implements ToModel, WithBatchInserts
     */
     public function model(array $row)
     {
-        $this->count = $this->count + 1;
+
+        $this->count++;
         
-        if($this->count >= 3){
+        if ($this->count > 1 && sizeof($row) == 13) {
+            
+            if (strtolower($row[7]) == 'ya') {
+                $row[7] = 1;
+            } else {
+                $row[7] = 0;
+            }
 
-            //import vendor
-            $data['name'] = $row[8];
-            $data['email'] = $row[10];
-            $data['address'] = $row[13];
-            $data['no_telp'] = $row[11];
-            $data['no_rek'] = $row[16];
-            $data['bank_name'] = $row[15];
-            $data['no_tax'] = $row[14];
-            $data['afiliasi'] =  0;
-            $data['pic_name'] = $row[9];
-            $data['delete'] = 0;
+            $newVendor = [
+                'name' => $row[0],
+                'no_rek' => strval($row[4]),
+                'address' => $row[2],
+                'bank_name' => $row[5],
+                'no_telp' => $row[3],
+                'no_tax' => strval($row[6]),
+                'email' => $row[1],
+                'afiliasi' => $row[7],
+                'delete' => 0,
+                'pic_name' => $row[8], 
+            ];
 
-            if(Vendor::where('name', $data['name'])->exists()){
-                $search_vendor = Vendor::where('name', $data['name'])->first();
-                $vendor = Vendor::find($search_vendor->id);
-                $vendor->name = $data['name'];
-                $vendor->email = $data['email'];
-                $vendor->address = $data['address'];
-                $vendor->no_telp = $data['no_telp'];
-                $vendor->no_rek = $data['no_rek'];
-                $vendor->bank_name = $data['bank_name'];
-                $vendor->no_tax = $data['no_tax'];
-                $vendor->afiliasi = $data['afiliasi'];
-                $vendor->pic_name = $data['pic_name'];
-                $vendor->save();
-
-                //category
-                $data['category_id'][0] = $row[1];
-                $data['category_id'][1] = $row[2];
-                $data['category_id'][2] = $row[3];
-                $data['category_id'][3] = $row[4];
-                $data['category_id'][4] = $row[5];
-                $data['category_id'][5] = $row[6];
-                foreach($data['category_id'] as $row){
-                    if($row!="" || $row!=null){
-                        $category = ItemCategory::where('code', $row)->first();
-                        if(!VendorCategory::where('vendor_id', $vendor->id)->where('category_id', $category->id)->exists()){
-                            $cat = new VendorCategory();
-                            $cat->vendor_id = $vendor->id;
-                            $cat->category_id = $category->id;
-                            $cat->save();
-                        }
-                    }
+            if ($row[1] != NULL) {
+                $exist = Vendor::where('email', $row[1])->exists();
+                if (!$exist) {
+                    $vendor = Vendor::create($newVendor);
+                    Vendor::where('id', $vendor->id)->update([
+                        'no' => (new CreateNoVendor)->createNo($vendor->id)
+                    ]);
                 }
 
             } else {
-                $vendor = new Vendor();
-                $vendor->name = $data['name'];
-                $vendor->email = $data['email'];
-                $vendor->address = $data['address'];
-                $vendor->no_telp = $data['no_telp'];
-                $vendor->no_rek = $data['no_rek'];
-                $vendor->bank_name = $data['bank_name'];
-                $vendor->no_tax = $data['no_tax'];
-                $vendor->afiliasi = $data['afiliasi'];
-                $vendor->pic_name = $data['pic_name'];
-                $vendor->delete = $data['delete'];
-                $vendor->save();
+                $exist = false;
+                $vendor = Vendor::create($newVendor);
+                Vendor::where('id', $vendor->id)->update([
+                    'no' => (new CreateNoVendor)->createNo($vendor->id)
+                ]);
+            }
 
-                //no vendor
-                $vendor_update = Vendor::find($vendor->id);
-                $vendor_update->no = (new CreateNoVendor)->createNo($vendor->id);
-                $vendor_update->save();
 
-                //score
-                $data['score'] = $row[17];
+            if ($row[9] != NULL && !$exist) {
+                $arrCat = explode(".", $row[9]);
+                foreach($arrCat as $dt){
+                    $cat = new VendorCategory();
+                    $cat->vendor_id = $vendor->id;
+                    $cat->category_id = $dt;
+                    $cat->save();
+                }
+
                 $vendor_score = new VendorScore();
                 $vendor_score->vendor_id = $vendor->id;
-                $vendor_score->score = ($data['score']==0) ? 4 : $data['score'];
+                $vendor_score->score = 4;
                 $vendor_score->user_id = Auth::user()->id;
                 $vendor_score->save();
-                
-                //category
-                $data['category_id'][0] = $row[1];
-                $data['category_id'][1] = $row[2];
-                $data['category_id'][2] = $row[3];
-                $data['category_id'][3] = $row[4];
-                $data['category_id'][4] = $row[5];
-                $data['category_id'][5] = $row[6];
-                foreach($data['category_id'] as $row){
-                    if($row!="" || $row!=null){
-                        $category = ItemCategory::where('code', $row)->first();
-                        $cat = new VendorCategory();
-                        $cat->vendor_id = $vendor->id;
-                        $cat->category_id = $category->id;
-                        $cat->save();
-                    }
-                }
             }
-            
         }
     }
 
