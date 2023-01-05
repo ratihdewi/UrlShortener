@@ -55,6 +55,10 @@
                         <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
                         Penunjukkan Langsung
                     </a>
+                    <a class="nav-link collapsed" href="{{route('procurement.manual-afiliasi')}}">
+                        <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
+                        Afiliasi
+                    </a>
                     </div>
                 </div>
                 

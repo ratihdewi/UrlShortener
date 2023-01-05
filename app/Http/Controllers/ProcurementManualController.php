@@ -775,4 +775,26 @@ class ProcurementManualController extends Controller
         }
     }
 
+
+    public function indexAfiliasi () {
+
+        $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', 4)->get();
+        if (sizeof($procurements) > 0) {
+
+            $pesertas = User::where('role_id', '<>', '1')->get();
+            $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+            $generalUsers = User::all();
+
+            return view('module.procurement.manual.afiliasi.index', compact(
+                'procurements',
+                'pesertas',
+                'users',
+                'generalUsers'
+            ));
+
+
+        } else {
+            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe Afiliasi tidak ada atau masih berstatus approval']);
+        }
+    }
 }

@@ -179,6 +179,10 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/', 'App\Http\Controllers\ProcurementManualController@indexPl')->name('procurement.manual-pl');
         });
 
+        Route::prefix('afiliasi')->group(function(){
+            route::get('/', 'App\Http\Controllers\ProcurementManualController@indexAfiliasi')->name('procurement.manual-afiliasi');
+        });
+
     });
 
     Route::prefix('slas')->group(function () {

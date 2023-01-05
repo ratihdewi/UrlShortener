@@ -60,6 +60,7 @@
                         <div class="form-group">
                             <label class="small mb-1">Category </label> <label class="small mb-1" style="color:red">*</label>
                             <select name="category_id" class="form-control" id="category">
+                                <option disabled selected> -- Pilih Opsi --</option> 
                                 @foreach($categories as $category)
                                     <option value="{{$category->id}}">{{$category->name}}</option>
                                 @endforeach
@@ -74,7 +75,7 @@
                                 </span>
                             @endif
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="selectMethodVendor">
                             <label class="small mb-1">Rekomenasi Vendor &nbsp;</label>
                             <select class="form-control" id="methodVendor">
                                 <option disabled value="0" selected> -- Pilih Opsi --</option> 
@@ -120,25 +121,33 @@
         } else {
             $('.flex-option').prop('disabled', true);
         }
+
+        if (this.value == 3 || this.value == 4) {
+            $('#selectMethodVendor').hide();
+        } else {
+            $('#selectMethodVendor').show();
+        }
         
     });
 
     $('#methodVendor').on('change', function(){
 
         if(this.value == 1){
+           
             $('#inputManual').hide();
             $('#inputList').show();
-
             loadVendorOption();
+
         } else if (this.value == 2) {
+           
             $('#inputManual').show();
             $('#inputList').hide();
-
             $('#listVendor').html('');
-        } else {
+        } 
+        else {
+
             $('#inputManual').show();
             $('#inputList').show();   
-
             loadVendorOption();         
         }
 

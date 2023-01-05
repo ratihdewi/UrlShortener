@@ -171,8 +171,9 @@
 
 						$.ajax({
 							type: "GET",
-							url: url + "/tender/getVendor/" + this.value,
+							url: url + "/tender/getVendor/" + $('#opsiProcurement').val(),
 							success: function(res) {
+								$('#opsiVendor_0').html('');
 								$('#opsiVendor_0').prop('disabled', false);
 								$('#opsiVendor_0').append('<option disabled selected> -- Pilih Vendor -- </option>');
 								$.each(res, function(key, value){
@@ -183,7 +184,7 @@
 
 						$.ajax({
 							type: "GET",
-							url: url + "/tender/getPenawaran/" + this.value,
+							url: url + "/tender/getPenawaran/" + $('#opsiProcurement').val(),
 							success: function(res) {
 								let id = 0;
 								$.each(res, function(k,v){
@@ -204,6 +205,14 @@
 									id++;
 								});
 							}
+						});
+
+						$.ajax({
+							type: "GET",
+							url: url + "/tender/getProcurement/" + $('#opsiProcurement').val(),
+							success: function(res) {
+								$('#opsiVendor_0').val(res.vendor_id_penunjukan_langsung).trigger('change');
+							},
 						});
 					}
 				}
