@@ -226,8 +226,8 @@
 												<input name="po_no_memo[]" disabled class="form-control po_no_memo" type="text"/>
 											</div>
 
-											<input name="po_job_terms[]" value="Sesuai dengan hasil rapat Negosiasi dan klarifikasi harga" type="hidden"/>
-											<input name="po_spph_id[]" class="po_spph_id" hidden type="text" />
+											<input name="po_job_terms[]" id="po_job_terms" value="Sesuai dengan hasil rapat Negosiasi dan klarifikasi harga" type="hidden"/>
+											<input name="po_spph_id[]" id="po_spph_id" class="po_spph_id" hidden type="text" />
 
 											<div class="form-group">
 												<label class="small mb-1">Perihal </label> <label class="small mb-1" style="color:red">*</label> 
@@ -269,11 +269,11 @@
 										<div class="col-xl-12">
 											<div class="form-group">
 												<label class="small mb-1">Ketentuan Pekerjaan </label> <label class="small mb-1" style="color:red">*</label> 
-												<textarea id="ket_kerja0" name="po_ketentuan_pekerjaan[]" rows="4" class="form-control"> </textarea>
+												<textarea id="ket_kerja0" class="inputKeterangan form-control" name="po_ketentuan_pekerjaan[]" rows="4" class="form-control"> </textarea>
 											</div>
 											<div class="form-group">
 												<label class="small mb-1">Ketentuan Pembayaran </label> <label class="small mb-1" style="color:red">*</label>
-												<textarea id="ket_bayar0" name="po_ketentuan_pembayaran[]" rows="4" class="form-control"> </textarea>
+												<textarea id="ket_bayar0" class="inputKeterangan form-control" name="po_ketentuan_pembayaran[]" rows="4" class="form-control"> </textarea>
 											</div>
 										</div>
 									</div>

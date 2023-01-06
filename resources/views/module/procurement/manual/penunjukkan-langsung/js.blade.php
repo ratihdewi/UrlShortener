@@ -109,8 +109,7 @@
 								$('#ket_kerja0').text(spphWon.po.ketentuan_pekerjaan);
 								$('#ket_bayar0').text(spphWon.po.ketentuan_pembayaran);
 
-								ClassicEditor.create(document.querySelector(`#ket_kerja0`));
-								ClassicEditor.create(document.querySelector(`#ket_bayar0`));
+								// ClassicEditor.create(document.querySelector(`.inputKeterangan`));
 
 								$('#bast_vn0').val(spphWon.vendor.name);
 								$('#bast_perihal0').val(res.procurement.name);
@@ -333,7 +332,7 @@
 							$(`#pesertaInternal0`).next().children().children().css({"background-color" : "white"});
 						}
 
-						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea');
+						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea:not(.inputKeterangan)');
 						allInput.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 								isEmpty = true;
