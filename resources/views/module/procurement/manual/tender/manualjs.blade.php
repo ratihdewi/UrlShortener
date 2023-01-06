@@ -594,8 +594,8 @@
 						`;
 
 						$('#fieldPO').append(isiField);
-						ClassicEditor.create(document.querySelector(`#ket_kerja${index}`));
-						ClassicEditor.create(document.querySelector(`#ket_bayar${index}`));
+						ClassicEditor.create(document.querySelector(`#po_ketentuan_pekerjaan${index}`));
+						ClassicEditor.create(document.querySelector(`#po_ketentuan_pembayaran${index}`));
 
 						let bastTag = `
 						<div class="accordion" id="accordionBAST${index}">
