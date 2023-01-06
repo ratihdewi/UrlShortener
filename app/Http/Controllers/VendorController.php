@@ -444,7 +444,7 @@ class VendorController extends Controller
                 FlashMessage::WARNING));
     }
 
-    public function vendorExampleImport()
+    public function vendorTemplateImport()
     {
         $file = public_path()."/templat/Templat-Masukan-Vendor.xlsx";
         $headers = array('Content-Type: application/vnd.ms-excel',);

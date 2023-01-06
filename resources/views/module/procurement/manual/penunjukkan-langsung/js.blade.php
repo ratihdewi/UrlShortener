@@ -193,7 +193,27 @@
 										`<input type="checkbox" id="checkbox_${id}" onchange="ubahArrNego(${id})" />`,
 										v.name,
 										v.category_name,
-										v.specs,
+										`
+									    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#modalSpesifikasi${id}">
+										  Lihat spesifikasi
+										</button>
+									    <div class="modal fade" id="modalSpesifikasi${id}" tabindex="-1" role="dialog" aria-labelledby="modalSpesifikasiTitle${id}" aria-hidden="true">
+										  <div class="modal-dialog" role="document">
+										    <div class="modal-content">
+										      <div class="modal-header">
+										        <h5 class="modal-title" id="modalSpesifikasiTitle${id}">Spesifikasi ${v.name}</h5>
+										        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										          <span aria-hidden="true">&times;</span>
+										        </button>
+										      </div>
+										      <div class="modal-body">
+										       <div style="margin: 1%">
+										       ${v.specs}
+										       </div>
+										      </div>
+										    </div>
+										  </div>
+										</div>`,
 										`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})" onkeypress="return validateNumber(event)" required>`,
 										v.total_unit,
 										'',
@@ -204,6 +224,8 @@
 									myTable.draw(false);
 									id++;
 								});
+								$('.hargaSatuan').css('width', '12%').trigger('change');
+								$('.inputTextArea').css('width', '11%').trigger('change');
 							}
 						});
 
@@ -245,6 +267,11 @@
 		$('#setTotal').on('click', function(){
 			let arr = this.value.split(',');
 			myTable.cell(arr[0],6).data(arr[1]);
+		});
+
+		$(window).on('resize', function(){
+			$('.hargaSatuan').css('width', '12%').trigger('change');
+			$('.inputTextArea').css('width', '11%').trigger('change');
 		});
 
 

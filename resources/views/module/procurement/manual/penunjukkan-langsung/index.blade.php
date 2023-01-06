@@ -68,19 +68,19 @@
 									<label> Unggah File Evaluasi Tender (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
 									<input type="file" class="form-control" id="eval_tender_pdf" name="eval_tender_pdf">
 								</div>
-								<table width="130%" class="table mt-5 mb-5" id="tabelItem">
+								<table width="150%" class="table mt-5 mb-5" id="tabelItem">
 									<thead>
 										<tr>
 											<th> Negosiasi </th>
 											<th> Nama Barang </th>
 											<th> Kategori </th>
 											<th> Spesifikasi </th>
-											<th> Harga Satuan <label class="small mb-1" style="color:red">*</label> </th>
+											<th class="hargaSatuan"> Harga Satuan <label class="small mb-1" style="color:red">*</label> </th>
 											<th> Kuantitas </th>
-											<th width="10%"> Harga Total </th>
+											<th class="inputTextArea"> Harga Total </th>
 											<th> Nama Vendor </th>
-											<th width="20%"> Keterangan <label class="small mb-1" style="color:red">*</label> </th>
-											<th width="20%"> Evaluasi <label class="small mb-1" style="color:red">*</label> </th>
+											<th class="inputTextArea"> Keterangan <label class="small mb-1" style="color:red">*</label> </th>
+											<th class="inputTextArea"> Evaluasi <label class="small mb-1" style="color:red">*</label> </th>
 										</tr>
 									</thead>
 								</table>

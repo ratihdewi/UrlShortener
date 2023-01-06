@@ -1034,7 +1034,7 @@ class ProcurementController extends Controller
                     }
                 }
             } else if($procurement->mechanism_id==3 || $procurement->mechanism_id==4){
-                if (!$procurement->vendor_id_penunjukan_langsung > 0) {
+                if ($procurement->vendor_id_penunjukan_langsung > 0) {
                     $spph = new ProcurementSpph();
                     $spph->procurement_id = $procurement->id;
                     $spph->vendor_id = $procurement->vendor_id_penunjukan_langsung;

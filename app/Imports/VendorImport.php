@@ -64,12 +64,22 @@ class VendorImport implements ToModel, WithBatchInserts
 
 
             if ($row[9] != NULL && !$exist) {
-                $arrCat = explode(".", $row[9]);
+                
+                $delimiter = ",";
+                if (gettype($row[9]) == 'double') {
+                    $delimiter = ".";
+                }
+ 
+                $arrCat = explode($delimiter, $row[9]);
+                sort($arrCat);
+
                 foreach($arrCat as $dt){
-                    $cat = new VendorCategory();
-                    $cat->vendor_id = $vendor->id;
-                    $cat->category_id = $dt;
-                    $cat->save();
+                    if ($dt >= 1 && $dt <= 16) {
+                        $cat = new VendorCategory();
+                        $cat->vendor_id = $vendor->id;
+                        $cat->category_id = $dt;
+                        $cat->save();
+                    }
                 }
 
                 $vendor_score = new VendorScore();
