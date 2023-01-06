@@ -41,7 +41,7 @@
 											<div class="col"> 
 												<label> Nama Vendor </label> 
 												<label class="small mb-1" style="color:red">*</label>  
-												<select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_0"></select>
+												<select name="name_vendor[]" class="form-control sm temp" id="opsiVendor_0"></select>
 											</div>
 										</div>
 										<div class="form-group mt-3 mb-3">

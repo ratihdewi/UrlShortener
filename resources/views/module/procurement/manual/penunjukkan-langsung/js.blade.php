@@ -179,6 +179,9 @@
 								$.each(res, function(key, value){
 									$('#opsiVendor_0').append('<option value='+value.id+'>'+ value.name +'</option>');
 								});
+
+								$('#opsiVendor_0').select2();
+								$(`#opsiVendor_0`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
 							}
 						});
 
@@ -248,6 +251,7 @@
 
 			var proc_id = $('#opsiProcurement').val();
 			var vendor_id = this.value;
+			$('#nomorSpph_0').prop('value', '');
 
 			$.ajax({
 				type: "GET",
