@@ -11,7 +11,7 @@
                     <div class="col-xl-12">
                         <div class="form-group">
                             <label class="small mb-1">Download Tempalte </label><br>
-                            <a href="{{route('vendor.download.import')}}" class="btn btn-primary btn-sm"><small>Download Template Contoh</small></a>
+                            <a href="{{route('vendor.download.template')}}" class="btn btn-primary btn-sm"><small>Download Template Contoh</small></a>
 
                             <div class="mt-3"> <small> <i> Harap baca petunjuk pengisian vendor melalui excel pada sheet keterangan </i> </small> </div>
                         </div>

@@ -41,7 +41,7 @@
 											<div class="col"> 
 												<label> Nama Vendor </label> 
 												<label class="small mb-1" style="color:red">*</label>  
-												<select name="name_vendor[]" class="form-control" class="temp" id="opsiVendor_0"></select>
+												<select name="name_vendor[]" class="form-control sm temp" id="opsiVendor_0"></select>
 											</div>
 										</div>
 										<div class="form-group mt-3 mb-3">
@@ -68,19 +68,19 @@
 									<label> Unggah File Evaluasi Tender (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
 									<input type="file" class="form-control" id="eval_tender_pdf" name="eval_tender_pdf">
 								</div>
-								<table width="130%" class="table mt-5 mb-5" id="tabelItem">
+								<table width="150%" class="table mt-5 mb-5" id="tabelItem">
 									<thead>
 										<tr>
 											<th> Negosiasi </th>
 											<th> Nama Barang </th>
 											<th> Kategori </th>
 											<th> Spesifikasi </th>
-											<th> Harga Satuan <label class="small mb-1" style="color:red">*</label> </th>
+											<th class="hargaSatuan"> Harga Satuan <label class="small mb-1" style="color:red">*</label> </th>
 											<th> Kuantitas </th>
-											<th width="10%"> Harga Total </th>
+											<th class="inputTextArea"> Harga Total </th>
 											<th> Nama Vendor </th>
-											<th width="20%"> Keterangan <label class="small mb-1" style="color:red">*</label> </th>
-											<th width="20%"> Evaluasi <label class="small mb-1" style="color:red">*</label> </th>
+											<th class="inputTextArea"> Keterangan <label class="small mb-1" style="color:red">*</label> </th>
+											<th class="inputTextArea"> Evaluasi <label class="small mb-1" style="color:red">*</label> </th>
 										</tr>
 									</thead>
 								</table>
@@ -226,8 +226,8 @@
 												<input name="po_no_memo[]" disabled class="form-control po_no_memo" type="text"/>
 											</div>
 
-											<input name="po_job_terms[]" value="Sesuai dengan hasil rapat Negosiasi dan klarifikasi harga" type="hidden"/>
-											<input name="po_spph_id[]" class="po_spph_id" hidden type="text" />
+											<input name="po_job_terms[]" id="po_job_terms" value="Sesuai dengan hasil rapat Negosiasi dan klarifikasi harga" type="hidden"/>
+											<input name="po_spph_id[]" id="po_spph_id" class="po_spph_id" hidden type="text" />
 
 											<div class="form-group">
 												<label class="small mb-1">Perihal </label> <label class="small mb-1" style="color:red">*</label> 
@@ -269,11 +269,11 @@
 										<div class="col-xl-12">
 											<div class="form-group">
 												<label class="small mb-1">Ketentuan Pekerjaan </label> <label class="small mb-1" style="color:red">*</label> 
-												<textarea id="ket_kerja0" name="po_ketentuan_pekerjaan[]" rows="4" class="form-control"> </textarea>
+												<textarea id="ket_kerja0" class="inputKeterangan form-control" name="po_ketentuan_pekerjaan[]" rows="4" class="form-control"> </textarea>
 											</div>
 											<div class="form-group">
 												<label class="small mb-1">Ketentuan Pembayaran </label> <label class="small mb-1" style="color:red">*</label>
-												<textarea id="ket_bayar0" name="po_ketentuan_pembayaran[]" rows="4" class="form-control"> </textarea>
+												<textarea id="ket_bayar0" class="inputKeterangan form-control" name="po_ketentuan_pembayaran[]" rows="4" class="form-control"> </textarea>
 											</div>
 										</div>
 									</div>

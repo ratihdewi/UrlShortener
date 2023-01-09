@@ -109,8 +109,7 @@
 								$('#ket_kerja0').text(spphWon.po.ketentuan_pekerjaan);
 								$('#ket_bayar0').text(spphWon.po.ketentuan_pembayaran);
 
-								ClassicEditor.create(document.querySelector(`#ket_kerja0`));
-								ClassicEditor.create(document.querySelector(`#ket_bayar0`));
+								// ClassicEditor.create(document.querySelector(`.inputKeterangan`));
 
 								$('#bast_vn0').val(spphWon.vendor.name);
 								$('#bast_perihal0').val(res.procurement.name);
@@ -179,6 +178,9 @@
 								$.each(res, function(key, value){
 									$('#opsiVendor_0').append('<option value='+value.id+'>'+ value.name +'</option>');
 								});
+
+								$('#opsiVendor_0').select2();
+								$(`#opsiVendor_0`).next().children().children().css('height', '2.95em').css('padding-top', '0.25em');
 							}
 						});
 
@@ -193,7 +195,27 @@
 										`<input type="checkbox" id="checkbox_${id}" onchange="ubahArrNego(${id})" />`,
 										v.name,
 										v.category_name,
-										v.specs,
+										`
+									    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#modalSpesifikasi${id}">
+										  Lihat spesifikasi
+										</button>
+									    <div class="modal fade" id="modalSpesifikasi${id}" tabindex="-1" role="dialog" aria-labelledby="modalSpesifikasiTitle${id}" aria-hidden="true">
+										  <div class="modal-dialog" role="document">
+										    <div class="modal-content">
+										      <div class="modal-header">
+										        <h5 class="modal-title" id="modalSpesifikasiTitle${id}">Spesifikasi ${v.name}</h5>
+										        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										          <span aria-hidden="true">&times;</span>
+										        </button>
+										      </div>
+										      <div class="modal-body">
+										       <div style="margin: 1%">
+										       ${v.specs}
+										       </div>
+										      </div>
+										    </div>
+										  </div>
+										</div>`,
 										`<input type="text" class="form-control" id="harga_satuan_${id}" name="harga_satuan[]" onchange="setHargaTotal(${id},${v.total_unit})" onkeypress="return validateNumber(event)" required>`,
 										v.total_unit,
 										'',
@@ -204,6 +226,8 @@
 									myTable.draw(false);
 									id++;
 								});
+								$('.hargaSatuan').css('width', '12%').trigger('change');
+								$('.inputTextArea').css('width', '11%').trigger('change');
 							}
 						});
 
@@ -226,6 +250,7 @@
 
 			var proc_id = $('#opsiProcurement').val();
 			var vendor_id = this.value;
+			$('#nomorSpph_0').prop('value', '');
 
 			$.ajax({
 				type: "GET",
@@ -245,6 +270,11 @@
 		$('#setTotal').on('click', function(){
 			let arr = this.value.split(',');
 			myTable.cell(arr[0],6).data(arr[1]);
+		});
+
+		$(window).on('resize', function(){
+			$('.hargaSatuan').css('width', '12%').trigger('change');
+			$('.inputTextArea').css('width', '11%').trigger('change');
 		});
 
 
@@ -302,7 +332,7 @@
 							$(`#pesertaInternal0`).next().children().children().css({"background-color" : "white"});
 						}
 
-						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea');
+						let allInput = $('#spph-negosiasi input:not(.ck, .ck-hidden, .select2-search__field), textarea:not(.inputKeterangan)');
 						allInput.each(function(){
 							if (this.value.toString() == "" || this.value.toString() == " " || this.value.toString() == "Pilih Vendor") {
 								isEmpty = true;

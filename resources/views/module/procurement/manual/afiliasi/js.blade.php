@@ -9,6 +9,8 @@
 		$('#hapusDokumen').hide(); 
     });
 
+	let tempUrl = window.location.href.split('/afiliasi');
+	const url = tempUrl[0];
 	var vendorSelect = [];
 	var arrNego = [];
 	var jumlahItem = 0;
@@ -19,7 +21,7 @@
 
 	$(function(){
 		
-		var currUrl = "{{ \Request::fullUrl() }}";
+	
 		var jumlahVendor = 0;
 		
 		var myTable = $('#tabelItem').DataTable({
@@ -63,7 +65,7 @@
 
 			$.ajax({
 				type: "GET",
-				url: window.location.href + "/getProcurement/" + this.value,
+				url: url + "/tender" + "/getProcurement/" + this.value,
 				success: function(res) {
 
 					if(parseInt(res.status) >= 5) {
@@ -203,7 +205,7 @@
 
 			$.ajax({
 				type: "GET",
-				url: window.location.href + "/getVendorCategory/" + arrValue[0],
+				url: url + "/tender" + "/getVendorCategory/" + arrValue[0],
 				success: function(res) {
 					$.each(res, function(k,v){
 						arrCat.push(v.category_name);
@@ -234,7 +236,7 @@
 				jumlahItem = 0;
 				$.ajax({
 					type: "GET",
-					url: currUrl + "/getPenawaran/" + this.value,
+					url: url + "/tender" + "/getPenawaran/" + this.value,
 					success: function(res) {
 						$.each(res, function(k,v){   
 							let id = counter*vendorSelect.length+k;
@@ -368,7 +370,7 @@
 
 			$.ajax({
 				type: "GET",
-				url: window.location.href + "/getProcurement/" + $('#opsiProcurement').val(),
+				url: url + "/tender" + "/getProcurement/" + $('#opsiProcurement').val(),
 				success: function(res) {
 
 					$('input:not(:disabled)').css("background-color", "white");
@@ -469,7 +471,7 @@
 		$('#loadBapp').on('click', function(){
 			$.ajax({
 				type: "GET",
-				url: window.location.href + "/getProcurementComponent/" + $('#opsiProcurement').val(),
+				url: url + "/tender" + "/getProcurementComponent/" + $('#opsiProcurement').val(),
 				success: function(res) {
 					$('input[name=nomor_memo_bapp]').prop('value', res.procurement.no_memo);
 					$('input[name=perihal]').prop('value', res.procurement.name);
@@ -594,8 +596,8 @@
 						`;
 
 						$('#fieldPO').append(isiField);
-						ClassicEditor.create(document.querySelector(`#po_ketentuan_pekerjaan${index}`));
-						ClassicEditor.create(document.querySelector(`#po_ketentuan_pembayaran${index}`));
+						ClassicEditor.create(document.querySelector(`#ket_kerja${index}`));
+						ClassicEditor.create(document.querySelector(`#ket_bayar${index}`));
 
 						let bastTag = `
 						<div class="accordion" id="accordionBAST${index}">
@@ -667,7 +669,7 @@
 
 						$.ajax({
 							type: "GET",
-							url: window.location.href + "/getSp3/" + $('#opsiProcurement').val(),
+							url: url + "/tender" + "/getSp3/" + $('#opsiProcurement').val(),
 							success: function(res) {
 								if(typeof res.keterangan !== 'undefined'){
 									$('#sp3_keterangan').prop('value', res.keterangan);
@@ -680,7 +682,7 @@
 
 			$.ajax({
 				type: "GET",
-				url: window.location.href + "/getVendor/" + $('#opsiProcurement').val(),
+				url: url + "/tender" + "/getVendor/" + $('#opsiProcurement').val(),
 				success: function (res) {
 					$.each(res, function (key, value){
 						let komentar = ((value.comment == null) ? "-" : value.comment);
@@ -727,7 +729,7 @@
 
 			$.ajax({
 				type: "GET",
-				url: window.location.href + "/getSpph/" + proc_id + "/" + vendor_id,
+				url: url + "/tender" + "/getSpph/" + proc_id + "/" + vendor_id,
 				success: function(res) {
 					$('#nomorSpph_'+id).prop('value', res.no_spph);
 					$('#linkSpph_'+id).prop('href', "{{ url('/spph-tor/download') }}" + "/" + res.id);
@@ -811,7 +813,7 @@
 
 		$.ajax({
 			type: "GET",
-			url: window.location.href + "/getVendor/" + proc_id,
+			url: url + "/tender" + "/getVendor/" + proc_id,
 			success: function(res) {
 				$('#opsiVendor_'+i).prop('disabled', false);
 				currOpt = 0;
