@@ -39,7 +39,11 @@ class VendorController extends Controller
      */
     public function index()
     {
-        $vendors = Vendor::where('delete', 0)->get();
+        $vendors = Vendor::where([
+            'delete' => 0,
+            'temporary' => 0
+        ])->get();
+ 
         return view('module.vendor.index', compact('vendors'));
     }
 

@@ -50,17 +50,17 @@
 									<div class="col">
 										<div class="mt-1"> 
 											<label> Unggah File Evaluasi Tender (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-											<input type="file" class="form-control" id="file_et" name="eval_tender_pdf"> 
+											<input type="file" class="form-control-file" id="file_et" name="eval_tender_pdf"> 
 										</div>
 										<div class="mt-4">
 											<label> Unggah File SP3 (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-											<input type="file" class="form-control" id="file_sp3" name="sp3_pdf"> 
+											<input type="file" class="form-control-file" id="file_sp3" name="sp3_pdf"> 
 										</div>
 									</div>
 									<div class="col">
 										<div class="mt-1">
 											<label> Unggah File BAPP (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-											<input type="file" class="form-control" id="file_bapp" name="bapp_pdf">
+											<input type="file" class="form-control-file" id="file_bapp" name="bapp_pdf">
 										</div>							
 									</div>
 								</div>
