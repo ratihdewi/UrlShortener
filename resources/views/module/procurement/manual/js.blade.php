@@ -28,6 +28,12 @@
 			"ordering": false,
 		});
 
+		$('#opsiProcurement').on('change', function(){
+			if (tableDocVendor.rows().count() < 1) {
+				$('#addRow').click();
+			}
+		});
+
 		$('#addRow').on('click', function (){
 
 			tableDocVendor.row.add([
