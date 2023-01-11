@@ -7,15 +7,6 @@
         <div class="col-xl-12">
             <div class="card mb-4">
                 <div class="card-body text-sm">
-					@if ($errors->any())
-						<div class="alert alert-danger">
-							<ul>
-								@foreach($errors->all() as $error)
-								<li> {{ $error }} </li>
-								@endforeach
-							</ul>
-						</div>
-					@endif
 					<form method="POST" id="storeData" enctype="multipart/form-data" action="{{ route('proc.manual.store') }}">
 						@csrf
 						<div class="form-group mb-4">
@@ -26,6 +17,11 @@
 									<option value="{{ $procurement->id }}"> {{ $procurement->name }} </option>
 								@endforeach
 							</select>
+							@if ($errors->has('procurement'))
+								<span class="small" style="color:red" role="alert">
+									<div class="mt-2"> <i> *Pengadaan wajib diisi </i> </div>
+								</span>
+							@endif
 						</div>
 						<span id="fieldFile">
 							<fieldset class="form-group border p-3">

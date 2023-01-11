@@ -64,6 +64,12 @@ class ProcurementManualController extends Controller
 
     public function store (Request $request) {
 
+        $request->validate([
+            'procurement' => 'required'
+        ]);
+
+        dd($request->all());
+
         $procurement = Procurement::where('id', $request->procurement)->first();
 
         foreach ($request->vendors as $key=>$row) {
