@@ -21,7 +21,8 @@ class Vendor extends Model
         'email',
         'afiliasi',
         'delete',
-        'pic_name'
+        'pic_name',
+        'temporary'
     ];
 
     //nama table

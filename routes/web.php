@@ -148,39 +148,45 @@ Route::group(['middleware' => ['auth'] ], function () {
                 route::get('/done/{procurement}', 'App\Http\Controllers\UmkPjController@done')->name('procurement.umk.pj.done');
             });
         });
+
+        Route::prefix('manual')->group(function() {
+            route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('proc.manual');
+            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor');
+            route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('proc.manual.store');
+        });
         
     });
 
-    Route::prefix('procurement-manual')->group(function(){
+    Route::prefix('procurement-manual-temp')->group(function(){
 
         Route::prefix('tender')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('procurement.manual');
-            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor')->name('manual.getvendor');
-            route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorCategory')->name('manual.getvendorcategory');
-            route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualController@getPenawaran')->name('manual.getpenawaran');
-            route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualController@getSpph')->name('manual.getspph');
-            route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('manual.store');
-            route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualController@storeFromBapp')->name('manual.storebapp');
-            route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurement')->name('manual.getprocurement');
-            route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementComponent')->name('manual.getprocurementcomponent');
-            route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualController@getSp3')->name('manual.getSp3');
+            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@index')->name('procurement.manual');
+            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendor')->name('manual.getvendor');
+            route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendorCategory')->name('manual.getvendorcategory');
+            route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualTempController@getPenawaran')->name('manual.getpenawaran');
+            route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualTempController@getSpph')->name('manual.getspph');
+            route::post('/store', 'App\Http\Controllers\ProcurementManualTempController@store')->name('manual.store');
+            route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualTempController@storeFromBapp')->name('manual.storebapp');
+            route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurement')->name('manual.getprocurement');
+            route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurementComponent')->name('manual.getprocurementcomponent');
+            route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualTempController@getSp3')->name('manual.getSp3');
         });
 
         Route::prefix('umk')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualController@indexUmk')->name('procurement.manual-umk');
-            route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
-            route::post('/store', 'App\Http\Controllers\ProcurementManualController@storeUmk')->name('manual.umk.store');
-            route::get('/loadDataUmk/{id}', 'App\Http\Controllers\ProcurementManualController@loadDataUmk')->name('procurement.manual-umk.loadDataUmk');
-            route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualController@getVendorByCategory');
-            route::delete('/deleteItem/{id}', 'App\Http\Controllers\ProcurementManualController@deleteItem');
+            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexUmk')->name('procurement.manual-umk');
+            route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
+            route::post('/store', 'App\Http\Controllers\ProcurementManualTempController@storeUmk')->name('manual.umk.store');
+            route::get('/loadDataUmk/{id}', 'App\Http\Controllers\ProcurementManualTempController@loadDataUmk')->name('procurement.manual-umk.loadDataUmk');
+            route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendorByCategory');
+            route::delete('/deleteItem/{id}', 'App\Http\Controllers\ProcurementManualTempController@deleteItem');
         });
 
         Route::prefix('pl')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualController@indexPl')->name('procurement.manual-pl');
+            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexPl')->name('procurement.manual-pl');
         });
 
         Route::prefix('afiliasi')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualController@indexAfiliasi')->name('procurement.manual-afiliasi');
+            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexAfiliasi')->name('procurement.manual-afiliasi');
         });
 
     });

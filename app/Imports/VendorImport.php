@@ -52,6 +52,8 @@ class VendorImport implements ToModel, WithBatchInserts
                     Vendor::where('id', $vendor->id)->update([
                         'no' => (new CreateNoVendor)->createNo($vendor->id)
                     ]);
+                } else {
+                    Vendor::where('email', $row[1])->where('delete', 0)->update(array_filter($newVendor));
                 }
 
             } else {
