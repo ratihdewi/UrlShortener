@@ -68,8 +68,6 @@ class ProcurementManualController extends Controller
             'procurement' => 'required'
         ]);
 
-        dd($request->all());
-
         $procurement = Procurement::where('id', $request->procurement)->first();
 
         foreach ($request->vendors as $key=>$row) {

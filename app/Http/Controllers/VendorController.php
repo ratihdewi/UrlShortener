@@ -445,7 +445,7 @@ class VendorController extends Controller
 
         return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan.', 
-                FlashMessage::WARNING));
+                FlashMessage::SUCCESS));
     }
 
     public function vendorTemplateImport()
