@@ -35,8 +35,14 @@
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Daftar Vendor Tender Terbuka
                 </a>
+                <a class="nav-link collapsed" href="{{route('proc.manual')}}" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
+                    <div class="nav-link-icon"> <i data-feather="arrow-right"></i> </div>
+                    Pengadaan (Manual)
+                </a>
 
-                <a class="nav-link collapsed" data-toggle="collapse" href="#collapseMn" role="button" aria-expanded="false" aria-controls="collapseMn">
+                
+
+                <!-- <a class="nav-link collapsed" data-toggle="collapse" href="#collapseMn" role="button" aria-expanded="false" aria-controls="collapseMn">
                     <div class="nav-link-icon"> <i data-feather="arrow-right"></i> </div>
                     Pengadaan (Manual)
                 </a>  
@@ -60,7 +66,7 @@
                         Afiliasi
                     </a>
                     </div>
-                </div>
+                </div> -->
                 
 
                 @endif
