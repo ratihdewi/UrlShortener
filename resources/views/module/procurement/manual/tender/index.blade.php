@@ -62,18 +62,18 @@
 								</div>
 								<div class="mt-5">
 									<div class="datatable">
-									<table class="table" id="tablePoBast">
-										<thead>
-											<tr>
-												<th width="15%"> Nama Vendor </th>
-												<th width="17%"> Nilai PO </th>
-												<th width="30%"> Dokumen PO </th>
-												<th width="30%"> Dokumen BAST </th>
-												<th width="8%"> Tindakan </th>
-											</tr>
-										</thead>
-									</table>
-								</div>
+										<table class="table" id="tablePoBast">
+											<thead>
+												<tr>
+													<th width="15%"> Nama Vendor </th>
+													<th width="17%"> Nilai PO </th>
+													<th width="30%"> Dokumen PO </th>
+													<th width="30%"> Dokumen BAST </th>
+													<th width="8%"> Tindakan </th>
+												</tr>
+											</thead>
+										</table>
+									</div>
 								</div>
 							</fieldset>
 						</span>
@@ -89,6 +89,6 @@
 	</div>
 </div>
 
-@include('module.procurement.manual.js')
+@include('module.procurement.manual.tender.js')
 
 @endsection

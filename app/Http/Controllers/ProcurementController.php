@@ -853,7 +853,12 @@ class ProcurementController extends Controller
             $file = public_path().'/brosurs'.'/'.$item->brosur_file;
             $headers = array('Content-Type: application/pdf',);
             return response()->download($file, $item->brosur_file, $headers);
-        } 
+        } else if ($type == 'pj-umk'){
+            $procurement = Procurement::find($id);
+            $file = public_path().'/pjumk/PJUMK-'.$procurement->id.'-'.$procurement->name.'pdf';
+            $headers = array('Content-Type: application/pdf',);
+            return response()->download($file);
+        }
         
     }
 
@@ -1346,7 +1351,10 @@ class ProcurementController extends Controller
         } else if($type=="invoice"){
             $procurement = Procurement::find($id);
             $file = 'invoice/'.$procurement->pjumk->invoice_file; 
-        } 
+        } else if ($type == 'pj-umk'){
+            $procurement = Procurement::find($id);
+            $file = 'pjumk/PJUMK-'.$procurement->id.'-'.$procurement->name.'.pdf';
+        }
         return view('module.procurement.dokumen_detail', compact('id','file', 'type'));
     }
 

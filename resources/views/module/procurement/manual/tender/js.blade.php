@@ -122,7 +122,7 @@
 					tableDocVendor.rows().nodes().page.len(-1).draw();
 					tablePoBast.rows().nodes().page.len(-1).draw();
 
-					$('#otherField').html(`<input type="hidden" name="vendor_po" value="${tablePoBast.rows().column(0).data().toArray()}" >`)
+					$('#otherField').html(`<input type="hidden" name="vendor_po" value="${tablePoBast.rows().column(0).data().toArray()}" >`);
 					$('#storeData').submit();
 				}
 			});

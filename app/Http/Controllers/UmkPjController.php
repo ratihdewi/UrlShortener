@@ -47,7 +47,7 @@ class UmkPjController extends Controller
 
     public function cetak(Procurement $procurement)
     {
-        $pdf_name = "PJUMK-".$procurement->id.'-'.rand(10000, 100000).".pdf";
+        $pdf_name = "PJUMK-".$procurement->id.'-'.$procurement->name.".pdf";
         $location = "pjumk"."/";
         $pdf_save = PDF::loadview('module.procurement.umk.pj_cetak',['procurement' => $procurement]);
         $pdf_save->save($location.$pdf_name);

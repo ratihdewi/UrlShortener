@@ -8,6 +8,7 @@ use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\ProcurementItem;
 use App\Models\SpphPenawaran;
+use App\Models\ProcurementMechanism;
 use App\Models\Vendor;
 use App\Models\PoDetail;
 use App\Models\Po;
@@ -37,11 +38,15 @@ use Auth;
 class ProcurementManualController extends Controller
 {
 
-    public function index () {
+    public function index ($id) {
 
-        $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', 1)->get();
-
-        return view ('module.procurement.manual.index', compact('procurements'));
+        if ($id == 2){
+            $procurements = Procurement::where('status', '>', 0)->where('mechanism_id', $id)->get();
+            return view ('module.procurement.manual.umk.index', compact('procurements'));
+        } else {
+            $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', $id)->get();
+            return view ('module.procurement.manual.tender.index', compact('procurements'));
+        }
     }
 
     public function getVendor ($id) {
@@ -219,6 +224,72 @@ class ProcurementManualController extends Controller
         $msg = "Pengadaan ditambahkan secara manual";
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
         
+        return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
+        new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
+            FlashMessage::SUCCESS));
+    }
+
+    public function storeUmk (Request $request){
+        $request->validate([
+            'procurement' => 'required'
+        ]);
+        
+        $procurement = Procurement::where('id', $request->procurement)->first();
+
+        if (isset($request->sp3_pdf)) {
+            $file_sp3 = $request->file('sp3_pdf');
+            $name_sp3 = 'SP3-'.$procurement->name.'.pdf'; 
+            $path_sp3 = $this->upload($name_sp3, $file_sp3, 'sp3');
+
+            if (!Sp3::where('procurement_id', $procurement->id)->exists()) {
+                Sp3::create([
+                    'procurement_id' => $procurement->id,
+                    'sp3_file' => $name_sp3
+                ]);
+            } else {
+                Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
+            }
+        }
+
+        if (isset($request->bast_pdf)) {
+            $file_bast = $request->file('bast_pdf');
+            $name_bast = 'BAST-'.$procurement->name.'.pdf'; 
+            $path_bast = $this->upload($name_bast, $file_bast, 'bast');
+
+            $queryBast = UmkBast::where('procurement_id', $procurement->id);
+            if (!$queryBast->exists()){
+                $bast = UmkBast::create([
+                    'procurement_id' => $procurement->id,
+                    'bast_file' => $name_bast
+                ]);
+            } else {
+                $queryBast->update(['bast_file' => $name_bast]);
+            }
+        }
+
+        if (isset($request->pjumk_pdf)) {
+            $file_pjumk = $request->file('pjumk_pdf');
+            $name_pjumk = 'PJUMK-'.$procurement->id.'-'.$procurement->name.'.pdf'; 
+            $path_pjumk = $this->upload($name_pjumk, $file_pjumk, 'pjumk');
+
+            $queryPjumk = UmkPj::where('procurement_id', $procurement->id);
+            if (!$queryPjumk->exists()){
+                $umkPj = UmkPj::create([
+                    'procurement_id' => $procurement->id
+                ]);
+            } else {
+                $umkPj = $queryPjumk->first();
+            }
+
+            if (isset($request->invoice_pdf)){
+                $file_invoice = $request->file('invoice_pdf');
+                $name_invoice = 'Invoice-'.$procurement->name.'.pdf'; 
+                $path_invoice = $this->upload($name_invoice, $file_invoice, 'invoice');
+
+                UmkPj::where('id', $umkPj->id)->update(['invoice_file' => $name_invoice]);
+            }
+        }
+
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
             FlashMessage::SUCCESS));
