@@ -95,8 +95,8 @@ class ProcurementController extends Controller
      */
     public function create()
     {
-        $vendors = Vendor::where('delete', 0)->get();
-        $vendor_afiliasis = Vendor::where('afiliasi', 1)->get();
+        $vendors = Vendor::where('delete', 0)->where('temporary',0)->get();
+        $vendor_afiliasis = Vendor::where('afiliasi', 1)->where('temporary',0)->get();
         $categories = ItemCategory::all();
         $mechanisms = ProcurementMechanism::all();
 
@@ -678,6 +678,7 @@ class ProcurementController extends Controller
             foreach($request->vendor_name as $key => $value){
                 $exist = Vendor::where([
                     'email' => $request->vendor_email[$key],
+                    'temporary' => 0
                 ])->exists();
 
                 if ($exist) {
@@ -883,6 +884,7 @@ class ProcurementController extends Controller
         
             $vendors = Vendor::whereHas('categories', function ($query) use($category_id){
                 $query->where('category_id', $category_id);
+                $query->where('temporary', 0);
             })->get();
             return response()->json([
                 'vendors' => $vendors
@@ -1245,44 +1247,46 @@ class ProcurementController extends Controller
         $number = 0;
         $file[$number] = 'tors/'.$procurement->tor_file;
 
-        foreach($procurement->spphs as $row){
-            $number++;
-            $file[$number] = 'spph/SPPH-'.$row->vendor->name.'-'.$row->id.'.pdf';
-        }
-
-        $number++;
-        $file[$number] = 'evaluasi/'.$procurement->evaluasi_tender_file;   
-            
-        $number++;  
-        $file[$number] = 'bapp/BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
-
-        foreach($procurement->spphs as $row){
-            if($row->has_negosiasi){
+        if($procurement->mechanism_id != 2){
+            foreach($procurement->spphs as $row){
                 $number++;
-                $file[$number] = 'banegosiasi/BaNegosiasi-'.$row->vendor->name.'-'.$row->id.'.pdf';
+                $file[$number] = 'spph/SPPH-'.$row->vendor->name.'-'.$row->id.'.pdf';
+            }
+
+            $number++;
+            $file[$number] = 'evaluasi/'.$procurement->evaluasi_tender_file;   
+            
+            $number++;  
+            $file[$number] = 'bapp/BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
+
+            foreach($procurement->spphs as $row){
+                if($row->has_negosiasi){
+                    $number++;
+                    $file[$number] = 'banegosiasi/BaNegosiasi-'.$row->vendor->name.'-'.$row->id.'.pdf';
+                }
+            }
+            
+            foreach($procurement->spphsWon as $row){
+                if($row->has_po){
+                    $number++;
+                    $file[$number] = 'po/PO-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
+                } 
+            }
+
+            foreach($procurement->spphsWon as $row){
+                if($row->has_bast){
+                    $number++;
+                    $file[$number] = 'bast/BAST-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
+                }
+            }
+
+            foreach($procurement->sp3s as $row){
+                $number++;
+                $file[$number] = 'sp3/'.$row->sp3_file; 
             }
         }
-            
-        foreach($procurement->spphsWon as $row){
-            if($row->has_po){
-                $number++;
-                $file[$number] = 'po/PO-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
-            } 
-        }
-        
-        foreach($procurement->spphsWon as $row){
-            if($row->has_bast){
-                $number++;
-                $file[$number] = 'bast/BAST-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
-            }
-        }
-        
-        foreach($procurement->sp3s as $row){
-            $number++;
-            $file[$number] = 'sp3/'.$row->sp3_file; 
-        }
 
-        if($procurement->mechanism_id == 2){
+        else {
             foreach($procurement->bastUmks as $row){
                 $number++;
                 $file[$number] = 'bast/'.$row->bast_file; 
@@ -1291,6 +1295,9 @@ class ProcurementController extends Controller
             if($procurement->has_pjumk){
                 $number++;
                 $file[$number] = 'invoice/'.$procurement->pjumk->invoice_file; 
+
+                $number++;
+                $file[$number] = 'pjumk/PJUMK-'.$procurement->id.'-'.$procurement->name.'.pdf';
             }
         }
 

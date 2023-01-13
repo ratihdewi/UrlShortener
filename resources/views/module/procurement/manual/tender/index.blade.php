@@ -46,17 +46,17 @@
 									<div class="col">
 										<div class="mt-1"> 
 											<label> Unggah File Evaluasi Tender (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-											<input type="file" class="form-control-file" id="file_et" name="eval_tender_pdf"> 
+											<input type="file" class="form-control-file" id="file_et" name="eval_tender_pdf" accept="application/pdf"> 
 										</div>
 										<div class="mt-4">
 											<label> Unggah File SP3 (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-											<input type="file" class="form-control-file" id="file_sp3" name="sp3_pdf"> 
+											<input type="file" class="form-control-file" id="file_sp3" name="sp3_pdf" accept="application/pdf"> 
 										</div>
 									</div>
 									<div class="col">
 										<div class="mt-1">
 											<label> Unggah File BAPP (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
-											<input type="file" class="form-control-file" id="file_bapp" name="bapp_pdf">
+											<input type="file" class="form-control-file" id="file_bapp" name="bapp_pdf" accept="application/pdf">
 										</div>							
 									</div>
 								</div>
@@ -77,11 +77,17 @@
 								</div>
 							</fieldset>
 						</span>
+						<input type="hidden" name="mechanism_id" value="{{ Request::segment(3) }}">
 						<div id="otherField"> </div>
 					</form>
 					<button id="save" class="btn btn-primary" style="float: right;"> Submit </button>
-					<button class="btn btn-info" style="float: left" id="addRow"> Tambah Vendor </button>
-					<button id="deleteRow" class="btn btn-danger ml-2" style="float: left;"> Hapus vendor </button>
+					@if (Request::segment(3) != 3)
+						<button class="btn btn-info" style="float: left" id="addRow"> Tambah Vendor </button>
+						<button id="deleteRow" class="btn btn-danger ml-2" style="float: left;"> Hapus vendor </button>
+					@else
+						<button class="btn btn-info" style="float: left" id="addRow" hidden> Tambah Vendor </button>
+						<button id="deleteRow" class="btn btn-danger ml-2" style="float: left;" hidden> Hapus vendor </button>
+					@endif
 					<button id="setChecked" hidden></button>
 				</div>
 			</div>

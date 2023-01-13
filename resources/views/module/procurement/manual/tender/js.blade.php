@@ -39,17 +39,17 @@
 			tableDocVendor.row.add([
 				`<input type="checkbox" class="chbx" onchange="setChecked()">`,
 				`<input type="text" name="vendors[]" class="form-control">`,
-				`<input type="file" class="form-control-file" name="spph_pdf[]">`,
-				`<input type="file" class="form-control-file" name="penawaran_pdf[]">`,
-				`<input type="file" class="form-control-file" id="file_ban" name="ba_negosiasi_pdf[]">`,
+				`<input type="file" class="form-control-file" accept="application/pdf" name="spph_pdf[]">`,
+				`<input type="file" class="form-control-file" accept="application/pdf" name="penawaran_pdf[]">`,
+				`<input type="file" class="form-control-file" accept="application/pdf" id="file_ban" name="ba_negosiasi_pdf[]">`,
 				]);
 			tableDocVendor.draw(false);
 
 			tablePoBast.row.add([
 				'-',
 				`<input type="text" class="form-control" name="nilaiPO[]">`,
-				`<input type="file" class="form-control-file" id="file_po" name="po_pdf[]">`,
-				`<input type="file" class="form-control-file" id="file_bast" name="bast_pdf[]">`,
+				`<input type="file" class="form-control-file" accept="application/pdf" id="file_po" name="po_pdf[]">`,
+				`<input type="file" class="form-control-file" accept="application/pdf" id="file_bast" name="bast_pdf[]">`,
 				`-`,
 			]);
 			tablePoBast.draw(false);

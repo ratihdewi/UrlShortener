@@ -31,8 +31,10 @@ use App\Models\UmkBast;
 use App\Models\UmkPj;
 use App\Utilities\CreateNoSpph;
 use App\Http\Controllers\ProcurementController;
+use Illuminate\Support\Str;
 use DB;
 use Auth;
+use URL;
 
 
 class ProcurementManualController extends Controller
@@ -68,7 +70,7 @@ class ProcurementManualController extends Controller
     }
 
     public function store (Request $request) {
-
+        
         $request->validate([
             'procurement' => 'required'
         ]);
@@ -79,10 +81,19 @@ class ProcurementManualController extends Controller
         
             $isWinner = true;
 
-            $vendor = Vendor::create([
-                'name' => $row,
-                'temporary' => 1,
-            ]);
+            if ($request->mechanism_id == 3){
+                $vendor = Vendor::create([
+                    'name' => $row,
+                    'temporary' => 1,
+                    'afiliasi' => 1
+                ]);
+            } else {
+                $vendor = Vendor::create([
+                    'name' => $row,
+                    'temporary' => 1,
+                ]);
+            }
+            
 
             $spph = new ProcurementSpph();
             $spph->procurement_id = $procurement->id;
