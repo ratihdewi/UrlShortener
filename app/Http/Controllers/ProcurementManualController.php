@@ -43,10 +43,10 @@ class ProcurementManualController extends Controller
     public function index ($id) {
 
         if ($id == 2){
-            $procurements = Procurement::where('status', '>', 0)->where('mechanism_id', $id)->get();
+            $procurements = Procurement::where('status', '>', 0)->where('mechanism_id', $id)->where('status', '<', 5)->get();
             return view ('module.procurement.manual.umk.index', compact('procurements'));
         } else {
-            $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', $id)->get();
+            $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', $id)->where('status', '<', 10)->get();
             return view ('module.procurement.manual.tender.index', compact('procurements'));
         }
     }
@@ -211,29 +211,36 @@ class ProcurementManualController extends Controller
             ]);
         }
 
-        $file_bapp = $request->file('bapp_pdf');
-        $name_bapp = 'BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
-        $path_bapp = $this->upload($name_bapp, $file_bapp, 'bapp');
+        if(isset($request->bapp_pdf)){
+            $file_bapp = $request->file('bapp_pdf');
+            $name_bapp = 'BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
+            $path_bapp = $this->upload($name_bapp, $file_bapp, 'bapp');
 
-        Procurement::where('id', $procurement->id)->update([
-            'bapp_file' => $name_bapp,
-        ]);
-
-        $file_sp3 = $request->file('sp3_pdf');
-        $name_sp3 = 'SP3-'.$procurement->name.'.pdf'; 
-        $path_sp3 = $this->upload($name_sp3, $file_sp3, 'sp3');
-
-        if (!Sp3::where('procurement_id', $procurement->id)->exists()) {
-            Sp3::create([
-                'procurement_id' => $procurement->id,
-                'sp3_file' => $name_sp3
+            Procurement::where('id', $procurement->id)->update([
+                'bapp_file' => $name_bapp,
             ]);
-        } else {
-            Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
+        } 
+        
+        if (isset($request->sp3_pdf)){
+            $file_sp3 = $request->file('sp3_pdf');
+            $name_sp3 = 'SP3-'.$procurement->name.'.pdf'; 
+            $path_sp3 = $this->upload($name_sp3, $file_sp3, 'sp3');
+
+            if (!Sp3::where('procurement_id', $procurement->id)->exists()) {
+                Sp3::create([
+                    'procurement_id' => $procurement->id,
+                    'sp3_file' => $name_sp3
+                ]);
+            } else {
+                Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
+            }    
         }
+        
 
         $msg = "Pengadaan ditambahkan secara manual";
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
+
+        Procurement::where('id', $procurement->id)->update(['status' => 10]);
         
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 
@@ -300,6 +307,8 @@ class ProcurementManualController extends Controller
                 UmkPj::where('id', $umkPj->id)->update(['invoice_file' => $name_invoice]);
             }
         }
+
+        Procurement::where('id', $procurement->id)->update(['status' => 5]);
 
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 

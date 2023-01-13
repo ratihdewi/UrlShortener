@@ -1309,8 +1309,11 @@ class ProcurementController extends Controller
 
         // Adding file: second parameter is what will the path inside of the archive
         // So it will create another folder called "storage/" inside ZIP, and put the file there.
+
         for($i=0; $i<=$number; $i++){
-            $zip->addFile(public_path($file[$i]), $file[$i]);
+            if (file_exists(public_path($file[$i]))){
+                $zip->addFile(public_path($file[$i]), $file[$i]);
+            }
         }
 
         $zip->close();
