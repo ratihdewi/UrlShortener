@@ -24,6 +24,7 @@ use App\Utilities\CreateNoVendor;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VendorExport;
 use App\Imports\VendorImport;
+use App\Exports\VendorTemplateImport;
 use App\Mail\VendorTerbukaMail;
 use App\Utilities\CreateNoSpph;
 use Illuminate\Support\Facades\Mail;
@@ -450,9 +451,11 @@ class VendorController extends Controller
 
     public function vendorTemplateImport()
     {
-        $file = public_path()."/templat/Templat-Masukan-Vendor.xlsx";
-        $headers = array('Content-Type: application/vnd.ms-excel',);
-        return response()->download($file, 'Templat-Masukan-Vendor.xlsx',$headers);
+        $vendors = Vendor::where([
+            'temporary' => 0
+        ])->get();
+
+        return Excel::download(new VendorTemplateImport(), 'Vendor-Template-Import.xlsx');
     }
 
 
