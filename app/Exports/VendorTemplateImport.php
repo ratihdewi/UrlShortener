@@ -5,6 +5,8 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Illuminate\Contracts\View\View;
 use App\Models\Vendor;
 use App\Models\ItemCategory;
@@ -25,7 +27,7 @@ class VendorTemplateImport implements WithMultipleSheets
 }
 
 
-class FirstSheetImport implements FromView
+class FirstSheetImport implements FromView, WithColumnFormatting
 {
     public function view(): View
     {
@@ -36,6 +38,15 @@ class FirstSheetImport implements FromView
         return view('module.vendor.template-import.sheet1', [
             'vendors' => $vendors
         ]);
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'D' => '0',
+            'E' => '0',
+            'G' => '0'
+        ];
     }
 }
 
@@ -49,4 +60,5 @@ class SecondSheetImport implements FromView
             'itemCategories' => $itemCategories
         ]);
     }
+
 }
