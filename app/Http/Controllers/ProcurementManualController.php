@@ -42,13 +42,22 @@ class ProcurementManualController extends Controller
 
     public function index ($id) {
 
+        $startStatus = 1;
+        $finishStatus = 10;
+
         if ($id == 2){
-            $procurements = Procurement::where('status', '>', 0)->where('mechanism_id', $id)->where('status', '<', 5)->get();
-            return view ('module.procurement.manual.umk.index', compact('procurements'));
-        } else {
-            $procurements = Procurement::where('status', '>', 1)->where('mechanism_id', $id)->where('status', '<', 10)->get();
-            return view ('module.procurement.manual.tender.index', compact('procurements'));
+            $startStatus = 0;
+            $finishStatus = 5;
         }
+
+        $procurements = Procurement::where('status', '>', $startStatus)->where('mechanism_id', $id)->where('status', '<', $finishStatus)->get();
+
+        if(sizeof($procurements) == 0){
+            $mechanism = ProcurementMechanism::where('id', $id)->first();
+           return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe '.$mechanism->name.' tidak ada atau masih berstatus approval']);
+        }
+
+        return view ('module.procurement.manual.tender.index', compact('procurements'));
     }
 
     public function getVendor ($id) {
