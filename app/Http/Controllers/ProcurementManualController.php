@@ -87,6 +87,9 @@ class ProcurementManualController extends Controller
                     'temporary' => 1,
                     'afiliasi' => 1
                 ]);
+                Procurement::where('id', $procurement->id)->update([
+                    'vendor_id_penunjukan_langsung' => $vendor->id
+                ]);
             } else {
                 $vendor = Vendor::create([
                     'name' => $row,

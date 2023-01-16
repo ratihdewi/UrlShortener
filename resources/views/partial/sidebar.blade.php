@@ -41,7 +41,7 @@
                     Pengadaan (Manual)
                 </a>  
 
-                <div class="collapse" id="collapseMn">
+                <div class="collapse {{ Request::segment(2) == 'manual' ? 'show' : '' }}" id="collapseMn">
                     <div>
                     <a class="nav-link collapsed" href="{{route('proc.manual', ['id' => 1])}}">
                         <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
