@@ -449,7 +449,7 @@ class VendorController extends Controller
                 FlashMessage::SUCCESS));
     }
 
-    public function vendorTemplateImport()
+    public function vendorImportTemplate()
     {
         $vendors = Vendor::where([
             'temporary' => 0

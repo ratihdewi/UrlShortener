@@ -216,7 +216,7 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::delete('file/delete/{file}', 'App\Http\Controllers\VendorController@deleteFile')->name('vendor.delete.file');
             route::get('/export', 'App\Http\Controllers\VendorController@export')->name('vendor.export');
             route::post('/import', 'App\Http\Controllers\VendorController@import')->name('vendor.import');
-            route::get('/download-template', 'App\Http\Controllers\VendorController@vendorTemplateImport')->name('vendor.download.template');
+            route::get('/unduh-template', 'App\Http\Controllers\VendorController@vendorImportTemplate')->name('vendor.download.template');
         });
 
         Route::prefix('deleted-bidder')->group(function () {
