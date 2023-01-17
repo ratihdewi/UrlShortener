@@ -217,6 +217,7 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/export', 'App\Http\Controllers\VendorController@export')->name('vendor.export');
             route::post('/import', 'App\Http\Controllers\VendorController@import')->name('vendor.import');
             route::get('/unduh-template', 'App\Http\Controllers\VendorController@vendorImportTemplate')->name('vendor.download.template');
+            route::get('/update-data', 'App\Http\Controllers\VendorController@vendorImportData')->name('vendor.download.unfinished.data');
         });
 
         Route::prefix('deleted-bidder')->group(function () {

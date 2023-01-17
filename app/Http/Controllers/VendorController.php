@@ -451,6 +451,13 @@ class VendorController extends Controller
 
     public function vendorImportTemplate()
     {
+        $file = public_path()."/templat/Templat-Masukan-Vendor.xlsx";
+        $headers = array('Content-Type: application/vnd.ms-excel',);
+        return response()->download($file, 'Templat-Masukan-Vendor.xlsx',$headers);
+    }
+
+    public function vendorImportData()
+    {
         $vendors = Vendor::where([
             'temporary' => 0
         ])->get();

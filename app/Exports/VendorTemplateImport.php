@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Illuminate\Contracts\View\View;
 use App\Models\Vendor;
 use App\Models\ItemCategory;
@@ -27,7 +28,7 @@ class VendorTemplateImport implements WithMultipleSheets
 }
 
 
-class FirstSheetImport implements FromView, WithColumnFormatting
+class FirstSheetImport implements FromView, WithColumnFormatting, WithTitle
 {
     public function view(): View
     {
@@ -48,9 +49,14 @@ class FirstSheetImport implements FromView, WithColumnFormatting
             'G' => '0'
         ];
     }
+
+    public function title(): string
+    {
+        return 'Input Data';
+    }
 }
 
-class SecondSheetImport implements FromView
+class SecondSheetImport implements FromView, WithTitle
 {
 
     public function view(): View
@@ -59,6 +65,11 @@ class SecondSheetImport implements FromView
         return view('module.vendor.template-import.sheet2', [
             'itemCategories' => $itemCategories
         ]);
+    }
+
+    public function title(): string
+    {
+        return 'Keterangan';
     }
 
 }

@@ -40,7 +40,7 @@
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">NPWP</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Afiliasi</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">PIC</th>
-            <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Kategori</th>
+            <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Kategori *)</th>
         </tr>
     </thead>
     <tbody>
