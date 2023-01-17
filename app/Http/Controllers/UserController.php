@@ -111,7 +111,7 @@ class UserController extends Controller
             $user->password = bcrypt($user->password);
             $user->password_real = $request->password;
         }
-        if ($user->role_id == 4){
+        if ($user->role_id == 4 || $user->role_id == 1){
             $user->is_pengadaan = 0;
         }
 
@@ -126,7 +126,7 @@ class UserController extends Controller
     {
         $user = User::find(Auth::user()->id);
 
-        if($user->role_id < 4){
+        if($user->role_id == 2 || $user->role_id == 3){
             $user->is_pengadaan = $user->role_id;
             $user->role_id = 4;
             $user->save();
@@ -137,7 +137,7 @@ class UserController extends Controller
                 $user->is_pengadaan = 0;
             }
 
-            else if ($user->is_pengadaan < 4 && $user->is_pengadaan > 0){
+            else if ($user->is_pengadaan == 2 || $user->is_pengadaan == 3){
                 $user->is_pengadaan = 1;
             }
 
