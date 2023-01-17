@@ -4,7 +4,9 @@
     <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 mr-lg-2" id="sidebarToggle" onclick="location.reload()"><i data-feather="refresh-cw"></i></button>
     <ul class="navbar-nav align-items-center ml-auto">
         @if(Auth::user()->is_pengadaan > 0)
-            @if(Auth::user()->role_id == 2 || Auth::user()->role_id == 3)
+            @if (Auth::user()->role_id == 1)
+                SUPER ADMIN &nbsp;&nbsp;&nbsp;
+            @elseif (Auth::user()->role_id == 2 || Auth::user()->role_id == 3)
                 TIM PENGADAAN &nbsp;&nbsp;&nbsp;
             @else
                 USER &nbsp;&nbsp;&nbsp;

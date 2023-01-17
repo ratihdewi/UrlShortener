@@ -106,22 +106,27 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         $user->fill(collect($request->toArray())->filter()->toArray());
+
         if($request->password!=''){
             $user->password = bcrypt($user->password);
             $user->password_real = $request->password;
-        } 
+        }
+        if ($user->role_id == 4){
+            $user->is_pengadaan = 0;
+        }
+
         $user->save();
+
         return redirect()->route('master.user.show', [$user])->with('message', 
             new FlashMessage('User telah berhasil diubah!', 
                 FlashMessage::SUCCESS));
-
     }
 
     public function changeAccountType()
     {
         $user = User::find(Auth::user()->id);
 
-        if($user->role_id == 2 || $user->role_id == 3){
+        if($user->role_id < 4){
             $user->is_pengadaan = $user->role_id;
             $user->role_id = 4;
             $user->save();
@@ -132,7 +137,7 @@ class UserController extends Controller
                 $user->is_pengadaan = 0;
             }
 
-            else if ($user->is_pengadaan == 2 || $user->is_pengadaan == 3){
+            else if ($user->is_pengadaan < 4 && $user->is_pengadaan > 0){
                 $user->is_pengadaan = 1;
             }
 
