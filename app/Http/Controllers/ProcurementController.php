@@ -15,6 +15,7 @@ use App\Models\MasterSpph;
 use App\Models\MasterSla;
 use App\Models\Sp3;
 use App\Models\UmkBast;
+use App\Models\UmkItemVendor;
 use App\Models\Logs;
 use App\Models\ProcurementMechanism;
 use App\Models\ProcurementVendorRecomendation;
@@ -415,7 +416,8 @@ class ProcurementController extends Controller
                         $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
                     }
                 } else if ($arr_note[$key] == "Status") {
-                    $msg .= "<li> Status dikembalikan ke {$procurement->status_caption} </li>";
+                    $msg .= "<li> Status dikembal
+                    ikan ke {$procurement->status_caption} </li>";
                 } else if ($arr_note[$key] == "Tanggal pengiriman spph" || $arr_note[$key] == "Status Date") {
                     continue;
                 } else {
@@ -425,13 +427,16 @@ class ProcurementController extends Controller
         }
         $msg .= "</ul> <br>";
         
-        $processName = "Pengajuan";
-        if ($procurement->mechanism_id != $old_procurement-> mechanism_id) {
-            Logs::where('procurement_id', $procurement->id)->update(['process_name' => NULL]);
-            $processName = "Start SPPH";
-        }
+        if (strpos($msg, "<li>")){
+            $processName = "Pengajuan";
+            if ($procurement->mechanism_id != $old_procurement-> mechanism_id) {
+                Logs::where('procurement_id', $procurement->id)->update(['process_name' => NULL]);
+                $processName = "Start SPPH";
+            }
 
-        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", $processName);
+            (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", $processName);
+        }
+        
     }
 
     public function update(Procurement $procurement, Request $request)
@@ -586,12 +591,17 @@ class ProcurementController extends Controller
 
                 foreach ($request->itemId as $key=>$row) {
                     ProcurementVendorRecomendation::where('item_id', $row)->delete();
-                    
+                    UmkItemVendor::where('item_id', $row)->delete();
+
                     if (isset($request->vendorSelected[$key])) {
                         foreach ($request->vendorSelected[$key] as $val) {
                             ProcurementVendorRecomendation::create([
                                     'item_id' => $row,
                                     'vendor_id' => $val
+                            ]);
+                            UmkItemVendor::create([
+                                'item_id' => $row,
+                                'vendor_id' => $val
                             ]);
                         }
                     }

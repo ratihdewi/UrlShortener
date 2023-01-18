@@ -356,6 +356,13 @@ class ProcurementManualController extends Controller
             }
         }
 
+        $msg = "Melakukan perubahan data detail Procurement pada : <br> <ul>";
+        foreach (array_unique($arrNote) as $row){
+            $msg .= "<li> {$row} </li>";
+        }
+        $msg .= "</ul>";
+
+        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
         Procurement::where('id', $procurement->id)->update(['status' => 5]);
 
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
