@@ -32,12 +32,12 @@
     <thead>
         <tr>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Nama Vendor</th>
-            <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Email</th>
-            <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Alamat</th>
+            <th style="background-color:#d9d9d9; font-weight: bold; width:230%; text-align: center;">Email</th>
+            <th style="background-color:#d9d9d9; font-weight: bold; width:275%; text-align: center;">Alamat</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">No Telp</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">No Rekening</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Nama Bank</th>
-            <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">NPWP</th>
+            <th style="background-color:#d9d9d9; font-weight: bold; width:240%; text-align: center;">NPWP</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Afiliasi</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">PIC</th>
             <th style="background-color:#d9d9d9; font-weight: bold; width:215%; text-align: center;">Kategori *)</th>

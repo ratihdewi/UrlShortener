@@ -53,11 +53,15 @@ class ProcurementManualController extends Controller
         $procurements = Procurement::where('status', '>', $startStatus)->where('mechanism_id', $id)->where('status', '<', $finishStatus)->get();
 
         if(sizeof($procurements) == 0){
-            $mechanism = ProcurementMechanism::where('id', $id)->first();
+           $mechanism = ProcurementMechanism::where('id', $id)->first();
            return redirect('/procurement')->withErrors(['msg' => 'Daftar pengadaan bertipe '.$mechanism->name.' tidak ada atau masih berstatus approval']);
         }
 
-        return view ('module.procurement.manual.tender.index', compact('procurements'));
+        if ($id == 2){
+            return view ('module.procurement.manual.umk.index', compact('procurements'));
+        } else {
+            return view ('module.procurement.manual.tender.index', compact('procurements'));
+        }
     }
 
     public function getVendor ($id) {
@@ -85,6 +89,7 @@ class ProcurementManualController extends Controller
         ]);
 
         $procurement = Procurement::where('id', $request->procurement)->first();
+        $arrNote = array();
 
         foreach ($request->vendors as $key=>$row) {
         
@@ -130,6 +135,8 @@ class ProcurementManualController extends Controller
                     'procurement_id' => $procurement->id,
                     'vendor_id' => $vendor->id
                 ])->update($dataUpdateSpph);
+
+                array_push($arrNote, "Penawaran");
             }
 
             if (isset($request->spph_pdf)) {
@@ -142,6 +149,8 @@ class ProcurementManualController extends Controller
                     'item_id' => $spph->item_id,
                     'procurement_id' => $procurement->id
                 ]);
+
+                array_push($arrNote, "SPPH");
             }
 
 
@@ -156,12 +165,16 @@ class ProcurementManualController extends Controller
                         'procurement_id' => $procurement->id
                     ]);
                 }
+
+                array_push($arrNote, "BA Negosiasi");
             }
 
             if (isset($request->po_pdf[$key])) {
                 $file_po = $request->file('po_pdf')[$key];
                 $name_po = 'PO-'.$spph->vendor->name.'-'.$spph->id.'.pdf'; 
                 $path_po = $this->upload($name_po, $file_po, 'po');
+
+                array_push($arrNote, "PO");
             } else {
                 $isWinner = false;
             }
@@ -170,6 +183,8 @@ class ProcurementManualController extends Controller
                 $file_bast = $request->file('bast_pdf')[$key];
                 $name_bast = 'BAST-'.$spph->vendor->name.'-'.$spph->id.'.pdf'; 
                 $path_bast = $this->upload($name_bast, $file_bast, 'bast');
+
+                array_push($arrNote, "BAST");
             }
 
             $queryPo = Po::where('spph_id', $spph->id)->where('procurement_id', $procurement->id);
@@ -191,6 +206,7 @@ class ProcurementManualController extends Controller
                 } else {
                     PoDetail::where('po_id', $po->id)->update(['harga_total' => $nilai_po[$key]]);
                 }
+                array_push($arrNote, "Nilai PO");
             } else {
                 $isWinner = false;
             }
@@ -221,6 +237,8 @@ class ProcurementManualController extends Controller
             Procurement::where('id', $procurement->id)->update([
                 'evaluasi_tender_file' => $name_et,
             ]);
+
+            array_push($arrNote, "Evaluasi Tender");
         }
 
         if(isset($request->bapp_pdf)){
@@ -231,6 +249,8 @@ class ProcurementManualController extends Controller
             Procurement::where('id', $procurement->id)->update([
                 'bapp_file' => $name_bapp,
             ]);
+
+            array_push($arrNote, "BAPP");
         } 
         
         if (isset($request->sp3_pdf)){
@@ -245,11 +265,18 @@ class ProcurementManualController extends Controller
                 ]);
             } else {
                 Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
-            }    
+            }
+
+            array_push($arrNote, "SP3");    
         }
         
 
-        $msg = "Pengadaan ditambahkan secara manual";
+        $msg = "Melakukan perubahan data detail Procurement pada : <br> <ul>";
+        foreach (array_unique($arrNote) as $row){
+            $msg .= "<li> {$row} </li>";
+        }
+        $msg .= "</ul>";
+
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
 
         Procurement::where('id', $procurement->id)->update(['status' => 10]);
@@ -260,11 +287,13 @@ class ProcurementManualController extends Controller
     }
 
     public function storeUmk (Request $request){
+
         $request->validate([
             'procurement' => 'required'
         ]);
         
         $procurement = Procurement::where('id', $request->procurement)->first();
+        $arrNote = array();
 
         if (isset($request->sp3_pdf)) {
             $file_sp3 = $request->file('sp3_pdf');
@@ -279,6 +308,8 @@ class ProcurementManualController extends Controller
             } else {
                 Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
             }
+
+            array_push($arrNote, "SP3");    
         }
 
         if (isset($request->bast_pdf)) {
@@ -295,6 +326,8 @@ class ProcurementManualController extends Controller
             } else {
                 $queryBast->update(['bast_file' => $name_bast]);
             }
+
+            array_push($arrNote, "BAST");
         }
 
         if (isset($request->pjumk_pdf)) {
@@ -311,12 +344,15 @@ class ProcurementManualController extends Controller
                 $umkPj = $queryPjumk->first();
             }
 
+            array_push($arrNote, "PJUMK");
+
             if (isset($request->invoice_pdf)){
                 $file_invoice = $request->file('invoice_pdf');
                 $name_invoice = 'Invoice-'.$procurement->name.'.pdf'; 
                 $path_invoice = $this->upload($name_invoice, $file_invoice, 'invoice');
 
                 UmkPj::where('id', $umkPj->id)->update(['invoice_file' => $name_invoice]);
+                array_push($arrNote, "Invoice");
             }
         }
 

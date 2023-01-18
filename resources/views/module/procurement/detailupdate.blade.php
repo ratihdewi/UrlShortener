@@ -64,15 +64,20 @@
                                 </select>
                             </div>
                         @endif
-
                         <div id="penunjukan_langsung">
                             <div class="form-group">
                                 <label class="small mb-1">Vendor</label><br>
                                 <select class="form-control{{ $errors->has('vendor_id') ? ' is-invalid' : '' }} select2" name="vendor_id" style="width:100%;">
                                     <option value="0">Pilih Vendor</option>
-                                    @foreach($vendors as $vendor)
-                                        <option value="{{$vendor->id}}">{{$vendor->name}}</option>
-                                    @endforeach
+                                    @if(is_null($procurement->vendor))
+                                        @foreach($vendors as $vendor)
+                                            <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                        @endforeach
+                                    @else
+                                        @foreach($vendors as $vendor)
+                                            <option value="{{$vendor->id}}" @if($vendor->id==$procurement->vendor->id) selected @endif>{{$vendor->name}}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                             </div>
                             <div class="form-group">
@@ -96,18 +101,6 @@
                                 @endforeach
                             </select>
                         </div>
-
-                        @if($procurement->mechanism_id==3 || $procurement->mechanism_id==4)
-                            <div class="form-group" id="field-PL">
-                                <label class="small mb-1">Vendors </label><br>
-                                <select class="form-control select2" style='width:100%' name="vendor_id" id="select_assign_vendor">
-                                    <option value="0">Belum ada vendor dipilih</option>
-                                    @foreach($vendors as $vendor)
-                                        <option value="{{$vendor->id}}" @if($vendor->id==$procurement->vendor->id) selected @endif>{{$vendor->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
                     </div>
                     <div class="col-xl-12">
                         <div id="tableVendorEdit">
