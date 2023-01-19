@@ -22,7 +22,7 @@
                                     <td>{{$row->vendor->name}}</td>
                                     <td>{{$row->no_spph}}</td>
                                     @if ($row->vendor->temporary == 1)
-                                    <td class="text-center"> Rp {{ number_format($row->po->detail->harga_total) }} </td>
+                                    <td class="text-center"> Rp {{ number_format($row->po->detail->harga_total, 2) }} </td>
                                     @else
                                     <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
                                     @endif
