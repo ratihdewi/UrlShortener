@@ -19,4 +19,9 @@ class PoDetail extends Model
 
     protected $table = 'po_details';
 
+    public function po()
+    {
+        return $this->belongsTo('App\Models\Po', 'po_id');
+    }
+
 }

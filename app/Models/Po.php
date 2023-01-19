@@ -40,5 +40,8 @@ class Po extends Model
         return $this->belongsTo('App\Models\User', 'approved_by');
     }
 
-    
+    public function detail ()
+    {
+        return $this->hasOne('App\Models\PoDetail', 'po_id');
+    }
 }

@@ -101,12 +101,14 @@ class VendorInsertor
             return '';
         } else {
             $vendor = VendorTenderTerbuka::create($data);
-            foreach($data['category_id'] as $row){
-                $cat = new VendorCategory();
-                $cat->vendor_id = $vendor->id;
-                $cat->category_id = $row;
-                $cat->terbuka = 1;
-                $cat->save();
+            if (isset($data['category_id'])) {
+                foreach($data['category_id'] as $row){
+                    $cat = new VendorCategory();
+                    $cat->vendor_id = $vendor->id;
+                    $cat->category_id = $row;
+                    $cat->terbuka = 1;
+                    $cat->save();
+                }
             }
             return $vendor->id;
         }
