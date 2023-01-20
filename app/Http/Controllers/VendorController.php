@@ -504,4 +504,11 @@ class VendorController extends Controller
         return response()->json(['captcha'=> captcha_img()]);
     }
 
+    public function cekVendorTerbuka ($id) {
+
+        $vendorTerbuka = VendorTenderTerbuka::where('id', $id)->first();
+        $exists = Vendor::where('email', $vendorTerbuka->email)->where('delete', 0)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
 }

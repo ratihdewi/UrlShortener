@@ -230,6 +230,7 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/detail-terbuka/{vendor}', 'App\Http\Controllers\VendorController@detailTerbuka')->name('vendor.terbuka.detail');
             route::put('/approve-vendor/{vendor}', 'App\Http\Controllers\VendorController@approveVendor')->name('vendor.terbuka.approve');
             route::put('/reject-vendor/{vendor}', 'App\Http\Controllers\VendorController@rejectVendor')->name('vendor.terbuka.reject');
+            route::get('/cek-vendor-terbuka/{id}', 'App\Http\Controllers\VendorController@cekVendorTerbuka');
 
         });
     });

@@ -1344,18 +1344,27 @@ class ProcurementController extends Controller
         } else if($type=="bapp"){
             $procurement = Procurement::find($id);
             $file = 'bapp/BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
+        } else if($type=="bapp-manual"){
+            $spph = ProcurementSpph::find($id);
+            $file = 'bapp/BAPP-'.$spph->procurement->name.'-'.$spph->vendor->name.'-manual.pdf';
         } else if($type=="spph"){
             $spph = ProcurementSpph::find($id);
-            $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-            
-        }else if($type=="penawaran"){
+            $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';   
+        } else if ($type == "spph-manual"){
+            $procurement = Procurement::find($id);
+            $file = 'spph/SPPH-'.$procurement->name.'.pdf';
+        } else if($type=="penawaran"){
             $spph = ProcurementSpph::find($id);
             $file = 'penawarans/'.$spph->penawaran_file;
-            
+        } else if($type=="penawaran-manual"){
+            $procurement = Procurement::find($id);
+            $file = 'penawarans/Penawaran-'.$procurement->name.'.pdf';
         } else if($type=="banegosiasi"){
             $spph = ProcurementSpph::find($id);
             $file = 'banegosiasi/BaNegosiasi-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-            
+        } else if($type=="banegosiasi-manual"){
+            $procurement = Procurement::find($id);
+            $file = 'banegosiasi/BaNegosiasi-'.$procurement->name.'.pdf';
         } else if($type=="po"){
             $spph = ProcurementSpph::find($id);
             $file = 'po/PO-'.$spph->vendor->name.'-'.$spph->id.'.pdf'; 

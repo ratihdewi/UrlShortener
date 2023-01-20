@@ -28,10 +28,12 @@
                                     <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
                                     @endif
                                     <td>
-                                        @if($row->has_bast)
-                                        <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowBast" data-target="#showBastModal" data-url="{{route('procurement.bast.show', [$row])}}" href="#."><small>Lihat BAST</small></a>
-                                        @else
-                                            <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputBast" data-target="#inputBastModal" data-url="{{route('procurement.bast.input', [$row])}}" href="#."><small>Buat BAST</small></a>
+                                        @if($row->vendor->temporary == 0)
+                                            @if($row->has_bast)
+                                                <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowBast" data-target="#showBastModal" data-url="{{route('procurement.bast.show', [$row])}}" href="#."><small>Lihat BAST</small></a>
+                                            @else
+                                                <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputBast" data-target="#inputBastModal" data-url="{{route('procurement.bast.input', [$row])}}" href="#."><small>Buat BAST</small></a>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>

@@ -91,8 +91,59 @@ class ProcurementManualController extends Controller
         $procurement = Procurement::where('id', $request->procurement)->first();
         $arrNote = array();
 
-        foreach ($request->vendors as $key=>$row) {
-        
+        if (isset($request->spph_pdf)) {
+            $file_spph = $request->file('spph_pdf');
+            $name_spph = 'SPPH-'.$procurement->name.'.pdf';
+            $path_spph = $this->upload($name_spph, $file_spph, 'spph');
+
+            array_push($arrNote, "SPPH");
+        }
+
+        if (isset($request->penawaran_pdf)) {
+            $file_penawaran = $request->file('penawaran_pdf');
+            $name_penawaran = 'Penawaran-'.$procurement->name.'.pdf';
+            $path_penawaran = $this->upload($name_penawaran, $file_penawaran, 'penawarans');
+
+            array_push($arrNote, "Penawaran");
+        }
+
+        if (isset($request->ba_negosiasi_pdf)) {
+
+            $file_ban = $request->file('ba_negosiasi_pdf');
+            $name_ban = 'BaNegosiasi-'.$procurement->name.'.pdf';
+            $path_ban = $this->upload($name_ban, $file_ban, 'banegosiasi');
+
+            array_push($arrNote, "BA Negosiasi");
+        }
+
+        if (isset($request->eval_tender_pdf)) {
+            $file_et = $request->file('eval_tender_pdf');
+            $name_et = 'Evaluasi-'.$procurement->name.'.pdf';
+            $path_et = $this->upload($name_et, $file_et, 'evaluasi');
+
+            Procurement::where('id', $procurement->id)->update(['evaluasi_tender_file' => $name_et]);
+            array_push($arrNote, "Evaluasi Tender");
+        }
+
+        if (isset($request->sp3_pdf)){
+            $file_sp3 = $request->file('sp3_pdf');
+            $name_sp3 = 'SP3-'.$procurement->name.'.pdf'; 
+            $path_sp3 = $this->upload($name_sp3, $file_sp3, 'sp3');
+
+            if (!Sp3::where('procurement_id', $procurement->id)->exists()) {
+                Sp3::create([
+                    'procurement_id' => $procurement->id,
+                    'sp3_file' => $name_sp3
+                ]);
+            } else {
+                Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
+            }
+
+            array_push($arrNote, "SP3");    
+        }
+
+        foreach ($request->vendors as $key => $row){
+
             $isWinner = true;
 
             if ($request->mechanism_id == 3){
@@ -110,7 +161,6 @@ class ProcurementManualController extends Controller
                     'temporary' => 1,
                 ]);
             }
-            
 
             $spph = new ProcurementSpph();
             $spph->procurement_id = $procurement->id;
@@ -120,54 +170,41 @@ class ProcurementManualController extends Controller
             $spph->no_spph = (new CreateNoSpph)->createNo();
             $spph->save();
 
-            if (isset($request->penawaran_pdf)) {
-                $file_penawaran = $request->file('penawaran_pdf')[$key];
-                $name_penawaran = 'Penawaran-'.Auth::user()->id.'-'.$file_penawaran->getClientOriginalName();
-                $path_penawaran = $this->upload($name_penawaran, $file_penawaran, 'penawarans');
+            $dataUpdateSpph = [
+                'no_spph' => $spph->no_spph,
+                'status' => 3,
+                'penawaran_file' => $name_penawaran,
+            ];
 
-                $dataUpdateSpph = [
-                    'no_spph' => $spph->no_spph,
-                    'status' => 3,
-                    'penawaran_file' => $name_penawaran,
-                ];
+            ProcurementSpph::where([
+                'procurement_id' => $procurement->id,
+                'vendor_id' => $vendor->id
+            ])->update($dataUpdateSpph);
 
-                ProcurementSpph::where([
-                    'procurement_id' => $procurement->id,
-                    'vendor_id' => $vendor->id
-                ])->update($dataUpdateSpph);
+            SpphPenawaran::create([
+                'spph_id' => $spph->id,
+                'item_id' => $spph->item_id,
+                'procurement_id' => $procurement->id
+            ]);
 
-                array_push($arrNote, "Penawaran");
-            }
-
-            if (isset($request->spph_pdf)) {
-                $file_spph = $request->file('spph_pdf')[$key];
-                $name_spph = 'SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-                $path_spph = $this->upload($name_spph, $file_spph, 'spph');
-
-                SpphPenawaran::create([
+            if (!BaNegosiasi::where('spph_id', $spph->id)->where('procurement_id', $procurement->id)->exists()) {
+                BaNegosiasi::create([
                     'spph_id' => $spph->id,
-                    'item_id' => $spph->item_id,
                     'procurement_id' => $procurement->id
                 ]);
-
-                array_push($arrNote, "SPPH");
             }
 
+            if(isset($request->bapp_pdf)){
+                $file_bapp = $request->file('bapp_pdf')[$key];
+                $name_bapp = 'BAPP-'.$procurement->name.'-'.$spph->vendor->name.'-manual'.'.pdf';
+                $path_bapp = $this->upload($name_bapp, $file_bapp, 'bapp');
 
-            if (isset($request->ba_negosiasi_pdf)) {
-                $file_ban = $request->file('ba_negosiasi_pdf')[$key];
-                $name_ban = 'BaNegosiasi-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-                $path_ban = $this->upload($name_ban, $file_ban, 'banegosiasi');
+                Procurement::where('id', $procurement->id)->update([
+                    'bapp_file' => $name_bapp,
+                ]);
 
-                if (!BaNegosiasi::where('spph_id', $spph->id)->where('procurement_id', $procurement->id)->exists()) {
-                    BaNegosiasi::create([
-                        'spph_id' => $spph->id,
-                        'procurement_id' => $procurement->id
-                    ]);
-                }
-
-                array_push($arrNote, "BA Negosiasi");
-            }
+                array_push($arrNote, "BAPP");
+            } 
 
             if (isset($request->po_pdf[$key])) {
                 $file_po = $request->file('po_pdf')[$key];
@@ -175,9 +212,8 @@ class ProcurementManualController extends Controller
                 $path_po = $this->upload($name_po, $file_po, 'po');
 
                 array_push($arrNote, "PO");
-            } else {
-                $isWinner = false;
             }
+
 
             if (isset($request->bast_pdf[$key])) {
                 $file_bast = $request->file('bast_pdf')[$key];
@@ -207,8 +243,6 @@ class ProcurementManualController extends Controller
                     PoDetail::where('po_id', $po->id)->update(['harga_total' => $nilai_po[$key]]);
                 }
                 array_push($arrNote, "Nilai PO");
-            } else {
-                $isWinner = false;
             }
 
             if ($isWinner){
@@ -226,50 +260,7 @@ class ProcurementManualController extends Controller
                     'procurement_id' => $procurement->id
                 ]);
             } 
-            
         }
-
-        if (isset($request->eval_tender_pdf)) {
-            $file_et = $request->file('eval_tender_pdf');
-            $name_et = 'Evaluasi-'.Auth::user()->id.'-'.$file_et->getClientOriginalName();
-            $path_et = $this->upload($name_et, $file_et, 'evaluasi');
-
-            Procurement::where('id', $procurement->id)->update([
-                'evaluasi_tender_file' => $name_et,
-            ]);
-
-            array_push($arrNote, "Evaluasi Tender");
-        }
-
-        if(isset($request->bapp_pdf)){
-            $file_bapp = $request->file('bapp_pdf');
-            $name_bapp = 'BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
-            $path_bapp = $this->upload($name_bapp, $file_bapp, 'bapp');
-
-            Procurement::where('id', $procurement->id)->update([
-                'bapp_file' => $name_bapp,
-            ]);
-
-            array_push($arrNote, "BAPP");
-        } 
-        
-        if (isset($request->sp3_pdf)){
-            $file_sp3 = $request->file('sp3_pdf');
-            $name_sp3 = 'SP3-'.$procurement->name.'.pdf'; 
-            $path_sp3 = $this->upload($name_sp3, $file_sp3, 'sp3');
-
-            if (!Sp3::where('procurement_id', $procurement->id)->exists()) {
-                Sp3::create([
-                    'procurement_id' => $procurement->id,
-                    'sp3_file' => $name_sp3
-                ]);
-            } else {
-                Sp3::where('procurement_id', $procurement->id)->update(['sp3_file' => $name_sp3]);
-            }
-
-            array_push($arrNote, "SP3");    
-        }
-        
 
         $msg = "Melakukan perubahan data detail Procurement pada : <br> <ul>";
         foreach (array_unique($arrNote) as $row){
@@ -279,7 +270,10 @@ class ProcurementManualController extends Controller
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
 
-        Procurement::where('id', $procurement->id)->update(['status' => 10]);
+        Procurement::where('id', $procurement->id)->update([
+            'status' => 10,
+            'is_manual' => 1
+        ]);
         
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 

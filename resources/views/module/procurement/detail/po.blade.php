@@ -22,16 +22,18 @@
                                     <td>{{$row->vendor->name}}</td>
                                     <td>{{$row->no_spph}}</td>
                                     @if ($row->vendor->temporary == 1)
-                                    <td class="text-center"> Rp {{ number_format($row->po->detail->harga_total, 2) }} </td>
+                                        <td class="text-center"> Rp {{ number_format($row->po->detail->harga_total, 2) }} </td>
                                     @else
-                                    <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
+                                        <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
                                     @endif
                                     <td>
                                         @if($row->has_po)
                                             @if($procurement->status == 6)
                                                 <a class="btn btn-sm btn-light" data-toggle="modal" id="getEditPo" data-target="#editPoModal" data-url="{{route('procurement.po.edit', [$row])}}" href="#."><small>Ubah PO</small></a>
                                             @endif
-                                            <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowPo" data-target="#showPoModal" data-url="{{route('procurement.po.show', [$row])}}" href="#."><small>Lihat PO</small></a>
+                                            @if($row->vendor->temporary == 0)
+                                                <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowPo" data-target="#showPoModal" data-url="{{route('procurement.po.show', [$row])}}" href="#."><small>Lihat PO</small></a>
+                                            @endif
                                         @else
                                             <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputPo" data-target="#inputPoModal" data-url="{{route('procurement.po.input', [$row])}}" href="#."><small>Buat PO</small></a>
                                         @endif

@@ -22,7 +22,7 @@ class VendorInsertor
 
         if (isset($data['email']) && isset($data['category_id'])) {
 
-            if($this->emailIsExists($data['email'])){
+            if($this->emailIsExists($data['email']) && $data['delete'] == 0){
                 return false;
             } else {
                 if(!isset($data['afiliasi'])){

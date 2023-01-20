@@ -24,7 +24,8 @@ class Procurement extends Model
         'evaluasi_tender_file',
         'bapp_file',
         'vendor_id_penunjukan_langsung',
-        'date_status'
+        'date_status',
+        'is_manual'
     ];
 
     //nama table
