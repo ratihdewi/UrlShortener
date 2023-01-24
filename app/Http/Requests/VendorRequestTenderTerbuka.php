@@ -36,7 +36,8 @@ class VendorRequestTenderTerbuka extends FormRequest
             'data_penawaran' => 'nullable',
             'no_penawaran' => 'nullable|String',
             'pic_name' => 'required|String',
-            'captcha' => 'required|captcha'
+            'captcha' => 'required|captcha',
+            'category_id' => 'required|array'
         ];
     }
 
@@ -47,8 +48,19 @@ class VendorRequestTenderTerbuka extends FormRequest
     */
     public function messages()
     {
-        return [
-            'required' => ':attribute harus diisi.',
+        $msg = [
+            'name.required' => 'Nama wajib diisi',
+            'email.required' => 'Email wajib diisi',
+            'no_rek.required' => 'Nomor rekening wajib diisi',
+            'address.required' => 'Alamat wajib diisi',
+            'bank_name.required' => 'Nama bank wajib diisi',
+            'no_telp.required' => 'Nomor telepon wajib diisi',
+            'no_tax.required' => 'NPWP wajib diisi',
+            'pic_name.required' => 'PIC wajib diisi',
+            'captcha.required' => 'Captcha wajib diisi',
+            'category_id.required' => 'Bidang usaha wajib diisi'
         ];
+
+        return $msg;
     }
 }
