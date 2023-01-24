@@ -13,7 +13,7 @@
                                 <th>Nama Vendor</th>
                                 <th>Nomor SPPH</th>
                                 <th>Total</th>
-                                <th>Aksi</th>
+                                @if(!$procurement->is_manual) <th>Aksi</th> @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -22,14 +22,24 @@
                                 <tr>
                                     <td>{{$row->vendor->name}}</td>
                                     <td>{{$row->no_spph}}</td>
-                                    <td class="text-center">Rp{{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
+                                    @if ($row->vendor->temporary == 1)
+                                    <td class="text-center"> Rp {{ number_format($row->po->detail->harga_total, 2) }} </td>
+                                    @else
+                                    <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
+                                    @endif
+
+                                    @if(!$procurement->is_manual)
                                     <td>
-                                        @if($row->has_bast)
-                                        <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowBast" data-target="#showBastModal" data-url="{{route('procurement.bast.show', [$row])}}" href="#."><small>Lihat BAST</small></a>
-                                        @else
-                                            <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputBast" data-target="#inputBastModal" data-url="{{route('procurement.bast.input', [$row])}}" href="#."><small>Buat BAST</small></a>
+                                        @if($row->vendor->temporary == 0)
+                                            @if($row->has_bast)
+                                                <a class="btn btn-sm btn-warning" data-toggle="modal" id="getShowBast" data-target="#showBastModal" data-url="{{route('procurement.bast.show', [$row])}}" href="#."><small>Lihat BAST</small></a>
+                                            @else
+                                                <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputBast" data-target="#inputBastModal" data-url="{{route('procurement.bast.input', [$row])}}" href="#."><small>Buat BAST</small></a>
+                                            @endif
                                         @endif
                                     </td>
+                                    @endif
+                                    
                                 </tr>
                             @endif
                             @empty

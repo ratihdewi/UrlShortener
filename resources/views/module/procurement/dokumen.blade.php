@@ -14,6 +14,9 @@
                         </div>
                         @if($procurement->mechanism_id != 2)
                         <div class="form-group">
+                            @if($procurement->is_manual)
+                            <label class="small mb-1"><a id="viewTor" data-url="{{route('procurement.file.view', [$procurement, 'spph-manual'])}}" href="#.">Spph</a></label>
+                            @else
                             <label class="small mb-1">Spph&nbsp;</label>
                             <div class="timeline timeline-sm">
                                 <table style="margin-left:10px;font-size:9pt">
@@ -28,10 +31,14 @@
                                 @endif
                                 </table>
                             </div>
+                            @endif
                         </div>
                         @endif
                         @if($procurement->mechanism_id != 2)
                         <div class="form-group">
+                            @if($procurement->is_manual)
+                            <label class="small mb-1"><a id="viewTor" data-url="{{route('procurement.file.view', [$procurement, 'penawaran-manual'])}}" href="#.">Penawaran</a></label>
+                            @else
                             <label class="small mb-1">Penawaran</label>
                             <div class="timeline timeline-sm">
                                 <table style="margin-left:10px;font-size:9pt">
@@ -45,11 +52,17 @@
                                 @endforeach
                                 </table>
                             </div>
+                            @endif
                         </div>
                         
                         <div class="form-group">
                             <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'evaluasi'])}}" href="#."> Tender Evaluasi</a></label>
                         </div>
+                        @if($procurement->is_manual)
+                        <div class="form-group">
+                            <label class="small mb-1"><a id="viewTor" data-url="{{route('procurement.file.view', [$procurement, 'banegosiasi-manual'])}}" href="#.">BA Negosiasi</a></label>
+                        </div>
+                        @else
                         <div class="form-group">
                             <label class="small mb-1">Ba Negosiasi&nbsp;</label>
                             <div class="timeline timeline-sm">
@@ -64,9 +77,25 @@
                                 </table>
                             </div>
                         </div>
+                        @endif
+                        @if($procurement->is_manual)
+                        <div class="form-group">
+                            <label class="small mb-1">BAPP&nbsp;</label>
+                            <div class="timeline timeline-sm">
+                                <table style="margin-left:10px;font-size:9pt">
+                                @foreach($procurement->spphs as $row)
+                                    <tr>
+                                        <td><a id="viewTor" data-url="{{route('procurement.file.view', [$row->id, 'bapp-manual'])}}" href="#."> {{$row->vendor->name}}</i></a></td>
+                                    </tr>
+                                @endforeach
+                                </table>
+                            </div>
+                        </div>
+                        @else
                         <div class="form-group">
                             <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'bapp'])}}" href="#."> Bapp</a></label>
                         </div>
+                        @endif
                         <div class="form-group">
                             <label class="small mb-1">PO&nbsp;</label>
                             <div class="timeline timeline-sm">
@@ -124,6 +153,9 @@
                             @if($procurement->has_pjumk)
                             <div class="form-group">
                                 <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'invoice'])}}" href="#."> Invoice</a></label>
+                            </div>
+                            <div class="form-group">
+                                <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', ['id' => 5, 'type' =>'pj-umk'])}}" href="#."> PJ UMK </a></label>
                             </div>
                             @endif
                         @endif

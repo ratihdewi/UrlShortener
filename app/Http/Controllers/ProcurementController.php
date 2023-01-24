@@ -15,6 +15,7 @@ use App\Models\MasterSpph;
 use App\Models\MasterSla;
 use App\Models\Sp3;
 use App\Models\UmkBast;
+use App\Models\UmkItemVendor;
 use App\Models\Logs;
 use App\Models\ProcurementMechanism;
 use App\Models\ProcurementVendorRecomendation;
@@ -95,8 +96,8 @@ class ProcurementController extends Controller
      */
     public function create()
     {
-        $vendors = Vendor::where('delete', 0)->get();
-        $vendor_afiliasis = Vendor::where('afiliasi', 1)->get();
+        $vendors = Vendor::where('delete', 0)->where('temporary',0)->get();
+        $vendor_afiliasis = Vendor::where('afiliasi', 1)->where('temporary',0)->get();
         $categories = ItemCategory::all();
         $mechanisms = ProcurementMechanism::all();
 
@@ -415,7 +416,8 @@ class ProcurementController extends Controller
                         $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
                     }
                 } else if ($arr_note[$key] == "Status") {
-                    $msg .= "<li> Status dikembalikan ke {$procurement->status_caption} </li>";
+                    $msg .= "<li> Status dikembal
+                    ikan ke {$procurement->status_caption} </li>";
                 } else if ($arr_note[$key] == "Tanggal pengiriman spph" || $arr_note[$key] == "Status Date") {
                     continue;
                 } else {
@@ -425,13 +427,16 @@ class ProcurementController extends Controller
         }
         $msg .= "</ul> <br>";
         
-        $processName = "Pengajuan";
-        if ($procurement->mechanism_id != $old_procurement-> mechanism_id) {
-            Logs::where('procurement_id', $procurement->id)->update(['process_name' => NULL]);
-            $processName = "Start SPPH";
-        }
+        if (strpos($msg, "<li>")){
+            $processName = "Pengajuan";
+            if ($procurement->mechanism_id != $old_procurement-> mechanism_id) {
+                Logs::where('procurement_id', $procurement->id)->update(['process_name' => NULL]);
+                $processName = "Start SPPH";
+            }
 
-        (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", $processName);
+            (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", $processName);
+        }
+        
     }
 
     public function update(Procurement $procurement, Request $request)
@@ -586,12 +591,17 @@ class ProcurementController extends Controller
 
                 foreach ($request->itemId as $key=>$row) {
                     ProcurementVendorRecomendation::where('item_id', $row)->delete();
-                    
+                    UmkItemVendor::where('item_id', $row)->delete();
+
                     if (isset($request->vendorSelected[$key])) {
                         foreach ($request->vendorSelected[$key] as $val) {
                             ProcurementVendorRecomendation::create([
                                     'item_id' => $row,
                                     'vendor_id' => $val
+                            ]);
+                            UmkItemVendor::create([
+                                'item_id' => $row,
+                                'vendor_id' => $val
                             ]);
                         }
                     }
@@ -678,6 +688,7 @@ class ProcurementController extends Controller
             foreach($request->vendor_name as $key => $value){
                 $exist = Vendor::where([
                     'email' => $request->vendor_email[$key],
+                    'temporary' => 0
                 ])->exists();
 
                 if ($exist) {
@@ -842,7 +853,12 @@ class ProcurementController extends Controller
             $procurement = Procurement::find($id);
             $file = public_path().'/invoice'.'/'.$procurement->pjumk->invoice_file;
             $headers = array('Content-Type: application/pdf',);
-            return response()->download($file, $procurement->tor_file, $headers);
+            if (file_exists($file)){
+                return response()->download($file, $procurement->tor_file, $headers);
+            } else {
+                return back()->with('message', new FlashMessage('Dokumen tidak ditemukan atau tidak diunggah', 
+                FlashMessage::DANGER));
+            } 
         } else if($type == 'vendorfile') {
             $vendor = VendorFile::find($id);
             $file = public_path().'/vendorfile'.'/'.$vendor->file; 
@@ -853,7 +869,17 @@ class ProcurementController extends Controller
             $file = public_path().'/brosurs'.'/'.$item->brosur_file;
             $headers = array('Content-Type: application/pdf',);
             return response()->download($file, $item->brosur_file, $headers);
-        } 
+        } else if ($type == 'pj-umk'){
+            $procurement = Procurement::find($id);
+            $file = public_path().'/pjumk/PJUMK-'.$procurement->id.'-'.$procurement->name.'.pdf';
+            $headers = array('Content-Type: application/pdf',);
+            if (file_exists($file)){
+                return response()->download($file);
+            } else {
+                return back()->with('message', new FlashMessage('Dokumen tidak ditemukan atau tidak diunggah', 
+                FlashMessage::DANGER));
+            }   
+        }
         
     }
 
@@ -878,6 +904,7 @@ class ProcurementController extends Controller
         
             $vendors = Vendor::whereHas('categories', function ($query) use($category_id){
                 $query->where('category_id', $category_id);
+                $query->where('temporary', 0);
             })->get();
             return response()->json([
                 'vendors' => $vendors
@@ -1240,44 +1267,65 @@ class ProcurementController extends Controller
         $number = 0;
         $file[$number] = 'tors/'.$procurement->tor_file;
 
-        foreach($procurement->spphs as $row){
-            $number++;
-            $file[$number] = 'spph/SPPH-'.$row->vendor->name.'-'.$row->id.'.pdf';
-        }
+        if($procurement->mechanism_id != 2){
 
-        $number++;
-        $file[$number] = 'evaluasi/'.$procurement->evaluasi_tender_file;   
-            
-        $number++;  
-        $file[$number] = 'bapp/BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
-
-        foreach($procurement->spphs as $row){
-            if($row->has_negosiasi){
+            if ($procurement->is_manual){
                 $number++;
-                $file[$number] = 'banegosiasi/BaNegosiasi-'.$row->vendor->name.'-'.$row->id.'.pdf';
+                $file[$number] = 'spph/SPPH-'.$procurement->name.'.pdf';
+            } else {
+                foreach($procurement->spphs as $row){
+                    $number++;
+                    $file[$number] = 'spph/SPPH-'.$row->vendor->name.'-'.$row->id.'.pdf';
+                }
+            }
+            
+            $number++;
+            $file[$number] = 'evaluasi/'.$procurement->evaluasi_tender_file;   
+            
+            if ($procurement->is_manual){
+                foreach($procurement->spphs as $row){
+                    $number++;
+                    $file[$number] = 'bapp/BAPP-'.$row->procurement->name.'-'.$row->vendor->name.'-manual.pdf';
+                }
+            } else {
+                $number++;  
+                $file[$number] = 'bapp/BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
+            }
+            
+
+            if ($procurement->is_manual){
+                $number++;
+                $file[$number] = 'banegosiasi/BaNegosiasi-'.$procurement->name.'.pdf';
+            } else {
+                foreach($procurement->spphs as $row){
+                    if($row->has_negosiasi){
+                        $number++;
+                        $file[$number] = 'banegosiasi/BaNegosiasi-'.$row->vendor->name.'-'.$row->id.'.pdf';
+                    }
+                }
+            }
+            
+            foreach($procurement->spphsWon as $row){
+                if($row->has_po){
+                    $number++;
+                    $file[$number] = 'po/PO-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
+                } 
+            }
+
+            foreach($procurement->spphsWon as $row){
+                if($row->has_bast){
+                    $number++;
+                    $file[$number] = 'bast/BAST-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
+                }
+            }
+
+            foreach($procurement->sp3s as $row){
+                $number++;
+                $file[$number] = 'sp3/'.$row->sp3_file; 
             }
         }
-            
-        foreach($procurement->spphsWon as $row){
-            if($row->has_po){
-                $number++;
-                $file[$number] = 'po/PO-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
-            } 
-        }
-        
-        foreach($procurement->spphsWon as $row){
-            if($row->has_bast){
-                $number++;
-                $file[$number] = 'bast/BAST-'.$row->vendor->name.'-'.$row->id.'.pdf'; 
-            }
-        }
-        
-        foreach($procurement->sp3s as $row){
-            $number++;
-            $file[$number] = 'sp3/'.$row->sp3_file; 
-        }
 
-        if($procurement->mechanism_id == 2){
+        else {
             foreach($procurement->bastUmks as $row){
                 $number++;
                 $file[$number] = 'bast/'.$row->bast_file; 
@@ -1286,6 +1334,9 @@ class ProcurementController extends Controller
             if($procurement->has_pjumk){
                 $number++;
                 $file[$number] = 'invoice/'.$procurement->pjumk->invoice_file; 
+
+                $number++;
+                $file[$number] = 'pjumk/PJUMK-'.$procurement->id.'-'.$procurement->name.'.pdf';
             }
         }
 
@@ -1297,8 +1348,11 @@ class ProcurementController extends Controller
 
         // Adding file: second parameter is what will the path inside of the archive
         // So it will create another folder called "storage/" inside ZIP, and put the file there.
+
         for($i=0; $i<=$number; $i++){
-            $zip->addFile(public_path($file[$i]), $file[$i]);
+            if (file_exists(public_path($file[$i]))){
+                $zip->addFile(public_path($file[$i]), $file[$i]);
+            }
         }
 
         $zip->close();
@@ -1319,18 +1373,27 @@ class ProcurementController extends Controller
         } else if($type=="bapp"){
             $procurement = Procurement::find($id);
             $file = 'bapp/BAPP-'.$procurement->name.'-'.$procurement->id.'.pdf';
+        } else if($type=="bapp-manual"){
+            $spph = ProcurementSpph::find($id);
+            $file = 'bapp/BAPP-'.$spph->procurement->name.'-'.$spph->vendor->name.'-manual.pdf';
         } else if($type=="spph"){
             $spph = ProcurementSpph::find($id);
-            $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-            
-        }else if($type=="penawaran"){
+            $file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';   
+        } else if ($type == "spph-manual"){
+            $procurement = Procurement::find($id);
+            $file = 'spph/SPPH-'.$procurement->name.'.pdf';
+        } else if($type=="penawaran"){
             $spph = ProcurementSpph::find($id);
             $file = 'penawarans/'.$spph->penawaran_file;
-            
+        } else if($type=="penawaran-manual"){
+            $procurement = Procurement::find($id);
+            $file = 'penawarans/Penawaran-'.$procurement->name.'.pdf';
         } else if($type=="banegosiasi"){
             $spph = ProcurementSpph::find($id);
             $file = 'banegosiasi/BaNegosiasi-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
-            
+        } else if($type=="banegosiasi-manual"){
+            $procurement = Procurement::find($id);
+            $file = 'banegosiasi/BaNegosiasi-'.$procurement->name.'.pdf';
         } else if($type=="po"){
             $spph = ProcurementSpph::find($id);
             $file = 'po/PO-'.$spph->vendor->name.'-'.$spph->id.'.pdf'; 
@@ -1346,7 +1409,10 @@ class ProcurementController extends Controller
         } else if($type=="invoice"){
             $procurement = Procurement::find($id);
             $file = 'invoice/'.$procurement->pjumk->invoice_file; 
-        } 
+        } else if ($type == 'pj-umk'){
+            $procurement = Procurement::find($id);
+            $file = 'pjumk/PJUMK-'.$procurement->id.'-'.$procurement->name.'.pdf';
+        }
         return view('module.procurement.dokumen_detail', compact('id','file', 'type'));
     }
 

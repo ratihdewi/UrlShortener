@@ -67,6 +67,7 @@
                 </a>
                 <a class="btn btn-sm btn-info float-right" style="margin-right:20px;" data-toggle="modal" data-target="#uploadModal" href="#">Import</a>
                 <a class="btn btn-sm btn-secondary float-right"  style="margin-right:5px;"  href="{{route('vendor.export')}}">Export</a>
+                <a class="btn btn-sm btn-warning float-right"  style="margin-right:5px;"  href="{{route('vendor.download.unfinished.data')}}"> Update Data </a>
             @endif
         </div>
         <div class="card-body">

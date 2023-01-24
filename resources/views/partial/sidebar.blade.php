@@ -35,38 +35,32 @@
                     <div class="nav-link-icon"><i data-feather="users" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif></i></div>
                     Daftar Vendor Tender Terbuka
                 </a>
-                <a class="nav-link collapsed" href="{{route('proc.manual')}}" @if(request()->is('tenderterbuka-bidder*')) style="color:#385ac2;font-weight:bold;" @endif>
-                    <div class="nav-link-icon"> <i data-feather="arrow-right"></i> </div>
-                    Pengadaan (Manual)
-                </a>
-
                 
-
-                <!-- <a class="nav-link collapsed" data-toggle="collapse" href="#collapseMn" role="button" aria-expanded="false" aria-controls="collapseMn">
+                <a class="nav-link collapsed" data-toggle="collapse" href="#collapseMn" role="button" aria-expanded="false" aria-controls="collapseMn">
                     <div class="nav-link-icon"> <i data-feather="arrow-right"></i> </div>
                     Pengadaan (Manual)
                 </a>  
 
-                <div class="collapse" id="collapseMn">
+                <div class="collapse {{ Request::segment(2) == 'manual' ? 'show' : '' }}" id="collapseMn">
                     <div>
-                    <a class="nav-link collapsed" href="{{route('procurement.manual')}}">
+                    <a class="nav-link collapsed" href="{{route('proc.manual', ['id' => 1])}}">
                         <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
                         Tender
                     </a>
-                    <a class="nav-link collapsed" href="{{route('procurement.manual-umk')}}">
-                        <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
+                    <a class="nav-link collapsed" href="{{route('proc.manual', ['id' => 2])}}">
+                        <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
                         UMK
                     </a>
-                    <a class="nav-link collapsed" href="{{route('procurement.manual-pl')}}">
-                        <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
+                    <a class="nav-link collapsed" href="{{route('proc.manual', ['id' => 3])}}">
+                        <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
                         Penunjukkan Langsung
                     </a>
-                    <a class="nav-link collapsed" href="{{route('procurement.manual-afiliasi')}}">
-                        <div class="nav-link-icon"> <i data-feather="external-link" > </i> </div>
+                    <a class="nav-link collapsed" href="{{route('proc.manual', ['id' => 4])}}">
+                        <div class="nav-link-icon"> <i data-feather="external-link"> </i> </div>
                         Afiliasi
                     </a>
                     </div>
-                </div> -->
+                </div>
                 
 
                 @endif

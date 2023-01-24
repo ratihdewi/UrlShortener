@@ -53,11 +53,18 @@ class VendorImport implements ToModel, WithBatchInserts
                         'no' => (new CreateNoVendor)->createNo($vendor->id)
                     ]);
                 } else {
-                    Vendor::where('email', $row[1])->where('delete', 0)->update(array_filter($newVendor));
+                    $queryVendor = Vendor::where('email', $row[1])->where('delete', 0);
+                    $queryVendor->update(array_filter($newVendor));
+                    $vendor = $queryVendor->first();
+
+                    if(is_null($vendor->no)) {
+                        Vendor::where('id', $vendor->id)->update([
+                            'no' => (new CreateNoVendor)->createNo($vendor->id)
+                        ]);
+                    }
                 }
 
             } else {
-                $exist = false;
                 $vendor = Vendor::create($newVendor);
                 Vendor::where('id', $vendor->id)->update([
                     'no' => (new CreateNoVendor)->createNo($vendor->id)
@@ -65,8 +72,10 @@ class VendorImport implements ToModel, WithBatchInserts
             }
 
 
-            if ($row[9] != NULL && !$exist) {
+            if ($row[9] != NULL) {
                 
+                VendorCategory::where('vendor_id', $vendor->id)->delete();
+
                 $delimiter = ",";
                 if (gettype($row[9]) == 'double') {
                     $delimiter = ".";
@@ -84,11 +93,13 @@ class VendorImport implements ToModel, WithBatchInserts
                     }
                 }
 
-                $vendor_score = new VendorScore();
-                $vendor_score->vendor_id = $vendor->id;
-                $vendor_score->score = 4;
-                $vendor_score->user_id = Auth::user()->id;
-                $vendor_score->save();
+                if (!VendorScore::where('vendor_id', $vendor->id)->exists()){
+                    $vendor_score = new VendorScore();
+                    $vendor_score->vendor_id = $vendor->id;
+                    $vendor_score->score = 4;
+                    $vendor_score->user_id = Auth::user()->id;
+                    $vendor_score->save();
+                }
             }
         }
     }

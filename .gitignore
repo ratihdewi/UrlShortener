@@ -3,4 +3,5 @@ public/*
 !public/js
 !public/templat
 vendor
+!resources/views/module/vendor
 env

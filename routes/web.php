@@ -150,46 +150,47 @@ Route::group(['middleware' => ['auth'] ], function () {
         });
 
         Route::prefix('manual')->group(function() {
-            route::get('/', 'App\Http\Controllers\ProcurementManualController@index')->name('proc.manual');
+            route::get('/{id}', 'App\Http\Controllers\ProcurementManualController@index')->name('proc.manual');
             route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualController@getVendor');
             route::post('/store', 'App\Http\Controllers\ProcurementManualController@store')->name('proc.manual.store');
+            route::post('/store-umk', 'App\Http\Controllers\ProcurementManualController@storeUmk')->name('proc.manual.storeUmk');
         });
         
     });
 
-    Route::prefix('procurement-manual-temp')->group(function(){
+    // Route::prefix('procurement-manual-temp')->group(function(){
 
-        Route::prefix('tender')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@index')->name('procurement.manual');
-            route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendor')->name('manual.getvendor');
-            route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendorCategory')->name('manual.getvendorcategory');
-            route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualTempController@getPenawaran')->name('manual.getpenawaran');
-            route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualTempController@getSpph')->name('manual.getspph');
-            route::post('/store', 'App\Http\Controllers\ProcurementManualTempController@store')->name('manual.store');
-            route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualTempController@storeFromBapp')->name('manual.storebapp');
-            route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurement')->name('manual.getprocurement');
-            route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurementComponent')->name('manual.getprocurementcomponent');
-            route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualTempController@getSp3')->name('manual.getSp3');
-        });
+    //     Route::prefix('tender')->group(function(){
+    //         route::get('/', 'App\Http\Controllers\ProcurementManualTempController@index')->name('procurement.manual');
+    //         route::get('/getVendor/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendor')->name('manual.getvendor');
+    //         route::get('/getVendorCategory/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendorCategory')->name('manual.getvendorcategory');
+    //         route::get('/getPenawaran/{proc_id}', 'App\Http\Controllers\ProcurementManualTempController@getPenawaran')->name('manual.getpenawaran');
+    //         route::get('/getSpph/{proc_id}/{vendor_id}', 'App\Http\Controllers\ProcurementManualTempController@getSpph')->name('manual.getspph');
+    //         route::post('/store', 'App\Http\Controllers\ProcurementManualTempController@store')->name('manual.store');
+    //         route::post('/store/bapp', 'App\Http\Controllers\ProcurementManualTempController@storeFromBapp')->name('manual.storebapp');
+    //         route::get('/getProcurement/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurement')->name('manual.getprocurement');
+    //         route::get('/getProcurementComponent/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurementComponent')->name('manual.getprocurementcomponent');
+    //         route::get('/getSp3/{id}', 'App\Http\Controllers\ProcurementManualTempController@getSp3')->name('manual.getSp3');
+    //     });
 
-        Route::prefix('umk')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexUmk')->name('procurement.manual-umk');
-            route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
-            route::post('/store', 'App\Http\Controllers\ProcurementManualTempController@storeUmk')->name('manual.umk.store');
-            route::get('/loadDataUmk/{id}', 'App\Http\Controllers\ProcurementManualTempController@loadDataUmk')->name('procurement.manual-umk.loadDataUmk');
-            route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendorByCategory');
-            route::delete('/deleteItem/{id}', 'App\Http\Controllers\ProcurementManualTempController@deleteItem');
-        });
+    //     Route::prefix('umk')->group(function(){
+    //         route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexUmk')->name('procurement.manual-umk');
+    //         route::get('/getProcurementUmk/{id}', 'App\Http\Controllers\ProcurementManualTempController@getProcurementUmk')->name('procurement.manual-umk.getProcurementUmk');
+    //         route::post('/store', 'App\Http\Controllers\ProcurementManualTempController@storeUmk')->name('manual.umk.store');
+    //         route::get('/loadDataUmk/{id}', 'App\Http\Controllers\ProcurementManualTempController@loadDataUmk')->name('procurement.manual-umk.loadDataUmk');
+    //         route::get('/getVendorByCategory/{id}', 'App\Http\Controllers\ProcurementManualTempController@getVendorByCategory');
+    //         route::delete('/deleteItem/{id}', 'App\Http\Controllers\ProcurementManualTempController@deleteItem');
+    //     });
 
-        Route::prefix('pl')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexPl')->name('procurement.manual-pl');
-        });
+    //     Route::prefix('pl')->group(function(){
+    //         route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexPl')->name('procurement.manual-pl');
+    //     });
 
-        Route::prefix('afiliasi')->group(function(){
-            route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexAfiliasi')->name('procurement.manual-afiliasi');
-        });
+    //     Route::prefix('afiliasi')->group(function(){
+    //         route::get('/', 'App\Http\Controllers\ProcurementManualTempController@indexAfiliasi')->name('procurement.manual-afiliasi');
+    //     });
 
-    });
+    // });
 
     Route::prefix('slas')->group(function () {
         route::get('/', 'App\Http\Controllers\SlaController@index')->name('sla.index');
@@ -215,7 +216,8 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::delete('file/delete/{file}', 'App\Http\Controllers\VendorController@deleteFile')->name('vendor.delete.file');
             route::get('/export', 'App\Http\Controllers\VendorController@export')->name('vendor.export');
             route::post('/import', 'App\Http\Controllers\VendorController@import')->name('vendor.import');
-            route::get('/download-template', 'App\Http\Controllers\VendorController@vendorTemplateImport')->name('vendor.download.template');
+            route::get('/unduh-template', 'App\Http\Controllers\VendorController@vendorImportTemplate')->name('vendor.download.template');
+            route::get('/update-data', 'App\Http\Controllers\VendorController@vendorImportData')->name('vendor.download.unfinished.data');
         });
 
         Route::prefix('deleted-bidder')->group(function () {
@@ -228,6 +230,7 @@ Route::group(['middleware' => ['auth'] ], function () {
             route::get('/detail-terbuka/{vendor}', 'App\Http\Controllers\VendorController@detailTerbuka')->name('vendor.terbuka.detail');
             route::put('/approve-vendor/{vendor}', 'App\Http\Controllers\VendorController@approveVendor')->name('vendor.terbuka.approve');
             route::put('/reject-vendor/{vendor}', 'App\Http\Controllers\VendorController@rejectVendor')->name('vendor.terbuka.reject');
+            route::get('/cek-vendor-terbuka/{id}', 'App\Http\Controllers\VendorController@cekVendorTerbuka');
 
         });
     });

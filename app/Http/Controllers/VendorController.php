@@ -24,6 +24,7 @@ use App\Utilities\CreateNoVendor;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VendorExport;
 use App\Imports\VendorImport;
+use App\Exports\VendorTemplateImport;
 use App\Mail\VendorTerbukaMail;
 use App\Utilities\CreateNoSpph;
 use Illuminate\Support\Facades\Mail;
@@ -445,14 +446,23 @@ class VendorController extends Controller
 
         return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan.', 
-                FlashMessage::WARNING));
+                FlashMessage::SUCCESS));
     }
 
-    public function vendorTemplateImport()
+    public function vendorImportTemplate()
     {
         $file = public_path()."/templat/Templat-Masukan-Vendor.xlsx";
         $headers = array('Content-Type: application/vnd.ms-excel',);
         return response()->download($file, 'Templat-Masukan-Vendor.xlsx',$headers);
+    }
+
+    public function vendorImportData()
+    {
+        $vendors = Vendor::where([
+            'temporary' => 0
+        ])->get();
+
+        return Excel::download(new VendorTemplateImport(), 'Vendor-Template-Import.xlsx');
     }
 
 
@@ -492,6 +502,13 @@ class VendorController extends Controller
     public function reloadCaptcha()
     {
         return response()->json(['captcha'=> captcha_img()]);
+    }
+
+    public function cekVendorTerbuka ($id) {
+
+        $vendorTerbuka = VendorTenderTerbuka::where('id', $id)->first();
+        $exists = Vendor::where('email', $vendorTerbuka->email)->where('delete', 0)->exists();
+        return response()->json(['exists' => $exists]);
     }
 
 }

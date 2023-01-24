@@ -22,7 +22,7 @@ class VendorInsertor
 
         if (isset($data['email']) && isset($data['category_id'])) {
 
-            if($this->emailIsExists($data['email'])){
+            if($this->emailIsExists($data['email']) && $data['delete'] == 0){
                 return false;
             } else {
                 if(!isset($data['afiliasi'])){
@@ -101,12 +101,14 @@ class VendorInsertor
             return '';
         } else {
             $vendor = VendorTenderTerbuka::create($data);
-            foreach($data['category_id'] as $row){
-                $cat = new VendorCategory();
-                $cat->vendor_id = $vendor->id;
-                $cat->category_id = $row;
-                $cat->terbuka = 1;
-                $cat->save();
+            if (isset($data['category_id'])) {
+                foreach($data['category_id'] as $row){
+                    $cat = new VendorCategory();
+                    $cat->vendor_id = $vendor->id;
+                    $cat->category_id = $row;
+                    $cat->terbuka = 1;
+                    $cat->save();
+                }
             }
             return $vendor->id;
         }

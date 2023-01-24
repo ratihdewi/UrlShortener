@@ -106,15 +106,20 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         $user->fill(collect($request->toArray())->filter()->toArray());
+
         if($request->password!=''){
             $user->password = bcrypt($user->password);
             $user->password_real = $request->password;
-        } 
+        }
+        if ($user->role_id == 4 || $user->role_id == 1){
+            $user->is_pengadaan = 0;
+        }
+
         $user->save();
+
         return redirect()->route('master.user.show', [$user])->with('message', 
             new FlashMessage('User telah berhasil diubah!', 
                 FlashMessage::SUCCESS));
-
     }
 
     public function changeAccountType()

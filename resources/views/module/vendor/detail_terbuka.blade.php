@@ -153,28 +153,64 @@
     $('#btn-terima-vendor').click(function (e) {
         e.preventDefault();
         var id = $(this).data('id');
-        swal({
-            title: 'Apakah Anda yakin ingin disimpan?',
-            type: 'warning',
-            confirmButtonColor: '#d26a5c',
-            confirmButtonText: 'Ya!',
-            showCancelButton: true,
-            cancelButtonText: 'Batal!',
-            html: false,
-            preConfirm: function() {
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        resolve();
-                    }, 50);
-                });
-            }
-        }).then(function(result){
-            if (result.value) {
-                // form action delete
-                $('#formDetail').attr('action', "{{ route('vendor.terbuka.approve', [$vendor]) }}");
-                document.getElementById('formDetail').submit();
+
+        let vendorId = window.location.pathname.split("/")[3];
+
+        $.ajax({
+            type: 'GET',
+            url: window.origin + '/tenderterbuka-bidder/cek-vendor-terbuka/' + vendorId,
+            success: function (res){
+                if(res.exists){
+                    swal({
+                      title: 'Maaf',
+                      type: 'error',
+                      text: `Vendor tidak dapat diapprove karena E-mail ${ $('input[name="email"]').val() } sudah terdaftar, apakah ingin dihapus?`,
+                      confirmButtonColor: '#d26a5c',
+                      confirmButtonText: 'Ya!',
+                      showCancelButton: true,
+                      cancelButtonText: 'Tidak',
+                      html: false,
+                      preConfirm: function() {
+                        return new Promise(function (resolve) {
+                            setTimeout(function () {
+                                resolve();
+                            }, 50);
+                        });
+                      }
+                  }).then(function(result){
+                    if (result.value) {
+                        $('#formDetail').attr('action', "{{ route('vendor.terbuka.reject', [$vendor]) }}");
+                        document.getElementById('formDetail').submit();
+                    }
+                  });
+                }
+                else{
+                    swal({
+                        title: 'Apakah Anda yakin ingin disimpan?',
+                        type: 'warning',
+                        confirmButtonColor: '#d26a5c',
+                        confirmButtonText: 'Ya!',
+                        showCancelButton: true,
+                        cancelButtonText: 'Batal!',
+                        html: false,
+                        preConfirm: function() {
+                            return new Promise(function (resolve) {
+                                setTimeout(function () {
+                                    resolve();
+                                }, 50);
+                            });
+                        }
+                    }).then(function(result){
+                        if (result.value) {
+                            $('#formDetail').attr('action', "{{ route('vendor.terbuka.approve', [$vendor]) }}");
+                            document.getElementById('formDetail').submit();
+                        }
+                    });
+                }
             }
         });
+
+        
     });
 
 
