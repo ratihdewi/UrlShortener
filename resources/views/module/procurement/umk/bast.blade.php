@@ -21,7 +21,11 @@
                             @forelse($procurement->bastUmks as $row)
                                 <tr>
                                     <td>{{$row->bast_file}}<a href="{{route('procurement.file.download', [$row->id, 'bast_umk'])}}"><i data-feather="download"></i></a></td>
-                                    <td>{{$row->keterangan}}</td>
+                                    @if(!$procurement->is_manual)
+                                        <td>{{$row->keterangan}}</td>
+                                    @else
+                                        <td> <i> Tidak ada keterangan </i> </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>

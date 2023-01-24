@@ -43,14 +43,7 @@ class ProcurementManualController extends Controller
     public function index ($id) {
 
         $startStatus = 1;
-        $finishStatus = 10;
-
-        if ($id == 2){
-            $startStatus = 0;
-            $finishStatus = 5;
-        }
-
-        $procurements = Procurement::where('status', '>', $startStatus)->where('mechanism_id', $id)->where('status', '<', $finishStatus)->get();
+        $procurements = Procurement::where('status', $startStatus + 1)->where('mechanism_id', $id)->get();
 
         if(sizeof($procurements) == 0){
            $mechanism = ProcurementMechanism::where('id', $id)->first();
@@ -272,7 +265,8 @@ class ProcurementManualController extends Controller
 
         Procurement::where('id', $procurement->id)->update([
             'status' => 10,
-            'is_manual' => 1
+            'is_manual' => 1,
+            'date_status' => $request->tanggal_selesai
         ]);
         
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
@@ -357,7 +351,11 @@ class ProcurementManualController extends Controller
         $msg .= "</ul>";
 
         (new LogsInsertor)->insert($procurement->id, Auth::user()->id, $msg, "", "Pengajuan");
-        Procurement::where('id', $procurement->id)->update(['status' => 5]);
+        Procurement::where('id', $procurement->id)->update([
+            'status' => 5,
+            'is_manual' => 1,
+            'date_status' => $request->tanggal_selesai
+        ]);
 
         return redirect()->route('procurement.show', [$procurement->id, $procurement->status])->with('message', 
         new FlashMessage('Berhasil memperbaharui pengadaan secara manual', 

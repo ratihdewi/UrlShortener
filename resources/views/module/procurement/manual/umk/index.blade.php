@@ -35,7 +35,7 @@
 									<input type="file" class="form-control-file" id="file_bast" name="bast_pdf">
 								</div>
 							</div>
-							<div class="row mb-3">
+							<div class="row mb-4">
 								<div class="col">
 									<label> Unggah File PJ UMK (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
 									<input type="file" class="form-control-file" id="file_pjumk" name="pjumk_pdf">
@@ -43,6 +43,12 @@
 								<div class="col">
 									<label> Unggah File Invoice (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
 									<input type="file" class="form-control-file" id="file_invoice" name="invoice_pdf" disabled>
+								</div>
+							</div>
+							<div class="row mb-4">
+								<div class="col-md-6">
+									<label> Tanggal penyelesaian pengadaan </label> <label class="small mb-1" style="color:red">*</label>
+									<input type="date" name="tanggal_selesai" class="form-control form-control-sm">
 								</div>
 							</div>
 						</fieldset>

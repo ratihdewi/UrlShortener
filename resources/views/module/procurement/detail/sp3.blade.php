@@ -20,7 +20,12 @@
                             @forelse($procurement->sp3s as $row)
                                 <tr>
                                     <td>{{$row->sp3_file}}<a href="{{route('procurement.file.download', [$row->id, 'sp3'])}}"><i data-feather="download"></i></a></td>
-                                    <td>{{$row->keterangan}}</td>
+
+                                    @if(!$procurement->is_manual)
+                                        <td>{{$row->keterangan}}</td>
+                                    @else
+                                        <td> <i> Tidak ada keterangan </i> </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>

@@ -13,7 +13,7 @@
                                 <th>Nama Vendor</th>
                                 <th>Nomor SPPH</th>
                                 <th>Total</th>
-                                <th>Aksi</th>
+                                @if(!$procurement->is_manual) <th>Aksi</th> @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -27,6 +27,8 @@
                                     @else
                                     <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
                                     @endif
+
+                                    @if(!$procurement->is_manual)
                                     <td>
                                         @if($row->vendor->temporary == 0)
                                             @if($row->has_bast)
@@ -36,6 +38,8 @@
                                             @endif
                                         @endif
                                     </td>
+                                    @endif
+                                    
                                 </tr>
                             @endif
                             @empty

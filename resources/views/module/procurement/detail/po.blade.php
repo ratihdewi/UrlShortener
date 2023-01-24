@@ -13,7 +13,7 @@
                                 <th>Nama Vendor</th>
                                 <th>Nomor SPPH</th>
                                 <th>Total</th>
-                                <th>Aksi</th>
+                                @if(!$procurement->is_manual) <th>Aksi</th> @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -26,6 +26,8 @@
                                     @else
                                         <td class="text-center">Rp {{number_format($row->penawarans->where('won', 1)->sum('harga_total')-$row['negosiasi']['negosiasi'],2)}}</td>
                                     @endif
+
+                                    @if(!$procurement->is_manual)
                                     <td>
                                         @if($row->has_po)
                                             @if($procurement->status == 6)
@@ -38,6 +40,8 @@
                                             <a class="btn btn-sm btn-light" data-toggle="modal" id="getInputPo" data-target="#inputPoModal" data-url="{{route('procurement.po.input', [$row])}}" href="#."><small>Buat PO</small></a>
                                         @endif
                                     </td>
+                                    @endif
+                                    
                                 </tr>
                             @empty
                                 <tr>

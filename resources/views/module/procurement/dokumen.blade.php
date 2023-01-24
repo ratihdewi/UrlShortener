@@ -79,6 +79,7 @@
                         </div>
                         @endif
                         @if($procurement->is_manual)
+                        <div class="form-group">
                             <label class="small mb-1">BAPP&nbsp;</label>
                             <div class="timeline timeline-sm">
                                 <table style="margin-left:10px;font-size:9pt">
@@ -89,6 +90,7 @@
                                 @endforeach
                                 </table>
                             </div>
+                        </div>
                         @else
                         <div class="form-group">
                             <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'bapp'])}}" href="#."> Bapp</a></label>

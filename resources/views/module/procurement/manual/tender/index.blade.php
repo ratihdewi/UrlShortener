@@ -50,6 +50,10 @@
 											<label> Unggah File SP3 (.pdf) </label> <label class="small mb-1" style="color:red">*</label>
 											<input type="file" class="form-control-file" id="file_sp3" name="sp3_pdf" accept="application/pdf"> 
 										</div>
+										<div class="mt-4">
+											<label> Tanggal penyelesaian pengadaan </label> <label class="small mb-1" style="color:red">*</label>
+											<input type="date" name="tanggal_selesai" class="form-control form-control-sm">
+										</div>
 									</div>
 								</div>
 								<div class="mt-5">
