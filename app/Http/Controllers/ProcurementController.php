@@ -169,6 +169,7 @@ class ProcurementController extends Controller
 
         $data = $request->except(['tor_file', 'item_file', 'vendor_id', 'vendor_id_afiliasi']);
         $data['user_id'] = Auth::user()->id;
+        $data['name'] = str_replace('/', '-', $request->name);
 
         if($request->has('tor_file')){
             $tor_file = $request->file('tor_file');
@@ -854,7 +855,7 @@ class ProcurementController extends Controller
             $file = public_path().'/invoice'.'/'.$procurement->pjumk->invoice_file;
             $headers = array('Content-Type: application/pdf',);
             if (file_exists($file)){
-                return response()->download($file, $procurement->tor_file, $headers);
+                return response()->download($file);
             } else {
                 return back()->with('message', new FlashMessage('Dokumen tidak ditemukan atau tidak diunggah', 
                 FlashMessage::DANGER));
