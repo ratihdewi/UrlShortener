@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\User;
+use App\Models\Vendor;
 use App\Models\Procurement;
 use App\Models\Bapp;
 use App\Http\Requests\BappRequest;
@@ -109,6 +110,14 @@ class BappController extends Controller
 
     public function cetak(Procurement $procurement)
     {
+        if ($procurement->mechanism_id == 3){
+            $vendor = Vendor::find($procurement->vendor_id_penunjukan_langsung);
+            if($vendor->address == NULL || $vendor->no == NULL  || $vendor->no_rek == NULL){
+                return back()->with('message', 
+                new FlashMessage('Gagal mencetak BAPP karena data vendor belum dilengkapi.', 
+                    FlashMessage::DANGER));
+            }
+        }
         //ini_set('max_execution_time', 6000);
         $vendor_count = 0;
         foreach($procurement->spphs as $row){
