@@ -169,6 +169,7 @@ class ProcurementController extends Controller
 
         $data = $request->except(['tor_file', 'item_file', 'vendor_id', 'vendor_id_afiliasi']);
         $data['user_id'] = Auth::user()->id;
+        $data['name'] = str_replace('/', '-', $request->name);
 
         if($request->has('tor_file')){
             $tor_file = $request->file('tor_file');
@@ -854,7 +855,7 @@ class ProcurementController extends Controller
             $file = public_path().'/invoice'.'/'.$procurement->pjumk->invoice_file;
             $headers = array('Content-Type: application/pdf',);
             if (file_exists($file)){
-                return response()->download($file, $procurement->tor_file, $headers);
+                return response()->download($file);
             } else {
                 return back()->with('message', new FlashMessage('Dokumen tidak ditemukan atau tidak diunggah', 
                 FlashMessage::DANGER));
@@ -913,32 +914,82 @@ class ProcurementController extends Controller
 
     public function itemExport($spph_id)
     {
-        //download SPPH
-
+        
         $spph = ProcurementSpph::find($spph_id);
         $procurement = Procurement::find($spph->procurement_id);
-        $manager = User::where('role_id', 2)->first();
-        $master_spph = MasterSpph::find(1);
-        $pdf = PDF::loadview('module.procurement.export_spph_tor_pdf', ['procurement'=>$procurement, 'spph'=>$spph, 'manager' => $manager, 'master_spph' => $master_spph])->save('spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf');
-        Excel::store(new ProcurementItemTorExport($spph), 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.xlsx', 'real_public');
+        $url = 'https://apphub.universitaspertamina.ac.id/api/Disposisi?nomor_surat='.$procurement->no_memo;
 
-        $zip_file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.zip'; // Name of our archive to download
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
 
-        // Initializing PHP class
-        $zip = new \ZipArchive();
-        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $response = json_decode(curl_exec($curl), true);
+        curl_close($curl);
 
-        $excel_file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.xlsx';
-        $pdf_file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
+        if (!$response['status']) {
+            return back()->with('message', new FlashMessage('Nomor Memo tidak valid', 
+            FlashMessage::DANGER));
+        } else {
 
-        // Adding file: second parameter is what will the path inside of the archive
-        // So it will create another folder called "storage/" inside ZIP, and put the file there.
-        $zip->addFile(public_path($excel_file), $excel_file);
-        $zip->addFile(public_path($pdf_file), $pdf_file);
-        $zip->close();
+            $manager = User::where('role_id', 2)->first();
+            $master_spph = MasterSpph::find(1);
 
-        // We return the file immediately after download
-        return response()->download($zip_file);
+            $data = $response['data'];
+            $disposisi = array();
+            $arrDis = array();
+            $arrNamaJabatan = array();
+
+            foreach ($data as $d){
+                if (sizeof($disposisi) == 0){
+                    array_push($disposisi, $d);
+                    array_push($arrDis, $d['disposisi']);
+                    array_push($arrNamaJabatan, $d['nama_jabatan']);
+                } else {
+                    $cekDis = in_array($d['disposisi'], $arrDis);
+                    $cekNamaJabatan = in_array($d['nama_jabatan'], $arrNamaJabatan);
+                    if (!$cekDis && !$cekNamaJabatan){
+                        array_push($disposisi, $d);
+                        array_push($arrDis, $d['disposisi']);
+                        array_push($arrNamaJabatan, $d['nama_jabatan']);
+                    }
+                }                
+            }
+            array_multisort($disposisi);
+            foreach ($disposisi as $key=>$dispo) {
+                if (is_null($dispo['tgl_disposisi'])){
+                    unset($disposisi[$key]);
+                }
+            }
+
+            if (sizeof($disposisi) == 0) {
+                return back()->with('message', new FlashMessage('Tanggal disposisi belum ditentukan', 
+                FlashMessage::DANGER));
+            }
+            $pdf = PDF::loadview('module.procurement.export_spph_tor_pdf', ['procurement'=>$procurement, 'spph'=>$spph, 'manager' => $manager, 'master_spph' => $master_spph, 'disposisi' => $disposisi])->save('spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf');
+            Excel::store(new ProcurementItemTorExport($spph), 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.xlsx', 'real_public');
+
+            $zip_file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.zip'; // Name of our archive to download
+
+            // Initializing PHP class
+            $zip = new \ZipArchive();
+            $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+            $excel_file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.xlsx';
+            $pdf_file = 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf';
+
+            // Adding file: second parameter is what will the path inside of the archive
+            // So it will create another folder called "storage/" inside ZIP, and put the file there.
+            $zip->addFile(public_path($excel_file), $excel_file);
+            $zip->addFile(public_path($pdf_file), $pdf_file);
+            $zip->close();
+
+            // We return the file immediately after download
+            return response()->download($zip_file);
+        }
+
     }
 
     public function reInputSpph (Procurement $procurement) {
@@ -1117,9 +1168,57 @@ class ProcurementController extends Controller
                     $procurement->spph_sending_date = \Carbon\Carbon::now()->format('Y-m-d');
                     $procurement->save();
 
+                    $url = 'https://apphub.universitaspertamina.ac.id/api/Disposisi?nomor_surat='.$procurement->no_memo;
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                      CURLOPT_URL => $url,
+                      CURLOPT_RETURNTRANSFER => true,
+                      CURLOPT_CUSTOMREQUEST => 'GET',
+                    ));
+
+                    $response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+
+                    if (!$response['status']) {
+                        return back()->with('message', new FlashMessage('Nomor Memo tidak valid', 
+                        FlashMessage::DANGER));
+                    } else {
+                        $data = $response['data'];
+                        $disposisi = array();
+                        $arrDis = array();
+                        $arrNamaJabatan = array();
+
+                        foreach ($data as $d){
+                            if (sizeof($disposisi) == 0){
+                                array_push($disposisi, $d);
+                                array_push($arrDis, $d['disposisi']);
+                                array_push($arrNamaJabatan, $d['nama_jabatan']);
+                            } else {
+                                $cekDis = in_array($d['disposisi'], $arrDis);
+                                $cekNamaJabatan = in_array($d['nama_jabatan'], $arrNamaJabatan);
+                                if (!$cekDis && !$cekNamaJabatan){
+                                    array_push($disposisi, $d);
+                                    array_push($arrDis, $d['disposisi']);
+                                    array_push($arrNamaJabatan, $d['nama_jabatan']);
+                                }
+                            }                
+                        }
+                        array_multisort($disposisi);
+                        foreach ($disposisi as $key=>$dispo) {
+                            if (is_null($dispo['tgl_disposisi'])){
+                                unset($disposisi[$key]);
+                            }
+                        }
+
+                        if (sizeof($disposisi) == 0) {
+                            return back()->with('message', new FlashMessage('Tanggal disposisi belum ditentukan', 
+                            FlashMessage::DANGER));
+                        }
+                    }
+
                     $manager = User::where('role_id', 2)->first();
                     $master_spph = MasterSpph::find(1);
-                    $pdf = PDF::loadview('module.procurement.export_spph_tor_pdf', ['procurement'=>$procurement, 'spph'=>$spph, 'manager' => $manager, 'master_spph' => $master_spph]);
+                    $pdf = PDF::loadview('module.procurement.export_spph_tor_pdf', ['procurement'=>$procurement, 'spph'=>$spph, 'manager' => $manager, 'master_spph' => $master_spph, 'disposisi' => $disposisi]);
                     $pdf->save('spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.pdf');
                     Excel::store(new ProcurementItemTorExport($spph), 'spph/SPPH-'.$spph->vendor->name.'-'.$spph->id.'.xlsx', 'real_public');
 

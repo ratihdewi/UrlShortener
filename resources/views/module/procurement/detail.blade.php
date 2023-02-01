@@ -79,12 +79,15 @@
                                 <label class="small mb-1">Status </label>
                                 <h1 style="margin-left:10px;">{{$procurement->status_caption}}</h1>
                             </div>
-                            
 
                             @if($procurement->mechanism_id==3 || $procurement->mechanism_id==4)
                                 <div class="form-group">
                                     <label class="small mb-1">Vendor </label>
-                                    <h1 style="margin-left:10px;">{{$procurement->vendor->name}}</h1>
+                                    @if(isset($procurement->vendor->name))
+                                        <h1 style="margin-left:10px;"> {{ $procurement->vendor->name }} </h1>
+                                    @else
+                                        <h1 style="margin-left:10px; color: gray;"> <i> Vendor belum ditentukan </i> </h1>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -126,7 +129,7 @@
             @include('module.procurement.detail.pengajuanuser')
         @endif
     @else
-        @if($procurement->mechanism_id==1 || $procurement->mechanism_id==3 || $procurement->mechanism_id==4 || $procurement->mechanism_id==6)
+        @if($procurement->mechanism_id==1 || $procurement->mechanism_id==4 || $procurement->mechanism_id==6)
             @if($status_choosen==0 || $status_choosen==1 || $status_choosen==10)
                 @include('module.procurement.detail.pengajuanuser')
             @elseif($status_choosen==2 && !isset($tenderterbuka))
@@ -147,6 +150,30 @@
                 @include('module.procurement.detail.penilaian')
             @elseif($status_choosen==9)
                 @include('module.procurement.detail.sp3')
+            @endif
+        @elseif($procurement->mechanism_id==3 )
+            @if($procurement->vendor_id_penunjukan_langsung != 0)
+                @if($status_choosen==0 || $status_choosen==1 || $status_choosen==10)
+                    @include('module.procurement.detail.pengajuanuser')
+                @elseif($status_choosen==2 && !isset($tenderterbuka))
+                    @include('module.procurement.detail.spph')
+                @elseif($status_choosen==2 && isset($tenderterbuka))
+                    @include('module.procurement.detail.spph_penawaran_tender_terbuka')
+                @elseif($status_choosen==3)
+                    @include('module.procurement.detail.tender_evaluasi')
+                @elseif($status_choosen==4)
+                    @include('module.procurement.detail.banegosiasi')
+                @elseif($status_choosen==5)
+                    @include('module.procurement.detail.bapp')
+                @elseif($status_choosen==6)
+                    @include('module.procurement.detail.po')
+                @elseif($status_choosen==7)
+                    @include('module.procurement.detail.bast')
+                @elseif($status_choosen==8)
+                    @include('module.procurement.detail.penilaian')
+                @elseif($status_choosen==9)
+                    @include('module.procurement.detail.sp3')
+                @endif
             @endif
         @elseif($procurement->mechanism_id==2 || $procurement->mechanism_id==5 || $procurement->mechanism_id==7)
             @if($status_choosen==0 || $status_choosen==1 || $status_choosen==5)

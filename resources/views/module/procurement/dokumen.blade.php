@@ -152,10 +152,10 @@
                             </div>
                             @if($procurement->has_pjumk)
                             <div class="form-group">
-                                <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'invoice'])}}" href="#."> Invoice</a></label>
+                                <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'invoice'])}}" href="#."> Invoice </a></label>
                             </div>
                             <div class="form-group">
-                                <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', ['id' => 5, 'type' =>'pj-umk'])}}" href="#."> PJ UMK </a></label>
+                                <label class="small mb-1"><a id="viewSpph" data-url="{{route('procurement.file.view', [$procurement, 'pj-umk'])}}" href="#."> PJ UMK </a></label>
                             </div>
                             @endif
                         @endif
