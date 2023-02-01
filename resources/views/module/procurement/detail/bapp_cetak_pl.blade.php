@@ -1,3 +1,26 @@
+<?php 
+    
+    function formatDate ($tanggal){
+        $bulan = array (
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $field = explode('-', $tanggal);
+        return $field[2] . ' ' . $bulan[ (int)$field[1] ] . ' ' . $field[0];
+    }
+
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,17 +35,17 @@
             No. {{$procurement->bapp->no_surat}}
         </center>
         <br><br>
-        Jakarta, {{date('d/m/Y')}}<br><br>
+        Jakarta, {{formatDate(date('Y-m-d'))}} <br><br>
         <table>
             <tr>
                 <td style="width:120px;">Kepada</td>
                 <td style="width:2px;">:</td>
-                <td style="width:250px;">{{ $procurement->bapp->userKepada->jabatan_caption }}</td>
+                <td style="width:500px;">{{ $procurement->bapp->userKepada->jabatan_caption }}</td>
             </tr>
             <tr>
                 <td>Dari</td>
                 <td>:</td>
-                <td style="width:200px;">{{ $procurement->bapp->userDari->jabatan_caption }}</td>
+                <td style="width:300px;">{{ $procurement->bapp->userDari->jabatan_caption }}</td>
             </tr>
             <tr>
                 <td>Lampiran</td>
@@ -37,22 +60,17 @@
         </table>
         <br>
         <table>
-            {{--<td style="text-align:justify">
+            <td style="text-align:justify">
                 Sehubungan dengan diposisi 
                 @php $i = 1 @endphp
                 @foreach($memos as $memo)
                     @if($i == 1)
-                        tanggal {{date('d M Y', strtotime($memo['tgl_disposisi']))}} dari {{$memo['nama_jabatan']}},
+                        tanggal {{ formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
                     @else
-                        dan mengacu pada disposisi pada tanggal {{date('d M Y', strtotime($memo['tgl_disposisi']))}} dari {{$memo['nama_jabatan']}},
+                        dan mengacu pada disposisi pada tanggal {{ formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
                     @endif
                     @php $i++ @endphp
                 @endforeach 
-                tentang {{$procurement->name}}, maka dengan ini kami mengajukan permohonan penunjukan langsung kepada {{$procurement->vendor->name}}. Landasan dalam pengajuan Penunjukan Langsung ini adalah sebagai berikut:
-            </td>--}}
-            <td style="text-align:justify">
-                Sehubungan dengan diposisi 
-                tanggal {{date('d M Y', strtotime($memos['tgl_disposisi']))}} dari {{$memos['nama_jabatan']}},
                 tentang {{$procurement->name}}, maka dengan ini kami mengajukan permohonan penunjukan langsung kepada {{$procurement->vendor->name}}. Landasan dalam pengajuan Penunjukan Langsung ini adalah sebagai berikut:
             </td>
         </table>
