@@ -1,6 +1,7 @@
 <?php 
     
     function formatDate ($tanggal){
+        $tanggal = date('Y-m-d', strtotime($tanggal));
         $bulan = array (
             1 =>   'Januari',
             'Februari',

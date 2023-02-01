@@ -1,6 +1,7 @@
 <?php 
     
     function formatDate ($tanggal){
+        $tanggal = date('Y-m-d', strtotime($tanggal));
         $bulan = array (
             1 =>   'Januari',
             'Februari',
@@ -64,29 +65,24 @@
         <table style="margin-left:10px;width:100%;">
             <tr>
                 <td style="width:20px;vertical-align:top"><b>1.</b></td>
-                {{-- <td style="text-align:justify">
+                <td style="text-align:justify">
                     Memorandum no. {{$procurement->no_memo}} 
                     @php $i = 1 @endphp
                     @foreach($memos as $memo)
                         @if($i == 1)
-                            pada tanggal {{date('d M Y', strtotime())}} dari {{$memo['dari']}} tentang {{$memo['perihal']}}, 
-                            mengacu pada disposisi pada tanggal {{date('d M Y', strtotime($memo['tgl_disposisi']))}} dari {{$memo['nama_jabatan']}}@if($i==$total_disposisi).@else,@endif
+                            pada tanggal {{ formatDate($memo['approved_at']) }} dari {{$memo['dari']}} tentang {{$memo['perihal']}}, 
+                            mengacu pada disposisi pada tanggal {{ formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}}@if($i==$total_disposisi).@else,@endif
                         @else
-                            mengacu pada disposisi pada tanggal {{date('d M Y', strtotime($memo['tgl_disposisi']))}} dari {{$memo['nama_jabatan']}}@if($i==$total_disposisi).@else,@endif
+                            mengacu pada disposisi pada tanggal {{ formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}}@if($i==$total_disposisi).@else,@endif
                         @endif
                         @php $i++ @endphp
                     @endforeach
-                </td> --}}
-                <td style="text-align:justify">
-                    Memorandum no. {{$procurement->no_memo}}
-                    pada tanggal {{ formatDate($memo['approved_at']) }} dari {{$memos['dari']}} tentang {{$memos['perihal']}}, 
-                    mengacu pada disposisi pada tanggal {{ formatDate($memos['tgl_disposisi']) }} dari {{$memos['nama_jabatan']}},
                 </td>
             </tr>
             <tr>
                 <td style="width:20px;vertical-align:top"><b>2.</b></td>
                 <td style="text-align:justify">
-                    Surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_count}} vendor pada tanggal {{date('d M Y', strtotime($procurement->spph_sending_date))}} sebagai berikut:
+                    Surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_count}} vendor pada tanggal {{ formatDate($procurement->spph_sending_date) }} sebagai berikut:
                 </td>
             </tr>
         </table><br>
@@ -166,7 +162,7 @@
             <tr>
                 <td style="width:20px;vertical-align:top"><b>4.</b></td>
                 <td style="text-align:justify">
-                Evaluasi Tender yang dibuat oleh Fungsi Pengguna ({{$procurement->pengaju->name}}) pada tanggal {{date('d/m/Y', strtotime($procurement->created_at))}} dengan metode evaluasi kesesuaian
+                Evaluasi Tender yang dibuat oleh Fungsi Pengguna ({{$procurement->pengaju->name}}) pada tanggal {{ formatDate($procurement->created_at) }} dengan metode evaluasi kesesuaian
                 spesifikasi dan harga terendah. (terlampir)
                 </td>
             </tr>

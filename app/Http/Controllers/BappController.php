@@ -207,7 +207,7 @@ class BappController extends Controller
             $pdf_name = str_replace("/", "-", $pdf_name);
             $pdf_save->save($location.$pdf_name);
         } else {
-            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak',['total_disposisi' => $total_disposisi, 'memos' => $memos, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
+            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
             $pdf_name = str_replace("/", "-", $pdf_name);
             $pdf_save->save($location.$pdf_name);
         }
