@@ -79,12 +79,15 @@
                                 <label class="small mb-1">Status </label>
                                 <h1 style="margin-left:10px;">{{$procurement->status_caption}}</h1>
                             </div>
-                            
 
                             @if($procurement->mechanism_id==3 || $procurement->mechanism_id==4)
                                 <div class="form-group">
                                     <label class="small mb-1">Vendor </label>
-                                    <h1 style="margin-left:10px;">{{$procurement->vendor->name}}</h1>
+                                    @if(isset($procurement->vendor->name))
+                                        <h1 style="margin-left:10px;"> {{ $procurement->vendor->name }} </h1>
+                                    @else
+                                        <h1 style="margin-left:10px; color: gray;"> <i> Vendor belum ditentukan </i> </h1>
+                                    @endif
                                 </div>
                             @endif
                         </div>
