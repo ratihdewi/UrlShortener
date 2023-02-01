@@ -110,14 +110,30 @@ class BappController extends Controller
 
     public function cetak(Procurement $procurement)
     {
+        $isAvailable = true;
         if ($procurement->mechanism_id == 3){
             $vendor = Vendor::find($procurement->vendor_id_penunjukan_langsung);
             if($vendor->address == NULL || $vendor->no == NULL  || $vendor->no_rek == NULL){
-                return back()->with('message', 
-                new FlashMessage('Gagal mencetak BAPP karena data vendor belum dilengkapi.', 
-                    FlashMessage::DANGER));
+                $isAvailable = false;
+            }
+        } else {
+            $sumVendor = sizeof($procurement->spphsWon);
+            foreach ($procurement->spphsWon as $spph){
+                if($spph->vendor->address == NULL || $spph->vendor->no == NULL  || $spph->vendor->no_rek == NULL){
+                    $sumVendor--;
+                }
+            }
+            if ($sumVendor == 0){
+                $isAvailable = false;
             }
         }
+
+        if (!$isAvailable){
+            return back()->with('message', 
+                new FlashMessage('Gagal mencetak BAPP karena data vendor belum dilengkapi.', 
+                    FlashMessage::DANGER));
+        }
+
         //ini_set('max_execution_time', 6000);
         $vendor_count = 0;
         foreach($procurement->spphs as $row){
