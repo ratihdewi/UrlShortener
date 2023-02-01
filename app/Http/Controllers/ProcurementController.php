@@ -1625,6 +1625,26 @@ class ProcurementController extends Controller
         }   
  
         return array($startYear, $finishYear);
-     }
+    }
+
+    public static function formatDate ($tanggal){
+        $tanggal = date('Y-m-d', strtotime($tanggal));
+        $bulan = array (
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $field = explode('-', $tanggal);
+        return $field[2] . ' ' . $bulan[ (int)$field[1] ] . ' ' . $field[0];
+    } 
 
 }

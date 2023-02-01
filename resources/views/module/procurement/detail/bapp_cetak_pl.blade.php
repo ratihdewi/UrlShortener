@@ -1,25 +1,5 @@
 <?php 
-    
-    function formatDate ($tanggal){
-        $tanggal = date('Y-m-d', strtotime($tanggal));
-        $bulan = array (
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
-        $field = explode('-', $tanggal);
-        return $field[2] . ' ' . $bulan[ (int)$field[1] ] . ' ' . $field[0];
-    }
-
+    use App\Http\Controllers\ProcurementController;
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +16,7 @@
             No. {{$procurement->bapp->no_surat}}
         </center>
         <br><br>
-        Jakarta, {{formatDate(date('Y-m-d'))}} <br><br>
+        Jakarta, {{ProcurementController::formatDate(date('Y-m-d'))}} <br><br>
         <table>
             <tr>
                 <td style="width:120px;">Kepada</td>
@@ -66,9 +46,9 @@
                 @php $i = 1 @endphp
                 @foreach($memos as $memo)
                     @if($i == 1)
-                        tanggal {{ formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
+                        tanggal {{ ProcurementController::formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
                     @else
-                        dan mengacu pada disposisi pada tanggal {{ formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
+                        dan mengacu pada disposisi pada tanggal {{ ProcurementController::formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
                     @endif
                     @php $i++ @endphp
                 @endforeach 
