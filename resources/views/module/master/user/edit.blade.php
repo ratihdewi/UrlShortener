@@ -58,6 +58,15 @@
                                         </span>
                                     @endif
                                 </div>
+                                <div class="form-group">
+                                    <label class="small mb-1">Unit Kerja </label>
+                                    <select class="form-control select2" name="unit_kerja">
+                                        <option value="-"> Tidak ada </option>
+                                        @foreach ($positions as $position)
+                                            <option value="{{ $position['position'] }}" @if($user->unit_kerja == $position['position']) selected @endif > {{ $position['position'] }} </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-xl-6">
                                 <div class="form-group">
@@ -82,7 +91,7 @@
                                 <div class="form-group">
                                     <label class="small mb-1">Jabatan </label>
                                     <select class="form-control" name="jabatan_id">
-                                        <option @if($user->jabatan_id==0) selected @endif value="0">Tidak Ada</option>
+                                        <option value="0" @if($user->jabatan_id==0) selected @endif>Tidak Ada</option>
                                         @foreach($jabatans as $row)
                                             <option value="{{$row->id}}" @if($user->jabatan_id==$row->id) selected @endif>{{$row->name}}</option>
                                         @endforeach

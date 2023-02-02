@@ -120,9 +120,9 @@ class BappController extends Controller
             $sumVendor = sizeof($procurement->spphsWon);
             if ($sumVendor > 0){
                 foreach ($procurement->spphsWon as $spph){
-                    if($spph->vendor->address == NULL || $spph->vendor->no == NULL  || $spph->vendor->no_rek == NULL){
+                    if($spph->vendor->address == NULL || $spph->vendor->no == NULL  || $spph->vendor->no_rek == NULL) {
                         $sumVendor--;
-                    }
+                    }   
                 }
                 if ($sumVendor == 0){
                     $isAvailable = false;

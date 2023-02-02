@@ -36,7 +36,20 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $jabatans = MasterJabatan::all();
-        return view('module.master.user.create', compact('jabatans', 'roles'));
+
+        $url = 'https://masayu.universitaspertamina.ac.id/api/Positions';
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $responses = json_decode(curl_exec($curl), true);
+        curl_close($curl);
+        $positions = $responses['data'];
+
+        return view('module.master.user.create', compact('jabatans', 'roles', 'positions'));
     }
 
     /**
@@ -93,7 +106,20 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $jabatans = MasterJabatan::all();
-        return view('module.master.user.edit', compact('jabatans', 'user', 'roles'));
+
+        $url = 'https://masayu.universitaspertamina.ac.id/api/Positions';
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $responses = json_decode(curl_exec($curl), true);
+        curl_close($curl);
+        $positions = $responses['data'];
+
+        return view('module.master.user.edit', compact('jabatans', 'user', 'roles', 'positions'));
     }
 
     /**
@@ -106,7 +132,9 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         $user->fill(collect($request->toArray())->filter()->toArray());
-
+        if ($request->jabatan_id == 0){
+            $user->jabatan_id = 0;
+        }
         if($request->password!=''){
             $user->password = bcrypt($user->password);
             $user->password_real = $request->password;
@@ -165,8 +193,8 @@ class UserController extends Controller
 
     public function userExampleImport()
     {
-        $file = public_path()."/template-import-user.xlsx";
+        $file = public_path()."/templat/Template_Import_User.xlsx";
         $headers = array('Content-Type: application/vnd.ms-excel',);
-        return response()->download($file, 'template-import-user.xlsx',$headers);
+        return response()->download($file, 'Template_Import_User.xlsx',$headers);
     }
 }

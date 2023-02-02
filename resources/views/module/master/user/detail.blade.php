@@ -53,7 +53,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="small mb-1">Jabatan</label>
-                                <h3 style="margin-left:10px;">{{$user->jabatan_caption}}</h3>
+                                <h3 style="margin-left:10px;">{{ ($user->jabatan_caption == "") ? "Tidak Ada" : $user->jabatan_caption }}</h3>
                             </div>
                         </div>
                     </div>
