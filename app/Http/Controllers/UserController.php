@@ -37,7 +37,7 @@ class UserController extends Controller
         $roles = Role::all();
         $jabatans = MasterJabatan::all();
 
-        $url = 'https://masayu.universitaspertamina.ac.id/api/Positions';
+        $url = 'https://masayu.universitaspertamina.ac.id/api/Organizations';
         $curl = curl_init();
         curl_setopt_array($curl, array(
           CURLOPT_URL => $url,
@@ -47,9 +47,9 @@ class UserController extends Controller
 
         $responses = json_decode(curl_exec($curl), true);
         curl_close($curl);
-        $positions = $responses['data'];
+        $organizations = $responses['data'];
 
-        return view('module.master.user.create', compact('jabatans', 'roles', 'positions'));
+        return view('module.master.user.create', compact('jabatans', 'roles', 'organizations'));
     }
 
     /**
@@ -107,7 +107,7 @@ class UserController extends Controller
         $roles = Role::all();
         $jabatans = MasterJabatan::all();
 
-        $url = 'https://masayu.universitaspertamina.ac.id/api/Positions';
+        $url = 'https://masayu.universitaspertamina.ac.id/api/Organizations';
         $curl = curl_init();
         curl_setopt_array($curl, array(
           CURLOPT_URL => $url,
@@ -117,9 +117,9 @@ class UserController extends Controller
 
         $responses = json_decode(curl_exec($curl), true);
         curl_close($curl);
-        $positions = $responses['data'];
+        $organizations = $responses['data'];
 
-        return view('module.master.user.edit', compact('jabatans', 'user', 'roles', 'positions'));
+        return view('module.master.user.edit', compact('jabatans', 'user', 'roles', 'organizations'));
     }
 
     /**

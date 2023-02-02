@@ -33,13 +33,13 @@
                                 <label class="small mb-1">Nama </label>
                                 <h3 style="margin-left:10px;">{{$user->name}}</h3>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-4">
                                 <label class="small mb-1">Email </label>
                                 <h3 style="margin-left:10px;">{{$user->email}}</h3>
                             </div>
-                            <div class="form-group">
-                                <label class="small mb-1">Password </label>
-                                <h3 style="margin-left:10px;">**********</h3>
+                            <div class="form-group mt-4">
+                                <label class="small mb-1">Unit Kerja </label>
+                                <h3 style="margin-left:10px;">{{$user->unit_kerja}} </h3>
                             </div>
                         </div>
                         <div class="col-xl-6">
@@ -47,11 +47,11 @@
                                 <label class="small mb-1">Username </label>
                                 <h3 style="margin-left:10px;">{{$user->username}}</h3>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-4">
                                 <label class="small mb-1">Role</label>
                                 <h3 style="margin-left:10px;">{{$user->role_caption}}</h3>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-4">
                                 <label class="small mb-1">Jabatan</label>
                                 <h3 style="margin-left:10px;">{{ ($user->jabatan_caption == "") ? "Tidak Ada" : $user->jabatan_caption }}</h3>
                             </div>

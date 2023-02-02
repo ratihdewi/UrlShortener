@@ -62,8 +62,8 @@
                                     <label class="small mb-1">Unit Kerja </label>
                                     <select class="form-control select2" name="unit_kerja">
                                         <option value="-"> Tidak ada </option>
-                                        @foreach ($positions as $position)
-                                            <option value="{{ $position['position'] }}" @if($user->unit_kerja == $position['position']) selected @endif > {{ $position['position'] }} </option>
+                                        @foreach ($organizations as $organization)
+                                            <option value="{{ $organization['org_unit'] }}" @if($user->unit_kerja == $organization['org_unit']) selected @endif > {{ $organization['org_unit'] }} </option>
                                         @endforeach
                                     </select>
                                 </div>
