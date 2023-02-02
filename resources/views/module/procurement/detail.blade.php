@@ -59,13 +59,18 @@
         <div class="col-xl-12">
             <!-- Account details card-->
             <div class="card mb-4">
+                <div class="card-header">
+                    <div class="pt-2">
+                        <h3 style="line-height: 1.35"> {{ $procurement->name }} </h3>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-xl-6">
                             <!-- Form Group (username)-->
                             <div class="form-group">
-                                <label class="small mb-1">Perihal </label>
-                                <h3 style="margin-left:10px;">{{$procurement->name}}</h3>
+                                <label class="small mb-1">Diajukan oleh </label>
+                                <h3 style="margin-left:10px; line-height: 1.3">{{$procurement->user->name}} <br> {{$procurement->user->unit_kerja}} </h3>
                             </div>
                             <div class="form-group">
                                 <label class="small mb-1">No. Memo </label>
@@ -102,7 +107,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="small mb-1"> PIC</label>
-                                <h3 style="margin-left:10px;">@if($procurement->staff_id!=NULL) {{$procurement->staff['name']}} @else Blm di-assign @endif</h3>
+                                <h3 style="margin-left:10px;">@if($procurement->staff_id!=NULL) {{$procurement->staff['name']}} @else <i style="color: gray;"> Belum ditentukan </i> @endif</h3>
                             </div>
                             <div class="form-group">
                                 <label class="small mb-1"> No. RKA</label>
