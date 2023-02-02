@@ -413,8 +413,9 @@ class ProcurementController extends Controller
                     $mch = User::where('id', $procurement->$keyword)->first()->name;
                     $msg .= "<li> {$arr_note[$key]} : {$mch} </li>";
                 } else if ($arr_note[$key] == "Vendor (Penunjukkan Langsung)") {
-                    if ($procurement->$keyword != 0 || $procurement->$keyword != NULL) {
-                        $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
+                    $vendor = Vendor::find($procurement->$keyword);
+                    if (isset($vendor->name)) {
+                        $msg .= "<li> {$arr_note[$key]} : $vendor->name </li>";
                     }
                 } else if ($arr_note[$key] == "Status") {
                     $msg .= "<li> Status dikembal
