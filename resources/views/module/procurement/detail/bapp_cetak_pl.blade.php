@@ -1,3 +1,7 @@
+<?php 
+    use App\Http\Controllers\ProcurementController;
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,17 +16,17 @@
             No. {{$procurement->bapp->no_surat}}
         </center>
         <br><br>
-        Jakarta, {{date('d/m/Y')}}<br><br>
+        Jakarta, {{ProcurementController::formatDate(date('Y-m-d'))}} <br><br>
         <table>
             <tr>
                 <td style="width:120px;">Kepada</td>
                 <td style="width:2px;">:</td>
-                <td style="width:250px;">{{ $procurement->bapp->userKepada->jabatan_caption }}</td>
+                <td style="width:500px;">{{ $procurement->bapp->userKepada->jabatan_caption }}</td>
             </tr>
             <tr>
                 <td>Dari</td>
                 <td>:</td>
-                <td style="width:200px;">{{ $procurement->bapp->userDari->jabatan_caption }}</td>
+                <td style="width:300px;">{{ $procurement->bapp->userDari->jabatan_caption }}</td>
             </tr>
             <tr>
                 <td>Lampiran</td>
@@ -37,22 +41,17 @@
         </table>
         <br>
         <table>
-            {{--<td style="text-align:justify">
+            <td style="text-align:justify">
                 Sehubungan dengan diposisi 
                 @php $i = 1 @endphp
                 @foreach($memos as $memo)
                     @if($i == 1)
-                        tanggal {{date('d M Y', strtotime($memo['tgl_disposisi']))}} dari {{$memo['nama_jabatan']}},
+                        tanggal {{ ProcurementController::formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
                     @else
-                        dan mengacu pada disposisi pada tanggal {{date('d M Y', strtotime($memo['tgl_disposisi']))}} dari {{$memo['nama_jabatan']}},
+                        dan mengacu pada disposisi pada tanggal {{ ProcurementController::formatDate($memo['tgl_disposisi']) }} dari {{$memo['nama_jabatan']}},
                     @endif
                     @php $i++ @endphp
                 @endforeach 
-                tentang {{$procurement->name}}, maka dengan ini kami mengajukan permohonan penunjukan langsung kepada {{$procurement->vendor->name}}. Landasan dalam pengajuan Penunjukan Langsung ini adalah sebagai berikut:
-            </td>--}}
-            <td style="text-align:justify">
-                Sehubungan dengan diposisi 
-                tanggal {{date('d M Y', strtotime($memos['tgl_disposisi']))}} dari {{$memos['nama_jabatan']}},
                 tentang {{$procurement->name}}, maka dengan ini kami mengajukan permohonan penunjukan langsung kepada {{$procurement->vendor->name}}. Landasan dalam pengajuan Penunjukan Langsung ini adalah sebagai berikut:
             </td>
         </table>

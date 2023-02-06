@@ -53,7 +53,7 @@
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="form-group">
-                                <label class="small mb-1">Melalui berita acara ini, Fungsi Pengadaan Barang dan Jasa dan Fungsi Pengguna (Sekretaris Universitas) melakukan Klarifikasi kepada {{$spph->vendor->name}} untuk pekerjaan Pengadaan {{$spph->procurement->name}}. </label>
+                                <label class="small mb-1">Melalui berita acara ini, Fungsi Pengadaan Barang dan Jasa serta {{ $procurement->user->unit_kerja }} melakukan Klarifikasi kepada {{$spph->vendor->name}} untuk pekerjaan Pengadaan {{$spph->procurement->name}}. </label>
                             </div>
                         </div>
                     </div>

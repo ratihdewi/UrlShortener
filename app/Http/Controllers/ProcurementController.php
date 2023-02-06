@@ -413,8 +413,9 @@ class ProcurementController extends Controller
                     $mch = User::where('id', $procurement->$keyword)->first()->name;
                     $msg .= "<li> {$arr_note[$key]} : {$mch} </li>";
                 } else if ($arr_note[$key] == "Vendor (Penunjukkan Langsung)") {
-                    if ($procurement->$keyword != 0 || $procurement->$keyword != NULL) {
-                        $msg .= "<li> {$arr_note[$key]} : {$procurement->$keyword} </li>";
+                    $vendor = Vendor::find($procurement->$keyword);
+                    if (isset($vendor->name)) {
+                        $msg .= "<li> {$arr_note[$key]} : $vendor->name </li>";
                     }
                 } else if ($arr_note[$key] == "Status") {
                     $msg .= "<li> Status dikembal
@@ -1625,6 +1626,26 @@ class ProcurementController extends Controller
         }   
  
         return array($startYear, $finishYear);
-     }
+    }
+
+    public static function formatDate ($tanggal){
+        $tanggal = date('Y-m-d', strtotime($tanggal));
+        $bulan = array (
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $field = explode('-', $tanggal);
+        return $field[2] . ' ' . $bulan[ (int)$field[1] ] . ' ' . $field[0];
+    } 
 
 }

@@ -57,6 +57,15 @@
                                         </span>
                                     @endif
                                 </div>
+                                <div class="form-group">
+                                    <label class="small mb-1">Unit Kerja </label>
+                                    <select class="form-control select2" name="unit_kerja">
+                                        <option disabled selected value="-"> -- Pilih Opsi -- </option>
+                                        @foreach ($organizations as $organization)
+                                            <option value="{{ $organization['org_unit'] }}"> {{ $organization['org_unit'] }} </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-xl-6">
                                 <div class="form-group">

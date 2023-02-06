@@ -41,7 +41,7 @@
                 </td>
             </tr>
         </table>
-        <p align="justify">Melalui berita acara ini, Fungsi Pengadaan Barang dan Jasa dan Fungsi Pengguna (Sekretaris Universitas)
+        <p align="justify">Melalui berita acara ini, Fungsi Pengadaan Barang dan Jasa serta {{ $procurement->user->unit_kerja }}
         melakukan Klarifikasi kepada {{$spph->vendor->name}} untuk pekerjaan {{$spph->procurement->name}}
         Universitas Pertamina.</p>
         <b>1. Klarifikasi Kesesuaian Spesifikasi dan Harga Penawaran</b>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProcurementSpph;
 use App\Models\SpphPenawaran;
 use App\Models\User;
+use App\Models\Vendor;
 use App\Models\Procurement;
 use App\Models\Bapp;
 use App\Http\Requests\BappRequest;
@@ -109,6 +110,32 @@ class BappController extends Controller
 
     public function cetak(Procurement $procurement)
     {
+        $isAvailable = true;
+        if ($procurement->mechanism_id == 3){
+            $vendor = Vendor::find($procurement->vendor_id_penunjukan_langsung);
+            if($vendor->address == NULL || $vendor->no == NULL  || $vendor->no_rek == NULL){
+                $isAvailable = false;
+            }
+        } else {
+            $sumVendor = sizeof($procurement->spphsWon);
+            if ($sumVendor > 0){
+                foreach ($procurement->spphsWon as $spph){
+                    if($spph->vendor->address == NULL || $spph->vendor->no == NULL  || $spph->vendor->no_rek == NULL) {
+                        $sumVendor--;
+                    }   
+                }
+                if ($sumVendor == 0){
+                    $isAvailable = false;
+                }
+            }
+        }
+
+        if (!$isAvailable){
+            return back()->with('message', 
+                new FlashMessage('Gagal mencetak BAPP karena data vendor belum dilengkapi.', 
+                    FlashMessage::DANGER));
+        }
+
         //ini_set('max_execution_time', 6000);
         $vendor_count = 0;
         foreach($procurement->spphs as $row){
@@ -148,28 +175,66 @@ class BappController extends Controller
         $procurement = Procurement::find($procurement->id);
 
         //memo
-        $client = new Client([
-            //'base_uri' => 'https://apphub.universitaspertamina.ac.id/',
-             'base_uri' => 'http://10.10.71.218:800/',
-            // 'base_uri' => 'http://36.37.91.71:21800/',
-            'headers' => ['Content-Type' => 'application/json']
-        ]);
-        $responses = $client->get('/api/Disposisi?nomor_surat=0820/UP-SU.1/MEMO/BJ.00/II/2022');
-        $result = json_decode($responses->getBody()->getContents(), true);
-        
-        $memos = array_reverse($result['data']);
-        //dd($memos['user_id']);
-        $total_disposisi = count($memos);
+        $url = 'https://apphub.universitaspertamina.ac.id/api/Disposisi?nomor_surat='.$procurement->no_memo;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $response = json_decode(curl_exec($curl), true);
+        curl_close($curl);
+
+        if (!$response['status']) {
+            return back()->with('message', new FlashMessage('Nomor Memo tidak valid', 
+            FlashMessage::DANGER));
+        } else {
+            $data = $response['data'];
+            $disposisi = array();
+            $arrDis = array();
+            $arrNamaJabatan = array();
+
+            foreach ($data as $d){
+                if (sizeof($disposisi) == 0){
+                    array_push($disposisi, $d);
+                    array_push($arrDis, $d['disposisi']);
+                    array_push($arrNamaJabatan, $d['nama_jabatan']);
+                } else {
+                    $cekDis = in_array($d['disposisi'], $arrDis);
+                    $cekNamaJabatan = in_array($d['nama_jabatan'], $arrNamaJabatan);
+                    if (!$cekDis && !$cekNamaJabatan){
+                        array_push($disposisi, $d);
+                        array_push($arrDis, $d['disposisi']);
+                        array_push($arrNamaJabatan, $d['nama_jabatan']);
+                    }
+                }                
+            }
+            array_multisort($disposisi);
+            foreach ($disposisi as $key=>$dispo) {
+                if (is_null($dispo['tgl_disposisi'])){
+                    unset($disposisi[$key]);
+                }
+            }
+
+            if (sizeof($disposisi) == 0) {
+                return back()->with('message', new FlashMessage('Tanggal disposisi belum ditentukan', 
+                FlashMessage::DANGER));
+            }
+
+            $total_disposisi = count($disposisi);
+        }
 
         $pdf_name = "BAPP-".$procurement->name.'-'.$procurement->id.".pdf";
         $location = "bapp"."/";
 
         if($procurement->mechanism_id==3){
-            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak_pl',['total_disposisi' => $total_disposisi, 'memos' => $memos, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
+            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak_pl',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
             $pdf_name = str_replace("/", "-", $pdf_name);
             $pdf_save->save($location.$pdf_name);
         } else {
-            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak',['total_disposisi' => $total_disposisi, 'memos' => $memos, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
+            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
             $pdf_name = str_replace("/", "-", $pdf_name);
             $pdf_save->save($location.$pdf_name);
         }

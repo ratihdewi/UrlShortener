@@ -1,24 +1,5 @@
 <?php 
-    
-    function formatDate ($tanggal){
-        $bulan = array (
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
-        $field = explode('-', $tanggal);
-        return $field[2] . ' ' . $bulan[ (int)$field[1] ] . ' ' . $field[0];
-    }
-
+    use App\Http\Controllers\ProcurementController;
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +23,7 @@
         <center>
             <img class="mt-2 mb-3" src="{{public_path('img/up.png')}}" width="20%"><br> 
         </center>
-        Jakarta, {{formatDate(date('Y-m-d'))}}<br><br>
+        Jakarta, {{ProcurementController::formatDate(date('Y-m-d'))}}<br><br>
         <table style="margin-left:10px;">
             @if($procurement->mechanism_id!=6)
                 <tr>
@@ -72,7 +53,7 @@
         <p align="justify">
         Berkaitan dengan memorandum nomor @if($procurement->mechanism_id!=6) {{$spph->procurement->no_memo}} @else {{$procurement->no_memo}} @endif tentang {{$spph->procurement->name}} dari 
         @foreach ($disposisi as $key=>$dispo)
-            {{ $dispo['nama_jabatan'] }} pada tanggal {{ formatDate($dispo['tgl_disposisi']) }},
+            {{ $dispo['nama_jabatan'] }} pada tanggal {{ ProcurementController::formatDate($dispo['tgl_disposisi']) }},
             @if ($key+1 == sizeof($disposisi)-1) serta @endif
         @endforeach
         kami dari Fungsi Pengadaan Barang dan Jasa Universitas Pertamina mengundang perusahaan
