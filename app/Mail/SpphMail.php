@@ -31,7 +31,7 @@ class SpphMail extends Mailable
     public function build()
     {
         $spph = ProcurementSpph::find($this->spph_id);
-        $pengirim_email = "pengadaan-dev@universitaspertamina.ac.id";
+        $pengirim_email = "pengadaan@universitaspertamina.ac.id";
         $alter = "Pengadaan Universitas Pertamina";
 
         return $this->from($pengirim_email, $alter)

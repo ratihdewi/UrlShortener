@@ -23,14 +23,14 @@ class PoController extends Controller
     {
         $po = MasterPo::find(1);
         $procurement = Procurement::find($spph->procurement_id);
-        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 10)->orWhere('role_id', 2)->get();
         return view('module.procurement.detail.po_input', compact('spph', 'procurement', 'users', 'po'));
     }
 
     public function edit(ProcurementSpph $spph)
     {
         $procurement = Procurement::find($spph->procurement_id);
-        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 10)->orWhere('role_id', 2)->get();
         return view('module.procurement.detail.po_edit', compact('spph', 'procurement', 'users'));
     }
 

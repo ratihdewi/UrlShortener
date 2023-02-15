@@ -34,7 +34,7 @@ class BappLoseMail extends Mailable
     {
         $procurement = Procurement::find($this->procurement_id);
         $perihal = $procurement->name;
-        $pengirim_email = "pengadaan-dev@universitaspertamina.ac.id";
+        $pengirim_email = "pengadaan@universitaspertamina.ac.id";
         $alter = "Pengadaan Universitas Pertamina";
 
         return $this->from($pengirim_email, $alter)

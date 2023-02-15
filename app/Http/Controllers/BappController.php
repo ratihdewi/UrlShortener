@@ -22,7 +22,7 @@ class BappController extends Controller
 {
     public function input(Procurement $procurement)
     {
-        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 10)->orWhere('role_id', 2)->get();
         return view('module.procurement.detail.bapp_input', compact('procurement', 'users'));
     }
 
@@ -54,7 +54,7 @@ class BappController extends Controller
 
     public function edit(Procurement $procurement)
     {
-        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 4)->orWhere('role_id', 2)->get();
+        $users = User::where('jabatan_id', '<>', 0)->where('jabatan_id', '<=', 10)->orWhere('role_id', 2)->get();
         return view('module.procurement.detail.bapp_edit', compact('procurement', 'users'));
     }
 
@@ -141,6 +141,13 @@ class BappController extends Controller
         foreach($procurement->spphs as $row){
             if($row->has_penawaran){
                 $vendor_count++;
+            }
+	}
+
+	$vendor_spph = 0;
+        foreach($procurement->spphs as $row){
+            if($row->status === 2 || $row->status === 3){
+                $vendor_spph++;
             }
         }
 
@@ -230,11 +237,11 @@ class BappController extends Controller
         $location = "bapp"."/";
 
         if($procurement->mechanism_id==3){
-            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak_pl',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
+            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak_pl',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price, 'vendor_spph'=> $vendor_spph]);
             $pdf_name = str_replace("/", "-", $pdf_name);
             $pdf_save->save($location.$pdf_name);
         } else {
-            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price]);
+            $pdf_save = PDF::loadview('module.procurement.detail.bapp_cetak',['total_disposisi' => $total_disposisi, 'memos' => $disposisi, 'itemOccurences' => $itemOccurences, 'check_name' => $check_name, 'procurement' => $procurement, 'vendor_count' => $vendor_count, 'min_price' => $min_price, 'vendor_spph' => $vendor_spph]);
             $pdf_name = str_replace("/", "-", $pdf_name);
             $pdf_save->save($location.$pdf_name);
         }

@@ -62,7 +62,7 @@
             <tr>
                 <td style="width:20px;vertical-align:top"><b>2.</b></td>
                 <td style="text-align:justify">
-                    Surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_count}} vendor pada tanggal {{ ProcurementController::formatDate($procurement->spph_sending_date) }} sebagai berikut:
+                    Surat Permintaan Penawaran Harga yang dikirimkan kepada {{$vendor_spph}} vendor pada tanggal {{ ProcurementController::formatDate($procurement->spph_sending_date) }} sebagai berikut:
                 </td>
             </tr>
         </table><br>
