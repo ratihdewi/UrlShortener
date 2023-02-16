@@ -15,7 +15,8 @@ class AuthController extends Controller
     {
 //        $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
         // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.224:8001/auth';
-          $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+          // $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+          $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.227:9001/auth';
         return \Redirect::to($login_url);
     }
 
@@ -30,13 +31,14 @@ class AuthController extends Controller
 
             $user = User::where('username', $username)->first();
             $user = User::find($user->id);
-            
+
             Auth::attempt(['email' => $user->email, 'password' => $user->password_real]);
             return redirect()->intended('procurement');
         } else {
 //            $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
            // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.224:8001/auth';
-              $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+              // $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+            $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.227:9001/auth';
             return \Redirect::to($login_url);
         }
     }
@@ -57,7 +59,7 @@ class AuthController extends Controller
                 }
             }
 	    // $logout_url = 'https://sso-dev.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;           
-	     $logout_url = 'https://sso.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
+	     $logout_url = 'https://sso-dev.universitaspertamina.ac.id/sso-logout?token='.$token_login.'&username='.$username;
         return \Redirect::to($logout_url);
         }
         // $username = $_COOKIE["username"];
