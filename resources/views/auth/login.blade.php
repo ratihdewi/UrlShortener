@@ -24,7 +24,7 @@
                                     <center><div class="card-header justify-content-center"><h3 class="font-weight-light my-4">Login e-Procurement</h3></div></center>
                                     <div class="card-body">
                                         <!-- Login form-->
-                                        <form method="POST" action="{{ route('login') }}">
+                                        <form method="POST" action="{{ route('auth.local') }}">
                                         @csrf
                                             <!-- Form Group (email address)-->
                                             <div class="form-group">

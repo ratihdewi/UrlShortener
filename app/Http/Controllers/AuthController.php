@@ -15,9 +15,10 @@ class AuthController extends Controller
     {
 //        $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
         // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.224:8001/auth';
-          // $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
-          $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.227:9001/auth';
-        return \Redirect::to($login_url);
+          $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+          // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:2345/auth';
+        // return \Redirect::to($login_url);
+          return view('auth.login');
     }
 
     public function auth()
@@ -37,8 +38,8 @@ class AuthController extends Controller
         } else {
 //            $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=https://pengadaan.universitaspertamina.ac.id/auth';
            // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.224:8001/auth';
-              // $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
-            $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://10.10.71.227:9001/auth';
+              $login_url = 'https://sso.universitaspertamina.ac.id/sso-login?redirect_url=https://sandra.universitaspertamina.ac.id/auth';
+            // $login_url = 'https://sso-dev.universitaspertamina.ac.id/sso-login?redirect_url=http://localhost:2345/auth';
             return \Redirect::to($login_url);
         }
     }
@@ -95,5 +96,16 @@ class AuthController extends Controller
         } else {
             echo "udah ga login";
         }
+    }
+
+    public function authLocal (Request $request)
+    {
+
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+            return redirect()->intended('procurement');
+        } else {
+            return redirect()->back();
+        }
+       
     }
 }

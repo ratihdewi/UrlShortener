@@ -305,5 +305,6 @@ route::get('auth/', 'App\Http\Controllers\AuthController@auth');
 route::get('login', 'App\Http\Controllers\AuthController@showLoginForm')->name('login');
 route::get('gettoken/', 'App\Http\Controllers\AuthController@getToken');
 route::post('logout/', 'App\Http\Controllers\AuthController@logout')->name('logout');
+route::post('auth-local/', 'App\Http\Controllers\AuthController@authLocal')->name('auth.local');
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
