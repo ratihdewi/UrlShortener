@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-    let vendorUrl = window.location.origin + '/procurement-manual/umk/getVendorByCategory/';
+    let vendorUrl = window.location.origin + '/procurement/get-vendor/';
 
     $(document).ready(function() {
         $('#inputManual').hide();
@@ -39,7 +39,7 @@
             url: vendorUrl + $('#category').val(),
             success: function (res) {
                 $('#listVendor').append('<option disabled selected> -- Pilih Vendor -- </option>');
-                $.each(res, function(k,v){
+                $.each(res.vendors, function(k,v){
                     $('#listVendor').append(`<option value="${v.id}"> ${v.name} </option>`);
                 });
             }
