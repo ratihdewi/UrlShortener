@@ -69,7 +69,7 @@
                             </div>
                             <div class="col-xl-6">
                                 <div class="form-group">
-                                    <label class="small mb-1">No. RKA&nbsp;</label><label style="font-size:8pt" class="small mb-1">(optional)</label>
+                                    <label class="small mb-1">No. RKA&nbsp;</label>
                                     <input placeholder="No RKA" class="form-control" type="text" name="no_rka" id="no_rka" /><span id="ikon"></span>
                                 </div>
                                 <div class="form-group">
@@ -202,7 +202,11 @@
 
     function checkSubmit () {
 
-        if (document.getElementById('importExcel').files.length == 0) {
+        if (document.getElementById('no_rka').value == '') {
+            alert('Nomor RKA Wajib diisi');
+        }
+
+        else if (document.getElementById('importExcel').files.length == 0) {
             
             $.ajax({
                 type : "GET",
@@ -225,6 +229,7 @@
         }
 
         else {
+           
             $('#savePengadaan').submit();
         }
         

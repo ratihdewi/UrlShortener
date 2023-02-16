@@ -456,6 +456,18 @@ class ProcurementController extends Controller
 
     public function update(Procurement $procurement, Request $request)
     {
+        if ($request->no_rka == "") {
+            return redirect()->back()->with('message', 
+            new FlashMessage('Nomor RKA Wajib diisi', 
+                FlashMessage::DANGER));
+        }
+
+        if ($request->staff_id == 0) {
+            return redirect()->back()->with('message', 
+            new FlashMessage('Mohon memilih PIC', 
+                FlashMessage::DANGER));
+        }
+
         //update semua nya di sini[]
         $old_procurement = clone $procurement;
 

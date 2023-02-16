@@ -25,6 +25,7 @@ class ProcurementRequest extends FormRequest
     {
         return [
             'name' => 'required|String',
+            'no_rka' => 'required',
             'mechanism_id' => 'nullable|String',
             'status' => 'required|String',
             'tor_file' => 'nullable',
