@@ -244,6 +244,19 @@ class ProcurementController extends Controller
                 FlashMessage::DANGER));
         }
 
+        if ($request->mechanism_id == 3 || $request->mechanism_id == 4) {
+            foreach ($tmp as $t) {
+                $existCat = [
+                    'vendor_id' => $proc->vendor_id_penunjukan_langsung,
+                    'category_id' => $t->category_id,
+                ];
+
+                if (!VendorCategory::where($existCat)->exists()){
+                    VendorCategory::create($existCat);
+                }
+            }
+        }
+
         //logs
         (new LogsInsertor)->insert($proc->id, Auth::user()->id, "Membuat pengadaan baru", "", "Pengajuan");
 
