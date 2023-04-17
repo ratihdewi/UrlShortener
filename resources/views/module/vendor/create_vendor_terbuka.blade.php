@@ -23,7 +23,7 @@
                 <!-- Main page content-->
                 <h1 style="font-family:verdana; text-align: center;">Form Pendaftaran Vendor<h1>
                 <div class="container mt-4">
-
+                @include('partial.alert')
                     <div class="row">
                         <div class="col-xl-12">
                             <!-- Account details card-->
@@ -35,10 +35,10 @@
                                             <div class="col-xl-6">
                                                 <div class="form-group">
                                                     <label class="small mb-1">Nama Vendor </label>
-                                                    <input name="name" value="{{ old('name') }}" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" type="text"/>
+                                                    <input name="name" required="true" value="{{ old('name') }}" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" type="text"/>
                                                     @if ($errors->has('name'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('name') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('name') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -46,26 +46,26 @@
                                                     <label class="small mb-1">Alamat Vendor </label>
                                                     <textarea name="address" rows="4" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}">{{ old('address') }}</textarea>
                                                     @if ($errors->has('address'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('address') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('address') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="small mb-1">No. Telepon </label>
-                                                    <input name="no_telp" value="{{ old('no_telp') }}" class="form-control{{ $errors->has('no_telp') ? ' is-invalid' : '' }}" type="number"/>
+                                                    <input name="no_telp" required="true" value="{{ old('no_telp') }}" class="form-control{{ $errors->has('no_telp') ? ' is-invalid' : '' }}" type="number"/>
                                                     @if ($errors->has('no_telp'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('no_telp') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('no_telp') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="small mb-1">Alamat Email </label>
-                                                    <input name="email" value="{{ old('email') }}" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" type="email"/>
+                                                    <input name="email" required="true" value="{{ old('email') }}" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" type="email"/>
                                                     @if ($errors->has('email'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('email') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('email') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -73,10 +73,10 @@
                                             <div class="col-xl-6">
                                                 <div class="form-group">
                                                     <label class="small mb-1">Nama PIC </label>
-                                                    <input name="pic_name" value="{{ old('pic_name') }}" class="form-control{{ $errors->has('pic_name') ? ' is-invalid' : '' }}" type="text"/>
+                                                    <input name="pic_name" required="true" value="{{ old('pic_name') }}" class="form-control{{ $errors->has('pic_name') ? ' is-invalid' : '' }}" type="text"/>
                                                     @if ($errors->has('pic_name'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('pic_name') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('pic_name') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -87,36 +87,31 @@
                                                             <option value="{{$category->id}}">{{$category->name}}</option>
                                                         @endforeach
                                                     </select>
-                                                    @if ($errors->has('category_id'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('category_id') }}</i>
-                                                        </span>
-                                                    @endif
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="small mb-1">Nomor Rekening </label>
-                                                    <input name="no_rek" value="{{ old('no_rek') }}" class="form-control{{ $errors->has('no_rek') ? ' is-invalid' : '' }}" type="number"/>
+                                                    <input name="no_rek" required="true" value="{{ old('no_rek') }}" class="form-control{{ $errors->has('no_rek') ? ' is-invalid' : '' }}" type="number"/>
                                                     @if ($errors->has('no_rek'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('no_rek') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('no_rek') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="small mb-1">Nama Bank </label>
-                                                    <input name="bank_name" value="{{ old('bank_name') }}" class="form-control{{ $errors->has('bank_name') ? ' is-invalid' : '' }}" type="text"/>
+                                                    <input name="bank_name" required="true" value="{{ old('bank_name') }}" class="form-control{{ $errors->has('bank_name') ? ' is-invalid' : '' }}" type="text"/>
                                                     @if ($errors->has('bank_name'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('bank_name') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('bank_name') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="small mb-1"> NPWP / TIN (Tax Identification Number) </label>
-                                                    <input name="no_tax" value="{{ old('no_tax') }}" class="form-control{{ $errors->has('no_tax') ? ' is-invalid' : '' }}" type="text"/>
+                                                    <input name="no_tax" required="true" value="{{ old('no_tax') }}" class="form-control{{ $errors->has('no_tax') ? ' is-invalid' : '' }}" type="text"/>
                                                     @if ($errors->has('no_tax'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('no_tax') }}</i>
+                                                        <span class="small" style="color:red" role="alert">
+                                                            <strong>{{ $errors->first('no_tax') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -132,11 +127,6 @@
                                                 <div class="form-group">
                                                     <label for="captcha" class="small mb-1">Enter Captcha</label>
                                                         <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha" name="captcha">
-                                                    @if ($errors->has('captcha'))
-                                                        <span class="small" style="color:red;" role="alert">
-                                                            <i>{{ $errors->first('captcha') }}</i>
-                                                        </span>
-                                                    @endif
                                                 </div>
                                             </div>
                                             <h4>*Pilih bidang usaha yang sesuai, Bisa memilih lebih dari 1 bidang usaha</h4>

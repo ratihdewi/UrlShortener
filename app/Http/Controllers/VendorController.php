@@ -4,14 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ItemCategory;
-use App\Models\MasterSla;
-use App\Models\Logs;
 use App\Models\VendorCategory;
 use App\Models\VendorScore;
-use App\Models\Procurement;
 use App\Models\ProcurementSpph;
 use App\Models\VendorFile;
-use App\Models\SpphPenawaran;
 use App\Models\Vendor;
 use App\Models\VendorTenderTerbuka;
 use App\Http\Requests\VendorRequest;
@@ -24,9 +20,7 @@ use App\Utilities\CreateNoVendor;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VendorExport;
 use App\Imports\VendorImport;
-use App\Exports\VendorTemplateImport;
 use App\Mail\VendorTerbukaMail;
-use App\Utilities\CreateNoSpph;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use DB;
@@ -40,11 +34,7 @@ class VendorController extends Controller
      */
     public function index()
     {
-        $vendors = Vendor::where([
-            'delete' => 0,
-            'temporary' => 0
-        ])->get();
- 
+        $vendors = Vendor::where('delete', 0)->get();
         return view('module.vendor.index', compact('vendors'));
     }
 
@@ -67,53 +57,41 @@ class VendorController extends Controller
      */
     public function store(VendorRequest $request, VendorInsertor $service)
     {
+        //dd($request);
         if($service->insert($request->all())){
 
-            $vendor = Vendor::where([['no_rek',$request->no_rek],['email',$request->email]])->first();
-            $prc = Procurement::all();
+            //tambahan untuk penyelesaian point 5
+            $data=Vendor::where([['no_rek',$request->no_rek],['email',$request->email]])->first();
+            foreach($request->category_id as $d){
+                //dd($d);
+                $datacek = DB::table("procurement_spphs as a")
+                    ->join("vendor_categories as b","a.vendor_id","=","b.vendor_id")
+                    ->select("a.*","b.vendor_id","b.category_id")->where('b.category_id',$d)->groupBy('a.procurement_id')->get();
+    
+                $getNomor = DB::table("procurement_spphs as a")
+                    ->join("vendor_categories as b","a.vendor_id","=","b.vendor_id")
+                    ->select("a.*","b.vendor_id","b.category_id")->where('b.category_id',$d)->orderBy('a.no_spph', 'desc')->first();
 
-            foreach ($prc as $procurement) {
-                foreach ($procurement->items as $item) {
-                    $categories = VendorCategory::where('category_id', $item->category_id)
-                                  ->where('vendor_id', $vendor->id)
-                                  ->get();
-                    foreach($categories as $row) {
-                        if(Vendor::find($row->vendor_id)){
-                            if(!ProcurementSpph::where('vendor_id', $row->vendor_id)->where('procurement_id', $item->procurement_id)->exists()){
-                                $curr_proc = Procurement::where('id', $item->procurement_id)->first();
-                                $spph = new ProcurementSpph();
-                                $spph->procurement_id = $item->procurement_id;
-                                $spph->vendor_id = $row->vendor_id;
-                                $spph->item_id = $item->id;
-                                $spph->status = 0;
-                                $spph->no_spph = (new CreateNoSpph)->createNo();
-                                if ($curr_proc->mechanism_id == 3 ||  $curr_proc->mechanism_id == 4) {
-                                    $spph->hidden = 1;
-                                }
-                                $spph->save();
+                    if(count($datacek)>0){
+                        foreach($datacek as $row){
+                            $cekDouble = ProcurementSpph::where([['procurement_id',$row->procurement_id],['vendor_id',$data->id]])->get();
+                            if(count($cekDouble)==0){
+                                $sp0=explode("/",$getNomor->no_spph);
+                                $sp1 =$sp0[0]+1;
+                                $sp2 ="0$sp1/$sp0[1]/$sp0[2]/$sp0[3]/$sp0[4]";
 
-                                foreach($spph->vendor->categories as $category){
-                                    //$category->id //per kategori tiap vendor
-                                    foreach($procurement->items as $item){
-                                        if($category->category_id == $item->category_id){
-                                            $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
-                                            if (!$isExists) {
-                                                //masukin item->id ke array
-                                                $penawaran = new SpphPenawaran();
-                                                $penawaran->item_id = $item->id;
-                                                $penawaran->spph_id = $spph->id;
-                                                $penawaran->procurement_id = $procurement->id;
-                                                $penawaran->save();
-                                            }
-                                        }
-                                    }
-                                }
-                            }  
+                                ProcurementSpph::create([
+                                    'vendor_id'=>$data->id,
+                                    'item_id'=>$row->item_id,
+                                    'no_spph'=> $sp2,
+                                    'procurement_id'=>$row->procurement_id,
+                                    'status'=>0
+                                ]);
+                            }
                         }
                     }
-                }
-            }
-            
+            } //akhir wahyu untuk penyelesaian point 5
+
         	return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan!', 
                 FlashMessage::SUCCESS));
@@ -172,7 +150,6 @@ class VendorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
     public function update(VendorRequest $request, Vendor $vendor)
     {
         $data = $request->all();
@@ -182,70 +159,13 @@ class VendorController extends Controller
         $data['no'] = (new CreateNoVendor)->createNo($vendor->id);
         $vendor->fill($data);
         $vendor->save();
-
-        if (isset($request->category_id)) {
-            $vendor_category = VendorCategory::where('vendor_id', $vendor->id)->delete();
-
-            foreach($request->category_id as $row){
-                $cat = new VendorCategory();
-                $cat->vendor_id = $vendor->id;
-                $cat->category_id = $row;
-                $cat->save();
-            }
-
-            $prc = Procurement::all();
-            ProcurementSpph::where('vendor_id', $vendor->id)->update(['hidden' => 1 ]);
-
-            foreach ($prc as $procurement) {
-                foreach ($procurement->items as $item) {
-                    $categories = VendorCategory::where('category_id', $item->category_id)
-                                  ->where('vendor_id', $vendor->id)
-                                  ->get();
-                    foreach($categories as $row) {
-                        if(Vendor::find($row->vendor_id)){
-                            if(!ProcurementSpph::where('vendor_id', $row->vendor_id)->where('procurement_id', $item->procurement_id)->exists()){
-                                
-                                $curr_proc = Procurement::where('id', $item->procurement_id)->first();
-                                $spph = new ProcurementSpph();
-                                $spph->procurement_id = $item->procurement_id;
-                                $spph->vendor_id = $row->vendor_id;
-                                $spph->item_id = $item->id;
-                                $spph->status = 0;
-                                $spph->no_spph = (new CreateNoSpph)->createNo();
-
-                                if ($curr_proc->mechanism_id == 3 ||  $curr_proc->mechanism_id == 4) {
-                                    $spph->hidden = 1;
-                                }
-                                $spph->save();
-
-                                foreach($spph->vendor->categories as $category){
-                                    //$category->id //per kategori tiap vendor
-                                    foreach($procurement->items as $item){
-                                        if($category->category_id == $item->category_id){
-                                            $isExists = SpphPenawaran::where('spph_id', $spph->id)->where('item_id', $item->id)->where('procurement_id', $procurement->id)->exists();
-                                            if (!$isExists) {
-                                                //masukin item->id ke array
-                                                $penawaran = new SpphPenawaran();
-                                                $penawaran->item_id = $item->id;
-                                                $penawaran->spph_id = $spph->id;
-                                                $penawaran->procurement_id = $procurement->id;
-                                                $penawaran->save();
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                ProcurementSpph::where('vendor_id', $row->vendor_id)->where('procurement_id', $item->procurement_id)->update(['hidden' => 0 ]);
-                            } 
-                        }
-                    }
-                }
-            }
-        } else {
-
-            VendorCategory::where('vendor_id', $vendor->id)->delete();
+        $vendor_category = VendorCategory::where('vendor_id', $vendor->id)->delete();
+        foreach($request->category_id as $row){
+            $cat = new VendorCategory();
+            $cat->vendor_id = $vendor->id;
+            $cat->category_id = $row;
+            $cat->save();
         }
-
         return redirect()->route('vendor.index')->with('message', 
         new FlashMessage('Vendor telah berhasil diubah!', 
             FlashMessage::SUCCESS));
@@ -446,23 +366,14 @@ class VendorController extends Controller
 
         return redirect()->route('vendor.index')->with('message', 
             new FlashMessage('Vendor telah berhasil ditambahkan.', 
-                FlashMessage::SUCCESS));
+                FlashMessage::WARNING));
     }
 
-    public function vendorImportTemplate()
+    public function vendorExampleImport()
     {
-        $file = public_path()."/templat/Templat-Masukan-Vendor.xlsx";
+        $file = public_path()."/template-import-vendorr.xlsx";
         $headers = array('Content-Type: application/vnd.ms-excel',);
-        return response()->download($file, 'Templat-Masukan-Vendor.xlsx',$headers);
-    }
-
-    public function vendorImportData()
-    {
-        $vendors = Vendor::where([
-            'temporary' => 0
-        ])->get();
-
-        return Excel::download(new VendorTemplateImport(), 'Vendor-Template-Import.xlsx');
+        return response()->download($file, 'template-import-vendorr.xlsx',$headers);
     }
 
 
@@ -502,13 +413,6 @@ class VendorController extends Controller
     public function reloadCaptcha()
     {
         return response()->json(['captcha'=> captcha_img()]);
-    }
-
-    public function cekVendorTerbuka ($id) {
-
-        $vendorTerbuka = VendorTenderTerbuka::where('id', $id)->first();
-        $exists = Vendor::where('email', $vendorTerbuka->email)->where('delete', 0)->exists();
-        return response()->json(['exists' => $exists]);
     }
 
 }
